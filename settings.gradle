@@ -1,0 +1,6 @@
+rootProject.name = 'template'
+include 'frontend'
+include 'web:rest'
+include 'web:shared'
+include 'web:memory-dao'
+include 'web:main'

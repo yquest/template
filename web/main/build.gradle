@@ -1,0 +1,44 @@
+plugins {
+  id 'application'
+}
+
+application {
+  mainClassName = 'io.vertx.core.Launcher'
+}
+
+dependencies {
+  implementation project(':web:rest')
+  implementation project(':web:memory-dao')
+  api project(':web:shared')
+
+  implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8:$kotlinVersion"
+  implementation "io.vertx:vertx-config:$vertxVersion"
+  implementation "io.vertx:vertx-config-yaml:$vertxVersion"
+  implementation "io.vertx:vertx-core:$vertxVersion"
+  implementation "io.vertx:vertx-rx-java2:$vertxVersion"
+  implementation "io.vertx:vertx-lang-kotlin:$vertxVersion"
+
+  testImplementation "io.vertx:vertx-junit5:$vertxVersion"
+  testImplementation "io.vertx:vertx-web-client:$vertxVersion"
+  testRuntimeOnly "org.junit.jupiter:junit-jupiter-engine:$junitJupiterEngineVersion"
+  testImplementation "org.junit.jupiter:junit-jupiter-api:$junitJupiterEngineVersion"
+
+}
+
+distributions {
+  main {
+    baseName = 'template'
+    contents {
+      from 'conf'
+    }
+  }
+}
+
+def mainVerticleName = 'pt.fabm.template.MainVerticle'
+def watchForChange = 'src/**/*'
+def doOnChange = './gradlew classes'
+def conf = """{"path":"conf/config.yaml"}"""
+
+run {
+  args = ['run', mainVerticleName, "--redeploy=$watchForChange", "--launcher-class=$mainClassName","-conf=$conf", "--on-redeploy=$doOnChange"]
+}

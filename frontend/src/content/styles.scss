@@ -1,0 +1,44 @@
+$fa-font-path: "./~@fortawesome/fontawesome-free/webfonts";
+
+@import "node_modules/bootstrap/scss/bootstrap.scss";
+// Required
+@import "node_modules/bootstrap/scss/functions";
+@import "node_modules/bootstrap/scss/variables";
+@import "node_modules/bootstrap/scss/mixins";
+// Optional
+@import "node_modules/bootstrap/scss/reboot";
+@import "node_modules/bootstrap/scss/type";
+@import "node_modules/bootstrap/scss/images";
+@import "node_modules/bootstrap/scss/code";
+@import "node_modules/bootstrap/scss/grid";
+
+@import '~@fortawesome/fontawesome-free/scss/fontawesome.scss';
+@import '~@fortawesome/fontawesome-free/scss/solid.scss';
+@import '~@fortawesome/fontawesome-free/scss/brands.scss';
+$rct-icon-color: #33c !default;
+$rct-label-hover: rgba($rct-icon-color, .1) !default;
+$rct-label-active: rgba($rct-icon-color, .15) !default;
+$rct-clickable-hover: rgba($rct-icon-color, .1) !default;
+$rct-clickable-focus: rgba($rct-icon-color, .2) !default;
+
+/* Default Table Style */
+table {
+  color: #333;
+  background: white;
+  border: 1px solid grey;
+  font-size: 12pt;
+  border-collapse: collapse;
+}
+table thead th,
+table tfoot th {
+  color: #777;
+  background: rgba(0,0,0,.1);
+}
+table caption {
+  padding:.5em;
+}
+table th,
+table td {
+  padding: .5em;
+  border: 1px solid lightgrey;
+}

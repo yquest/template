@@ -1,0 +1,19 @@
+verticles:
+  dao: pt.fabm.template.EBForwarderVerticleTest
+  rest: pt.fabm.template.rest.RestVerticle
+confs:
+  rest:
+    port: 8888
+    host: localhost
+  dao:
+    #all the event bus consumers addresses to be forwarded
+    eb_consumers:
+      -  dao.user.create
+      -  dao.user.login
+      -  dao.reservation.list
+      -  dao.reservation.create
+      -  dao.car.create
+      -  dao.car.list
+      -  dao.car.retrieve
+    codecs:
+      dao.car.list: List
