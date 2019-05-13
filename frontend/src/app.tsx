@@ -59,6 +59,20 @@ class AppStateStore {
 
 let appStateStore = new AppStateStore();
 
+window.addEventListener("popstate", e => {
+  switch (e.state) {
+    case "to-login":
+      appStateStore.updateShowRegister(false);
+      break;
+    case "to-register":
+      appStateStore.updateShowRegister(true);
+      break;
+    case null:
+      appStateStore.updateShowRegister(false);
+      break;
+  }
+});
+
 @observer
 export class App extends React.Component<{}, {}> {
   render() {
@@ -69,7 +83,7 @@ export class App extends React.Component<{}, {}> {
         {appStateStore.state === AppState.LOGGED_IN && (
           <div>Hello {appStateStore.appStateValues.userName}</div>
         )}
-        <CarsList />
+        {appStateStore.state !== AppState.SHOWING_REGISTER && <CarsList />}
         {appStateStore.state === AppState.LOGGED_IN && (
           <CarEditor
             saveCarEvent={car => {
@@ -96,6 +110,7 @@ export class App extends React.Component<{}, {}> {
             }}
             showUserRegister={() => {
               appStateStore.updateShowRegister(true);
+              window.history.pushState("to-register", "Register");
             }}
           />
         )}
@@ -103,6 +118,7 @@ export class App extends React.Component<{}, {}> {
           <UserRegisterEditor
             returnToLoginClick={() => {
               appStateStore.updateShowRegister(false);
+              window.history.pushState("to-login", "Login");
             }}
             successefullyRegistered={() => {
               appStateStore.updateShowRegister(false);
