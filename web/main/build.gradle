@@ -35,8 +35,10 @@ distributions {
 }
 
 def mainVerticleName = 'pt.fabm.template.MainVerticle'
-def watchForChange = 'src/**/*'
-def doOnChange = './gradlew classes'
+def modulesToWatch = ['rest','memory-dao','shared']
+def watchForChange = "src/**/*, ${modulesToWatch.collect {"../$it/src/**/*"}.join(', ')}"
+logger.info(watchForChange)
+def doOnChange = '../../gradlew :web:main:assemble'
 def conf = """{"path":"conf/config.yaml"}"""
 
 run {
