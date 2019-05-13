@@ -4,6 +4,7 @@ import { action, observable } from "mobx";
 import { userService } from "../../services/UserService";
 import { UserRegisterEditor } from "./UserRegisterEditor";
 import { User } from "../../model/User";
+import { notificationStore, NotificationType } from "./Notifications";
 
 export interface LoginProps {
   loginSuccessefull(user: string);
@@ -89,6 +90,12 @@ export class LoginEditor extends React.Component<LoginProps, {}> {
             userService.userLogin(user).then((res)=>{
               if(res.status === 200){
                 this.props.loginSuccessefull(user.username);
+              }else{
+                console.log("fails");
+                let notification = notificationStore.createNotification();
+                notification.content = "Authentication fails";
+                notification.type = NotificationType.ERROR;
+                notificationStore.addNotificationTemp(notification,3000);
               }
             });
           }}

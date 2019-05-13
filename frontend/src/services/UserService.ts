@@ -21,7 +21,20 @@ export class UserService {
             user: user.username,
             pass: user.password
         };
-        return Axios.post("api/user/login", body);
+
+        let call = Axios.post("api/user/login", body)
+
+        let error = call.catch(res=>{
+            console.log(res);
+            return res.response;
+        });
+
+        let success = call.then(res=>{
+            console.log(res);
+            return res;
+        });
+
+        return Promise.race([error,success]);
     };
 
     userLogout(): Promise<any> {
