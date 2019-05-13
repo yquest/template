@@ -15,41 +15,49 @@ configureMbox({ enforceActions: "observed" }); // don't allow state modification
 
 interface AppStateValues {
   register: boolean;
+  login: boolean;
   userName: string;
 }
 
 enum AppState {
-  LOGGED_IN,
-  WAIT_LOG_IN,
-  SHOWING_REGISTER
+  LIST_NO_AUTH,
+  CAR_EDIT_AUTH,
+  LOG_IN_NO_AUTH,
+  REGISTER_NO_AUTH
 }
 
 class AppStateStore {
   @observable
   appStateValues: AppStateValues = {
+    login: false,
     register: false,
     userName: localStorage.getItem("username")
   };
 
   @computed
   get state(): AppState {
-    console.log("try to calculate");
     if (
       this.appStateValues.userName === "" ||
       this.appStateValues.userName === null ||
       this.appStateValues.userName === undefined
     ) {
       if (this.appStateValues.register) {
-        return AppState.SHOWING_REGISTER;
+        return AppState.REGISTER_NO_AUTH;
+      } else if (this.appStateValues.login) {
+        return AppState.LOG_IN_NO_AUTH;
       }
-      return AppState.WAIT_LOG_IN;
+      return AppState.LIST_NO_AUTH;
     }
-    return AppState.LOGGED_IN;
+    return AppState.CAR_EDIT_AUTH;
   }
 
   @action
   updateShowRegister(showRegister: boolean) {
     this.appStateValues.register = showRegister;
+  }
+  @action
+  updateLogin(login: boolean) {
+    this.appStateValues.login = login;
   }
   @action
   updateUserName(userName: string) {
@@ -79,12 +87,19 @@ export class App extends React.Component<{}, {}> {
     console.log("render " + appStateStore.state);
     return (
       <div className="container" style={{ marginBottom: "5rem" }}>
+        {appStateStore.state === AppState.LIST_NO_AUTH && <a
+          href="#"
+          onClick={() => {
+            appStateStore.updateLogin(true);
+          }}>
+          login
+        </a>}
         <Notifications />
-        {appStateStore.state === AppState.LOGGED_IN && (
+        {appStateStore.state === AppState.CAR_EDIT_AUTH && (
           <div>Hello {appStateStore.appStateValues.userName}</div>
         )}
-        {appStateStore.state !== AppState.SHOWING_REGISTER && <CarsList />}
-        {appStateStore.state === AppState.LOGGED_IN && (
+        {(appStateStore.state === AppState.LIST_NO_AUTH ||appStateStore.state === AppState.CAR_EDIT_AUTH) && <CarsList />}
+        {appStateStore.state === AppState.CAR_EDIT_AUTH && (
           <CarEditor
             saveCarEvent={car => {
               carService.createCar(car).then(res => {
@@ -102,7 +117,7 @@ export class App extends React.Component<{}, {}> {
             }}
           />
         )}
-        {appStateStore.state === AppState.WAIT_LOG_IN && (
+        {appStateStore.state === AppState.LOG_IN_NO_AUTH && (
           <LoginEditor
             loginSuccessefull={user => {
               appStateStore.updateUserName(user);
@@ -114,7 +129,7 @@ export class App extends React.Component<{}, {}> {
             }}
           />
         )}
-        {appStateStore.state === AppState.SHOWING_REGISTER && (
+        {appStateStore.state === AppState.REGISTER_NO_AUTH && (
           <UserRegisterEditor
             returnToLoginClick={() => {
               appStateStore.updateShowRegister(false);
