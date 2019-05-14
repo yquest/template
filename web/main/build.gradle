@@ -39,7 +39,7 @@ def modulesToWatch = ['rest','memory-dao','shared']
 def watchForChange = "src/**/*, ${modulesToWatch.collect {"../$it/src/**/*"}.join(', ')}"
 logger.info(watchForChange)
 def doOnChange = '../../gradlew :web:main:assemble'
-def conf = """{"path":"conf/config.yaml"}"""
+def conf = "conf/start.json"
 
 run {
   args = ['run', mainVerticleName, "--redeploy=$watchForChange", "--launcher-class=$mainClassName","-conf=$conf", "--on-redeploy=$doOnChange"]
