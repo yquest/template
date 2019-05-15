@@ -18,30 +18,30 @@ class LoginStore {
   @observable
   password: string = "";
   @observable
-  startUsernameValidation:boolean = false;
+  startUsernameValidation: boolean = false;
   @observable
-  startPasswordValidation:boolean = false;
+  startPasswordValidation: boolean = false;
 
   @computed
   get passwordError(): string {
-    if(!this.startPasswordValidation){
+    if (!this.startPasswordValidation) {
       return null;
     }
-    if(this.password.length === 0){
+    if (this.password.length === 0) {
       return "required";
-    }else{
+    } else {
       return "";
     }
   }
 
   @computed
   get usernameError(): string {
-    if(!this.startUsernameValidation){
+    if (!this.startUsernameValidation) {
       return null;
     }
-    if(this.username.length === 0){
+    if (this.username.length === 0) {
       return "required";
-    }else{
+    } else {
       return "";
     }
   }
@@ -61,6 +61,14 @@ class LoginStore {
   updatePassword(value: string) {
     this.startPasswordValidation = true;
     this.password = value;
+  }
+
+  @action
+  reset() {
+    this.startPasswordValidation = false;
+    this.startUsernameValidation = false;
+    this.password = "";
+    this.username = "";
   }
 }
 
@@ -113,12 +121,12 @@ export class LoginEditor extends React.Component<LoginProps, {}> {
               if (res.status === 200) {
                 this.props.loginSuccessefull(user.username);
               } else {
-                console.log("fails");
                 let notification = notificationStore.createNotification();
                 notification.content = "Authentication fails";
                 notification.type = NotificationType.ERROR;
                 notificationStore.addNotificationTemp(notification, 3000);
               }
+              loginStore.reset();
             });
           }}>
           login
@@ -127,7 +135,10 @@ export class LoginEditor extends React.Component<LoginProps, {}> {
           style={{ marginRight: "0.5rem" }}
           type="button"
           className="btn btn-primary"
-          onClick={() => this.props.showUserRegister()}>
+          onClick={() => {
+            this.props.showUserRegister();
+            loginStore.reset();
+          }}>
           sign in
         </button>
       </div>

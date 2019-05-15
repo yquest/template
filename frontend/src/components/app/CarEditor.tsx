@@ -4,20 +4,12 @@ import { MAKERS, Car } from "../../model/Car";
 import { userService } from "../../services/UserService";
 import {
   DropDownInput,
-  Store as DropDownInputStore
+  createDefaultDropDownInputStore
 } from "../general/DropDownInput";
-import { observable, action } from "mobx";
+import { observable, action, computed } from "mobx";
+import { AppInput, InputType } from "../general/appTextInput";
 
-class DropDownInputStoreImp implements DropDownInputStore {
-  @observable
-  isOpen: boolean = false;
-  @action
-  updateState(isOpen: boolean) {
-    this.isOpen = isOpen;
-  }
-}
-
-let dropDownInputStore: DropDownInputStore = new DropDownInputStoreImp();
+const dropDownInputStore = createDefaultDropDownInputStore();
 
 class CarEditorStore {
   @observable
@@ -26,6 +18,13 @@ class CarEditorStore {
     model: null,
     maturityDate: null,
     price: null
+  };
+
+  validationsStart = {
+    make:true,
+    model:true,
+    maturityDate:true,
+    price:true
   };
 
   @action
@@ -44,9 +43,22 @@ class CarEditorStore {
 
   @action
   updateDetailModel(value: string) {
+    this.validationsStart.model = true;
     this.car.model = value;
   }
+  @computed
+  get modelError():string{
+    if(this.validationsStart.model){
+      if(this.car.model.length === 0){
+        return "required";
+      }else{
+        return "";
+      }
+    }
+    return null;
+  }
 }
+
 
 export interface CarEditorProps {
   saveCarEvent: (car) => void;
@@ -63,66 +75,44 @@ export class CarEditor extends React.Component<CarEditorProps, {}> {
         <h3>Car edit</h3>
         <div
           className="card"
-          style={{ marginTop: "1rem", marginBottom: "1rem",padding: "1.5rem" }}
-        >
+          style={{
+            marginTop: "1rem",
+            marginBottom: "1rem",
+            padding: "1.5rem"
+          }}>
           <div className="col-12">
+            <AppInput
+              label="Maturity date"
+              labelId="maturityDate"
+              inputType={InputType.DATE_TIME}
+              error={null}
+              onChange={value => {
+                carEditorStore.updateMaturityDate(value);
+              }}
+            />
+            <AppInput
+              label="Model"
+              labelId="model"
+              inputType={InputType.TEXT}
+              error={carEditorStore.modelError}
+              onChange={value => {
+                carEditorStore.updateDetailModel(value);
+              }}
+            />
+            <AppInput
+              label="Price"
+              labelId="price"
+              inputType={InputType.NUMBER}
+              error={null}
+              onChange={value => {
+                carEditorStore.updateDetailPrice(value);
+              }}
+            />
             <div className="form-group row">
               <label
-                htmlFor="example-datetime-local-input"
-                className="col-2 col-form-label"
-              >
-                Maturity date
-              </label>
-            </div>
-            <div className="col-6">
-              <input
-                className="form-control"
-                type="datetime-local"
-                onChange={event => {
-                  carEditorStore.updateMaturityDate(event.target.value);
-                }}
-              />
-            </div>
-            <div className="form-group row">
-              <label
-                htmlFor="example-datetime-local-input"
-                className="col-2 col-form-label"
-              >
-                Model
-              </label>
-            </div>
-            <div className="col-6">
-              <input
-                className="form-control"
-                type="text"
-                onChange={event => {
-                  carEditorStore.updateDetailModel(event.target.value);
-                }}
-              />
-            </div>
-            <div className="form-group row">
-              <label
-                htmlFor="example-datetime-local-input"
-                className="col-2 col-form-label"
-              >
-                Price
-              </label>
-            </div>
-            <div className="col-6">
-              <input
-                className="form-control"
-                type="number"
-                onChange={event => {
-                  carEditorStore.updateDetailPrice(event.target.value);
-                }}
-              />
-            </div>
-            <div className="form-group row">
-              <label
-                htmlFor="example-datetime-local-input"
-                className="col-2 col-form-label"
-              >
-                Maker
+                htmlFor="make"
+                className="col-2 col-form-label">
+                Make
               </label>
             </div>
 
@@ -141,8 +131,7 @@ export class CarEditor extends React.Component<CarEditorProps, {}> {
           className="btn btn-primary"
           onClick={() => {
             this.props.saveCarEvent(carEditorStore.car);
-          }}
-        >
+          }}>
           save car
         </button>
         <button
@@ -150,11 +139,10 @@ export class CarEditor extends React.Component<CarEditorProps, {}> {
           type="button"
           className="btn btn-primary"
           onClick={() => {
-              userService.userLogout()
-              localStorage.removeItem("username");
-              this.props.logoutEvent();
-            }}
-        >
+            userService.userLogout();
+            localStorage.removeItem("username");
+            this.props.logoutEvent();
+          }}>
           logout
         </button>
       </div>

@@ -68,15 +68,18 @@ class AppStateStore {
 let appStateStore = new AppStateStore();
 
 window.addEventListener("popstate", e => {
-  switch (e.state) {
-    case "to-login":
-      appStateStore.updateShowRegister(false);
-      break;
-    case "to-register":
+  switch (window.location.hash) {
+    case "#register":
       appStateStore.updateShowRegister(true);
+      appStateStore.updateLogin(false);
       break;
-    case null:
+    case "#login":
       appStateStore.updateShowRegister(false);
+      appStateStore.updateLogin(true);
+      break;
+    default:
+      appStateStore.updateShowRegister(false);
+      appStateStore.updateLogin(false);
       break;
   }
 });
@@ -87,18 +90,21 @@ export class App extends React.Component<{}, {}> {
     console.log("render " + appStateStore.state);
     return (
       <div className="container" style={{ marginBottom: "5rem" }}>
-        {appStateStore.state === AppState.LIST_NO_AUTH && <a
-          href="#"
-          onClick={() => {
-            appStateStore.updateLogin(true);
-          }}>
-          login
-        </a>}
+        {appStateStore.state === AppState.LIST_NO_AUTH && (
+          <a
+            href="#login"
+            onClick={() => {
+              appStateStore.updateLogin(true);
+            }}>
+            login
+          </a>
+        )}
         <Notifications />
         {appStateStore.state === AppState.CAR_EDIT_AUTH && (
           <div>Hello {appStateStore.appStateValues.userName}</div>
         )}
-        {(appStateStore.state === AppState.LIST_NO_AUTH ||appStateStore.state === AppState.CAR_EDIT_AUTH) && <CarsList />}
+        {(appStateStore.state === AppState.LIST_NO_AUTH ||
+          appStateStore.state === AppState.CAR_EDIT_AUTH) && <CarsList />}
         {appStateStore.state === AppState.CAR_EDIT_AUTH && (
           <CarEditor
             saveCarEvent={car => {
@@ -125,7 +131,7 @@ export class App extends React.Component<{}, {}> {
             }}
             showUserRegister={() => {
               appStateStore.updateShowRegister(true);
-              window.history.pushState("to-register", "Register");
+              window.location.hash = "#register";
             }}
           />
         )}
@@ -133,10 +139,11 @@ export class App extends React.Component<{}, {}> {
           <UserRegisterEditor
             returnToLoginClick={() => {
               appStateStore.updateShowRegister(false);
-              window.history.pushState("to-login", "Login");
+              window.location.hash = "#login";
             }}
             successefullyRegistered={() => {
               appStateStore.updateShowRegister(false);
+              appStateStore.updateLogin(false);
             }}
           />
         )}

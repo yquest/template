@@ -4,7 +4,9 @@ import { isString } from "util";
 export enum InputType {
   TEXT,
   PASSWORD,
-  SELECT
+  SELECT,
+  DATE_TIME,
+  NUMBER
 }
 
 export interface AppInputProps {
@@ -21,6 +23,10 @@ function getInputTypeRef(inputType: InputType) {
       return "password";
     case InputType.TEXT:
       return "text";
+      case InputType.DATE_TIME:
+      return "datetime-local";
+      case InputType.NUMBER:
+      return "number";
   }
 }
 
