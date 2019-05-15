@@ -2,14 +2,19 @@ import { observer } from "mobx-react";
 import * as React from "react";
 import { action, observable, computed } from "mobx";
 import { userService } from "../../services/UserService";
-import { UserRegisterEditor } from "./UserRegisterEditor";
 import { User } from "../../model/User";
 import { notificationStore, NotificationType } from "./Notifications";
 import { AppInput, InputType } from "../general/appTextInput";
+import { createGenericStore } from "../GenericStoreValidator";
 
 export interface LoginProps {
   loginSuccessefull(user: string);
   showUserRegister();
+}
+
+enum LoginEditorFields {
+  LOGIN,
+  PASSWORD
 }
 
 class LoginStore {
@@ -72,7 +77,16 @@ class LoginStore {
   }
 }
 
-let loginStore: LoginStore = new LoginStore();
+//let loginStore: LoginStore = new LoginStore();
+
+const validation: (idx: LoginEditorFields, value: string) => string = (
+  idx,
+  value
+) => {
+  return value.length === 0 ? "required" : "";
+};
+
+let loginStore = createGenericStore(2, ()=>"", validation);
 
 @observer
 export class LoginEditor extends React.Component<LoginProps, {}> {
@@ -92,15 +106,19 @@ export class LoginEditor extends React.Component<LoginProps, {}> {
               label="Username"
               labelId="username"
               inputType={InputType.TEXT}
-              onChange={value => loginStore.updateUserName(value)}
-              error={loginStore.usernameError}
+              onChange={value =>
+                loginStore.update(LoginEditorFields.LOGIN, value)
+              }
+              error={loginStore.values[LoginEditorFields.LOGIN].error}
             />
             <AppInput
               label="Password"
               labelId="password"
               inputType={InputType.PASSWORD}
-              onChange={value => loginStore.updatePassword(value)}
-              error={loginStore.passwordError}
+              onChange={value =>
+                loginStore.update(LoginEditorFields.PASSWORD, value)
+              }
+              error={loginStore.values[LoginEditorFields.PASSWORD].error}
             />
           </div>
         </div>
@@ -110,12 +128,13 @@ export class LoginEditor extends React.Component<LoginProps, {}> {
           type="button"
           className="btn btn-primary"
           onClick={() => {
-            if (!loginStore.isAllValid) {
+            loginStore.checkAllErrors();
+            if (!loginStore.isAllValidated) {
               return;
             }
             let user: User = {
-              username: loginStore.username,
-              password: loginStore.password
+              username: loginStore.values[LoginEditorFields.LOGIN].value,
+              password: loginStore.values[LoginEditorFields.PASSWORD].value
             };
             userService.userLogin(user).then(res => {
               if (res.status === 200) {

@@ -8,64 +8,25 @@ import {
 } from "../general/DropDownInput";
 import { observable, action, computed } from "mobx";
 import { AppInput, InputType } from "../general/appTextInput";
+import { createGenericStore } from "../GenericStoreValidator";
 
 const dropDownInputStore = createDefaultDropDownInputStore();
 
-class CarEditorStore {
-  @observable
-  car: Car = {
-    make: null,
-    model: null,
-    maturityDate: null,
-    price: null
-  };
-
-  validationsStart = {
-    make:true,
-    model:true,
-    maturityDate:true,
-    price:true
-  };
-
-  @action
-  updateMaturityDate(value: string) {
-    this.car.maturityDate = new Date(value);
-  }
-
-  @action
-  updateDetailMake(value: number) {
-    this.car.make = value;
-  }
-  @action
-  updateDetailPrice(value: string) {
-    this.car.price = Number(value);
-  }
-
-  @action
-  updateDetailModel(value: string) {
-    this.validationsStart.model = true;
-    this.car.model = value;
-  }
-  @computed
-  get modelError():string{
-    if(this.validationsStart.model){
-      if(this.car.model.length === 0){
-        return "required";
-      }else{
-        return "";
-      }
-    }
-    return null;
-  }
+enum CarEditorFields{
+  MAKE,MODEL,MATURITY_DATE,PRICE
 }
 
+const validation:(idx:number,value:string)=>string=(idx, value)=>{
+  return value.length === 0?"required":"";
+}
+
+const carEditorStore = createGenericStore(4,()=>"",validation)
 
 export interface CarEditorProps {
   saveCarEvent: (car) => void;
   logoutEvent: () => void;
 }
 
-export const carEditorStore = new CarEditorStore();
 
 @observer
 export class CarEditor extends React.Component<CarEditorProps, {}> {
@@ -85,27 +46,27 @@ export class CarEditor extends React.Component<CarEditorProps, {}> {
               label="Maturity date"
               labelId="maturityDate"
               inputType={InputType.DATE_TIME}
-              error={null}
+              error={carEditorStore.values[CarEditorFields.MATURITY_DATE].error}
               onChange={value => {
-                carEditorStore.updateMaturityDate(value);
+                carEditorStore.update(CarEditorFields.MATURITY_DATE,value);
               }}
             />
             <AppInput
               label="Model"
               labelId="model"
               inputType={InputType.TEXT}
-              error={carEditorStore.modelError}
+              error={carEditorStore.values[CarEditorFields.MODEL].error}
               onChange={value => {
-                carEditorStore.updateDetailModel(value);
+                carEditorStore.update(CarEditorFields.MODEL,value);
               }}
             />
             <AppInput
               label="Price"
               labelId="price"
               inputType={InputType.NUMBER}
-              error={null}
+              error={carEditorStore.values[CarEditorFields.PRICE].error}
               onChange={value => {
-                carEditorStore.updateDetailPrice(value);
+                carEditorStore.update(CarEditorFields.PRICE,value);
               }}
             />
             <div className="form-group row">
@@ -117,10 +78,11 @@ export class CarEditor extends React.Component<CarEditorProps, {}> {
             </div>
 
             <DropDownInput
-              current={carEditorStore.car.make}
+              current={carEditorStore.values[CarEditorFields.MAKE].value}
               element={MAKERS}
-              updateValue={make => carEditorStore.updateDetailMake(make)}
+              updateValue={make => carEditorStore.update(CarEditorFields.MAKE,make)}
               store={dropDownInputStore}
+              error={carEditorStore.values[CarEditorFields.MAKE].error}
             />
           </div>
         </div>
@@ -130,7 +92,8 @@ export class CarEditor extends React.Component<CarEditorProps, {}> {
           type="button"
           className="btn btn-primary"
           onClick={() => {
-            this.props.saveCarEvent(carEditorStore.car);
+            carEditorStore.checkAllErrors();
+            console.log("for now, just print car:", carEditorStore.values)
           }}>
           save car
         </button>

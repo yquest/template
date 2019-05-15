@@ -4,6 +4,7 @@ import { observer, propTypes } from "mobx-react";
 import { observable, action } from "mobx";
 
 export interface DropDownInputProps {
+  error: string;
   current: number;
   element: { [index: number]: string };
   updateValue: (value: number) => void;
@@ -13,19 +14,9 @@ export interface DropDownInputProps {
 class Store {
   @observable
   isOpen: boolean = false;
-  @observable
-  isValid: boolean = null;
   @action
   updateState(isOpen: boolean) {
     this.isOpen = isOpen;
-  }
-  @action
-  validate() {
-    this.isValid = this.isValid === null ? false : this.isValid;
-  }
-  @action
-  makeValid(){
-    this.isValid = true;
   }
 }
 
@@ -43,8 +34,8 @@ export class DropDownInput extends React.Component<DropDownInputProps, any> {
 
     var classesIsValid = classNames(
       { "form-control": true },
-      { "is-invalid": this.props.store.isValid === false},
-      { "is-valid": this.props.store.isValid === true}
+      { "is-invalid": this.props.error != null && this.props.error.length > 0 },
+      { "is-valid": this.props.error != null && this.props.error.length === 0 }
     );
 
     let labelsCount: number = Object.keys(this.props.element).length / 2;
@@ -79,7 +70,6 @@ export class DropDownInput extends React.Component<DropDownInputProps, any> {
                     onClick={() => {
                       this.props.updateValue(this.props.element[label]);
                       this.props.store.updateState(false);
-                      this.props.store.makeValid();
                     }}
                     className="dropdown-item"
                     href="#">
@@ -100,7 +90,9 @@ export class DropDownInput extends React.Component<DropDownInputProps, any> {
             }
             disabled
           />
-          {this.props.store.isValid === false && <div className="invalid-feedback">error</div>}
+          {this.props.error !== null && this.props.error.length > 0 && (
+            <div className="invalid-feedback">{this.props.error}</div>
+          )}
         </div>
       </div>
     );
