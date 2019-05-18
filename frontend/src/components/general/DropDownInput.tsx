@@ -1,6 +1,6 @@
 import * as React from "react";
 import classNames from "classnames/bind";
-import { observer, propTypes } from "mobx-react";
+import { observer } from "mobx-react";
 import { observable, action } from "mobx";
 
 export interface DropDownInputProps {
@@ -44,8 +44,7 @@ export class DropDownInput extends React.Component<DropDownInputProps, any> {
     );
 
     return (
-      <div className="col-6">
-        <div className="input-group mb-3">
+        <div className="input-group col-sm-10 col-md-8 col-lg-6 mb-3 mb-sm-3">
           <div className="input-group-prepend">
             <button
               className="btn btn-outline-secondary dropdown-toggle"
@@ -94,7 +93,6 @@ export class DropDownInput extends React.Component<DropDownInputProps, any> {
             <div className="invalid-feedback">{this.props.error}</div>
           )}
         </div>
-      </div>
     );
   }
 }

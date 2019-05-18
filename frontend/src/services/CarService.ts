@@ -1,14 +1,22 @@
 import Axios, { AxiosResponse } from "axios";
 import { Car, MAKERS } from "../model/Car";
+import { dateToString } from "../util";
+
 interface RestResult{
     data:any;
     status:number;
 }
 export class CarService {
     createCar(car: Car): Promise<RestResult> {
-        console.log("saved car",car);
+        let serialized = {
+            make:MAKERS[car.make],
+            maturityDate:dateToString(car.maturityDate),
+            model:car.model,
+            price:car.price
+        };
+        console.log("saved car",serialized);
         return Axios
-            .post("api/car", {...car,make:MAKERS[car.make]}, { withCredentials: true })
+            .post("api/car", serialized, { withCredentials: true })        
             .then(res => {                
                 console.log(res.data);
                 return res as RestResult
@@ -17,7 +25,7 @@ export class CarService {
 
     getCar(car: Car): Promise<any> {
         return Axios.get("api/car")
-    };
+    };    
 
     fetchCars(): Promise<Car[]> {
         return Axios.get("api/car/list")
