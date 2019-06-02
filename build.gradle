@@ -68,4 +68,5 @@ task copyPublic(type: Copy) {
   into "web/rest/src/main/resources/public"
 }
 
+copyPublic.shouldRunAfter(':frontend:build')
 task compileAndCopy(dependsOn: [':frontend:build', 'copyPublic'])

@@ -1,4 +1,4 @@
-import { observer, propTypes } from "mobx-react";
+import { observer } from "mobx-react";
 import * as React from "react";
 import { MAKERS, Car } from "../../model/Car";
 import { userService, RestResult } from "../../services/UserService";
@@ -6,10 +6,11 @@ import {
   DropDownInput,
   createDefaultDropDownInputStore
 } from "../general/DropDownInput";
-import { AppInput, InputType } from "../general/appTextInput";
+import { AppInput, InputType } from "../general/AppTextInput";
 import { createGenericStore } from "../GenericStoreValidator";
 import { carService } from "../../services/CarService";
 import { notificationStore, NotificationType } from "./Notifications";
+import { Calendar, monthsStr } from "./Calendar";
 
 const dropDownInputStore = createDefaultDropDownInputStore();
 
@@ -17,14 +18,32 @@ enum CarEditorFields {
   MAKE,
   MODEL,
   MATURITY_DATE,
-  PRICE
+  PRICE,
+  SHOW_CALENDAR
 }
 
 const validation: (idx: number, value: string) => string = (idx, value) => {
-  return value.length === 0 ? "required" : "";
+  return value === null || value.length === 0 ? "required" : "";
 };
 
-const carEditorStore = createGenericStore(4, () => "", validation);
+const creator = (idx: number) => {
+  if (idx === CarEditorFields.MATURITY_DATE) {
+    let date = new Date();
+    date.setSeconds(0);
+    return date;
+  }
+  if (idx === CarEditorFields.SHOW_CALENDAR) {
+    return false;
+  }
+  if (idx === CarEditorFields.MAKE || idx === CarEditorFields.MATURITY_DATE) {
+    return null;
+  }
+  return "";
+};
+
+const carEditorStore = createGenericStore(5, creator, validation);
+
+window['carEditorStore'] = carEditorStore;
 
 export interface CarEditorProps {
   saveCarEvent: (car) => void;
@@ -34,6 +53,8 @@ export interface CarEditorProps {
 @observer
 export class CarEditor extends React.Component<CarEditorProps, {}> {
   render() {
+    let maturityDate: Date =
+      carEditorStore.values[CarEditorFields.MATURITY_DATE].value;
     return (
       <div>
         <h3>Car edit</h3>
@@ -44,17 +65,130 @@ export class CarEditor extends React.Component<CarEditorProps, {}> {
             marginBottom: "1rem",
             padding: "1.5rem"
           }}>
-          <div className="form-group row">
-            <AppInput
-              label="Maturity date"
-              labelId="maturityDate"
-              placeholder="maturity date"
-              inputType={InputType.DATE_TIME}
-              error={carEditorStore.values[CarEditorFields.MATURITY_DATE].error}
-              onChange={value => {
-                carEditorStore.update(CarEditorFields.MATURITY_DATE, value);
-              }}
-            />
+          <div className="row">
+            <div className="form-group col-sm-10 col-md-8 col-lg-6 mb-3 mb-sm-3">
+              <label>Maturity Date</label>
+              <div className="">
+                <small>date</small>
+                <div className="input-group">
+                  <input
+                    type="number"
+                    placeholder="Year"
+                    className="form-control"
+                    value={maturityDate.getFullYear()}
+                    onChange={e => {
+                      let year = Number(e.target.value);
+                      if (year !== NaN || year !== 0) {
+                        maturityDate.setFullYear(year);
+                      }
+                      carEditorStore.update(
+                        CarEditorFields.MATURITY_DATE,
+                        maturityDate
+                      );
+                    }}
+                  />
+                  <select
+                    className="form-control"
+                    onChange={e => {
+                      maturityDate.setMonth(Number(e.target.value));
+                      carEditorStore.update(
+                        CarEditorFields.MATURITY_DATE,
+                        maturityDate
+                      );
+                    }}
+                    value={maturityDate.getMonth()}>
+                    {monthsStr.map((m, i) => (
+                      <option key={"month-" + i} value={i}>
+                        {m}
+                      </option>
+                    ))}
+                  </select>
+                  <input
+                    type="number"
+                    placeholder="Day"
+                    className="form-control"
+                    value={maturityDate.getDate()}
+                    onChange={e => {
+                      let day = Number(e.target.value);
+                      if (day !== NaN || day !== 0) {
+                        maturityDate.setDate(day);
+                      }
+                      carEditorStore.update(
+                        CarEditorFields.MATURITY_DATE,
+                        maturityDate
+                      );
+                    }}
+                  />
+
+                  <div
+                    className="input-group-append"
+                    onClick={() => {
+                      carEditorStore.update(
+                        CarEditorFields.SHOW_CALENDAR,
+                        !carEditorStore.values[CarEditorFields.SHOW_CALENDAR]
+                          .value
+                      );
+                    }}>
+                    <span
+                      className="input-group-text"
+                      style={{ cursor: "pointer" }}>
+                      <i className="fa fa-calendar" />
+                    </span>
+                  </div>
+                </div>
+                <small>hour</small>
+                <div className="input-group">
+                  <input
+                    type="number"
+                    placeholder="Hour"
+                    className="form-control"
+                    value={maturityDate.getHours()}
+                    onChange={e => {
+                      let hour = Number(e.target.value);
+                      if (hour !== NaN || hour < 0 || hour > 23) {
+                        maturityDate.setHours(hour);
+                      }
+                      carEditorStore.update(
+                        CarEditorFields.MATURITY_DATE,
+                        maturityDate
+                      );
+                    }}
+                  />
+                  <input
+                    type="number"
+                    placeholder="Hour"
+                    className="form-control"
+                    value={maturityDate.getMinutes()}
+                    onChange={e => {
+                      let hour = Number(e.target.value);
+                      if (hour !== NaN || hour < 0 || hour >= 60) {
+                        maturityDate.setMinutes(hour);
+                      }
+                      carEditorStore.update(
+                        CarEditorFields.MATURITY_DATE,
+                        maturityDate
+                      );
+                    }}
+                  />
+                </div>
+
+                {carEditorStore.values[CarEditorFields.SHOW_CALENDAR].value && (
+                  <Calendar
+                    month={maturityDate.getMonth() + 1}
+                    year={maturityDate.getFullYear()}
+                    selectChange={day => {
+                      maturityDate.setDate(day);
+                      carEditorStore.update(
+                        CarEditorFields.MATURITY_DATE,
+                        maturityDate
+                      );
+                    }}
+                    selected={maturityDate.getDate()}
+                  />
+                )}
+              </div>
+            </div>
+
             <AppInput
               label="Model"
               labelId="model"
@@ -63,6 +197,7 @@ export class CarEditor extends React.Component<CarEditorProps, {}> {
               onChange={value => {
                 carEditorStore.update(CarEditorFields.MODEL, value);
               }}
+              currentValue={carEditorStore.values[CarEditorFields.MODEL].value}
             />
             <AppInput
               label="Price"
@@ -72,13 +207,16 @@ export class CarEditor extends React.Component<CarEditorProps, {}> {
               onChange={value => {
                 carEditorStore.update(CarEditorFields.PRICE, value);
               }}
+              currentValue={carEditorStore.values[CarEditorFields.PRICE].value}
             />
             <DropDownInput
+              label="Make"
               current={carEditorStore.values[CarEditorFields.MAKE].value}
               element={MAKERS}
               updateValue={make =>
                 carEditorStore.update(CarEditorFields.MAKE, make)
               }
+              name="make"
               store={dropDownInputStore}
               error={carEditorStore.values[CarEditorFields.MAKE].error}
             />
@@ -95,22 +233,34 @@ export class CarEditor extends React.Component<CarEditorProps, {}> {
               let values = carEditorStore.values;
               let car: Car = {
                 make: values[CarEditorFields.MAKE].value,
-                maturityDate: new Date(values[CarEditorFields.MATURITY_DATE].value),
+                maturityDate:values[CarEditorFields.MATURITY_DATE].value,
                 model: values[CarEditorFields.MODEL].value,
                 price: Number.parseInt(values[CarEditorFields.PRICE].value)
               };
-              
-              let createPromise:Promise<RestResult> = carService.createCar(car);
+
+              let createPromise: Promise<RestResult> = carService.createCar(
+                car
+              );
               let notification = notificationStore.createNotification();
-              createPromise.then(res=>{
-                notification.content = "Created car succesefully";
-                notification.type = NotificationType.SUCCESS;
+              let promises: Array<Promise<any>> = [];
+              promises.push(
+                createPromise.then(res => {
+                  notification.content = "Created car succesefully";
+                  notification.type = NotificationType.SUCCESS;
+                  carEditorStore.reset();
+                })
+              );
+              promises.push(
+                createPromise.catch(res => {
+                  notification.content = "Error inserting car";
+                  console.error(res.response.data.error);
+                  notification.type = NotificationType.ERROR;
+                })
+              );
+
+              Promise.all(promises).finally(() => {
+                notificationStore.addNotificationTemp(notification, 3000);
               });
-              createPromise.catch(res=>{
-                notification.content = "Error inserting car";
-                notification.type = NotificationType.ERROR;
-              });
-              notificationStore.addNotificationTemp(notification,3000);
             }
           }}>
           save car
@@ -130,3 +280,5 @@ export class CarEditor extends React.Component<CarEditorProps, {}> {
     );
   }
 }
+
+window["carStore"] = carEditorStore;

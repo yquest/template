@@ -5,5 +5,5 @@ export function pad(num:number, size:number):string {
 }
 
 export function dateToString(date:Date){
-    return `${pad(date.getFullYear(),4)}-${pad(date.getMonth(),2)}-${pad(date.getUTCDay(),2)}T${pad(date.getUTCHours(),2)}:${pad(date.getUTCMinutes(),2)}:${pad(date.getSeconds(),2)}Z`;
+    return `${pad(date.getFullYear(),4)}-${pad(date.getMonth()+1,2)}-${pad(date.getDate(),2)}T${pad(date.getHours(),2)}:${pad(date.getMinutes(),2)}:${pad(date.getSeconds(),2)}Z`;
 }

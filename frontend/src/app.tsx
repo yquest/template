@@ -1,10 +1,4 @@
-import {
-  observable,
-  configure as configureMbox,
-  computed,
-  action,
-  autorun
-} from "mobx";
+import { observable, configure as configureMbox, computed, action } from "mobx";
 import * as React from "react";
 import { carService } from "./services/CarService";
 import { CarsList, carStore } from "./components/app/CarList";
@@ -20,6 +14,7 @@ import { UserRegisterEditor } from "./components/app/UserRegisterEditor";
 configureMbox({ enforceActions: "observed" }); // don't allow state modifications outside actions
 
 interface AppStateValues {
+  selected:number;
   register: boolean;
   login: boolean;
   userName: string;
@@ -35,6 +30,7 @@ enum AppState {
 class AppStateStore {
   @observable
   appStateValues: AppStateValues = {
+    selected : 0,
     login: false,
     register: false,
     userName: localStorage.getItem("username")
@@ -68,6 +64,10 @@ class AppStateStore {
   @action
   updateUserName(userName: string) {
     this.appStateValues.userName = userName;
+  }
+  @action
+  updateSelected(selected: number) {
+    this.appStateValues.selected = selected;
   }
 }
 

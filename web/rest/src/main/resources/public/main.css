@@ -8016,7 +8016,7 @@ pre {
     margin-left: 91.66667%; } }
 
 /*!
- * Font Awesome Free 5.8.1 by @fontawesome - https://fontawesome.com
+ * Font Awesome Free 5.8.2 by @fontawesome - https://fontawesome.com
  * License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License)
  */
 .fa,
@@ -9758,6 +9758,9 @@ readers do not read off random characters that represent icons */
 .fa-git:before {
   content: "\F1D3"; }
 
+.fa-git-alt:before {
+  content: "\F841"; }
+
 .fa-git-square:before {
   content: "\F1D2"; }
 
@@ -11483,6 +11486,9 @@ readers do not read off random characters that represent icons */
 .fa-stack-overflow:before {
   content: "\F16C"; }
 
+.fa-stackpath:before {
+  content: "\F842"; }
+
 .fa-stamp:before {
   content: "\F5BF"; }
 
@@ -12294,7 +12300,7 @@ readers do not read off random characters that represent icons */
   width: auto; }
 
 /*!
- * Font Awesome Free 5.8.1 by @fontawesome - https://fontawesome.com
+ * Font Awesome Free 5.8.2 by @fontawesome - https://fontawesome.com
  * License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License)
  */
 @font-face {
@@ -12302,8 +12308,8 @@ readers do not read off random characters that represent icons */
   font-style: normal;
   font-weight: 900;
   font-display: auto;
-  src: url(46e7cec623d8bd790d9fdbc8de2d3ee7.eot);
-  src: url(46e7cec623d8bd790d9fdbc8de2d3ee7.eot?#iefix) format("embedded-opentype"), url(418dad87601f9c8abd0e5798c0dc1feb.woff2) format("woff2"), url(a7140145ebaaf5fb14e40430af5d25c4.woff) format("woff"), url(ff8d9f8adb0d09f11d4816a152672f53.ttf) format("truetype"), url(assets/img/fa-solid-900.svg?5c68fef924f1824da2c291b02f71838f#fontawesome) format("svg"); }
+  src: url(e2675a616b68f446fa6284c111554c7f.eot);
+  src: url(e2675a616b68f446fa6284c111554c7f.eot?#iefix) format("embedded-opentype"), url(64b3e814a66c2719b15abf8f7998bd73.woff2) format("woff2"), url(0be94a07755ba9b88f2ebcac0f23a3da.woff) format("woff"), url(f14c3b2ff7c821a4c838debbffd6ad2d.ttf) format("truetype"), url(assets/img/fa-solid-900.svg?9dfce8e7f6a7396de09be49a7e225c9e#fontawesome) format("svg"); }
 
 .fa,
 .fas {
@@ -12311,7 +12317,7 @@ readers do not read off random characters that represent icons */
   font-weight: 900; }
 
 /*!
- * Font Awesome Free 5.8.1 by @fontawesome - https://fontawesome.com
+ * Font Awesome Free 5.8.2 by @fontawesome - https://fontawesome.com
  * License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License)
  */
 @font-face {
@@ -12319,8 +12325,8 @@ readers do not read off random characters that represent icons */
   font-style: normal;
   font-weight: normal;
   font-display: auto;
-  src: url(a7b95dbdd87e0c809570affaf366a434.eot);
-  src: url(a7b95dbdd87e0c809570affaf366a434.eot?#iefix) format("embedded-opentype"), url(5e2f92123d241cabecf0b289b9b08d4a.woff2) format("woff2"), url(2ef8ba3410dcc71578a880e7064acd7a.woff) format("woff"), url(98b6db59be947f563350d2284fc9ea36.ttf) format("truetype"), url(assets/img/fa-brands-400.svg?ea4238faf3cbc59ea6e0a4e3b27939ae#fontawesome) format("svg"); }
+  src: url(8e49b728413079dfd9ee45d0c58d54e4.eot);
+  src: url(8e49b728413079dfd9ee45d0c58d54e4.eot?#iefix) format("embedded-opentype"), url(9f4ce3dc689981a1b87faab0f5484f9e.woff2) format("woff2"), url(9f018d1025561e96439f7c0e9026301a.woff) format("woff"), url(b7d071b9c3c197bff4af902070622423.ttf) format("truetype"), url(assets/img/fa-brands-400.svg?30d03445fdcbb03d1ec235d9004a773d#fontawesome) format("svg"); }
 
 .fab {
   font-family: 'Font Awesome 5 Brands'; }
@@ -12345,6 +12351,19 @@ table th,
 table td {
   padding: .5em;
   border: 1px solid lightgrey; }
+
+table.calendar td {
+  width: 2rem;
+  height: 2rem;
+  text-align: center; }
+  table.calendar td:hover > valid-day {
+    cursor: pointer; }
+  table.calendar td:hover div.valid-day {
+    background-color: beige; }
+  table.calendar tddiv.selected {
+    background-color: burlywood; }
+  table.calendar td:hover div.valid-day, table.calendar tddiv.selected {
+    border-radius: 0.2rem; }
 
 
 /*# sourceMappingURL=main.css.map*/

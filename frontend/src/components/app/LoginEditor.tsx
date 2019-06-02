@@ -4,7 +4,7 @@ import { action, observable, computed } from "mobx";
 import { userService } from "../../services/UserService";
 import { User } from "../../model/User";
 import { notificationStore, NotificationType } from "./Notifications";
-import { AppInput, InputType } from "../general/appTextInput";
+import { AppInput, InputType } from "../general/AppTextInput";
 import { createGenericStore } from "../GenericStoreValidator";
 
 export interface LoginProps {
@@ -110,6 +110,7 @@ export class LoginEditor extends React.Component<LoginProps, {}> {
                 loginStore.update(LoginEditorFields.LOGIN, value)
               }
               error={loginStore.values[LoginEditorFields.LOGIN].error}
+              currentValue={loginStore.values[LoginEditorFields.LOGIN].value}
             />
             <AppInput
               label="Password"
@@ -119,6 +120,7 @@ export class LoginEditor extends React.Component<LoginProps, {}> {
                 loginStore.update(LoginEditorFields.PASSWORD, value)
               }
               error={loginStore.values[LoginEditorFields.PASSWORD].error}
+              currentValue={loginStore.values[LoginEditorFields.PASSWORD].value}
             />
           </div>
         </div>

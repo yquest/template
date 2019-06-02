@@ -30,14 +30,13 @@ export const createGenericStore = (max: number, create: (idx: number)=> any, val
                     if (error !== null && error.length > 0) {
                         return false;
                     }
-                    return true;
                 }
                 return true;
             },
             reset(): void { 
                 let resetByIndex = reset===undefined?(idx:number, value:any)=>{
                     return this.values[idx] = {
-                        value:"",
+                        value:create(idx),
                         error:null
                     };
                 }:reset;

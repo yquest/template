@@ -39,7 +39,7 @@ private fun consumeRest(rc: RoutingContext, restResponse: Single<RestResponse>) 
       is ErrorResponse -> applyResponse(error.toRestResponse())
       else -> {
         LOGGER.error("technical error", error)
-        applyResponse(ErrorResponse.toRestResponse(error, 500))
+        applyResponse(errorToRestResponse(error, 500))
       }
     }
   })

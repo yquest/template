@@ -1,10 +1,9 @@
 import { observer } from "mobx-react";
 import * as React from "react";
-import { action, observable } from "mobx";
 import { userService } from "../../services/UserService";
 import { User } from "../../model/User";
 import { notificationStore, NotificationType } from "./Notifications";
-import { AppInput, InputType } from "../general/appTextInput";
+import { AppInput, InputType } from "../general/AppTextInput";
 import { GenericStore, createGenericStore } from "../GenericStoreValidator";
 
 enum UserRegisterEditorFields {
@@ -56,6 +55,7 @@ export class UserRegisterEditor extends React.Component<UserRegisterProps, {}> {
               userRegisterStore.values[UserRegisterEditorFields.USERNAME].error
             }
             labelId={"username"}
+            currentValue={userRegisterStore.values[UserRegisterEditorFields.USERNAME].value}
           />
           <AppInput
             inputType={InputType.PASSWORD}
@@ -67,6 +67,7 @@ export class UserRegisterEditor extends React.Component<UserRegisterProps, {}> {
               userRegisterStore.values[UserRegisterEditorFields.PASSWORD].error
             }
             labelId={"password"}
+            currentValue={userRegisterStore.values[UserRegisterEditorFields.PASSWORD].value}
           />
           <AppInput
             inputType={InputType.TEXT}
@@ -78,6 +79,7 @@ export class UserRegisterEditor extends React.Component<UserRegisterProps, {}> {
               userRegisterStore.values[UserRegisterEditorFields.EMAIL].error
             }
             labelId={"email"}
+            currentValue={userRegisterStore.values[UserRegisterEditorFields.EMAIL].value}
           />
         </div>
 

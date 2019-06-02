@@ -1,5 +1,4 @@
 import * as React from "react";
-import { isString } from "util";
 
 export enum InputType {
   TEXT,
@@ -16,19 +15,27 @@ export interface AppInputProps {
   labelId: string;
   error: string;
   placeholder?: string;
+  currentValue: string;
 }
 
-function getInputTypeRef(inputType: InputType) {
+function getInputTypeRef(inputType: InputType, value: any) {
   switch (inputType) {
     case InputType.PASSWORD:
       return "password";
     case InputType.TEXT:
       return "text";
     case InputType.DATE_TIME:
-      return "text";
+      return value === null ? "text" : "date-time";
     case InputType.NUMBER:
       return "number";
   }
+}
+
+function resolveName() {
+  if (this.props.currentValue === null) {
+    return "";
+  }
+  return this.props.currentValue;
 }
 
 export class AppInput extends React.Component<AppInputProps, {}> {
@@ -42,10 +49,11 @@ export class AppInput extends React.Component<AppInputProps, {}> {
       validationClass = "is-invalid";
     }
     return (
-      <div className="col-sm-10 col-md-8 col-lg-6 mb-3 mb-sm-3">
+      <div className="form-group col-sm-10 col-md-8 col-lg-6 mb-3 mb-sm-3">
+        <label>{this.props.label}</label>
         <input
           className={"form-control " + validationClass}
-          type={getInputTypeRef(this.props.inputType)}
+          type={getInputTypeRef(this.props.inputType, this.props.currentValue)}
           onChange={event => this.props.onChange(event.target.value)}
           placeholder={this.props.label}
           onFocus={event => {
@@ -61,7 +69,9 @@ export class AppInput extends React.Component<AppInputProps, {}> {
               event.target.type = "text";
             }
           }}
+          value={resolveName.bind(this)()}
         />
+
         {this.props.error !== null && this.props.error.length > 0 && (
           <div className="invalid-feedback">{this.props.error}</div>
         )}

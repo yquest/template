@@ -42,3 +42,25 @@ table td {
   padding: .5em;
   border: 1px solid lightgrey;
 }
+
+table.calendar{
+  td{
+    &:hover>valid-day{
+      cursor: pointer;
+    }
+    &:hover div.valid-day{    
+      background-color: beige; 
+    }
+    &div.selected{
+      background-color:burlywood; 
+    }
+    &:hover div.valid-day,
+    &div.selected
+    {
+      border-radius: 0.2rem;
+    }
+    width: 2rem;
+    height: 2rem;
+    text-align: center;    
+  }
+}
