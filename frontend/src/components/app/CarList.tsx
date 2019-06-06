@@ -30,7 +30,7 @@ export class CarStore {
   });
 
   @action
-  createCar(car:Car){
+  createCar(car: Car) {
     this.cars.push(car);
   }
 }
@@ -38,15 +38,35 @@ export class CarStore {
 export const carStore = new CarStore();
 
 @observer
-export class CarsList extends React.Component<{}, any> {
+export class CarsList extends React.Component<{ wideWidth: boolean }, any> {
   render() {
+    let createTable;
+    if (this.props.wideWidth) {
+      createTable = () => (
+        <table>
+          <tbody>
+            <tr>
+              <th>Make</th>
+              <th>Model</th>
+              <th>Maturity date</th>
+              <th>Price</th>
+              <th colSpan={2}>Actions</th>
+            </tr>
+            {carStore.cars.map((car, idx) => (
+              <CarView key={idx} car={car} />
+            ))}
+          </tbody>
+        </table>
+      );
+    } else {
+      createTable = () => <div>...no space left</div>;
+    }
     return (
       <div>
         <h3>Car List</h3>
         <div
           className="card"
-          style={{ marginTop: "1rem", marginBottom: "1rem" }}
-        >
+          style={{ marginTop: "1rem", marginBottom: "1rem" }}>
           <div style={{ padding: "1.5rem" }}>
             {carStore.state == State.PENDING && <div>loading...</div>}
             {carStore.state == State.ERROR && (
@@ -55,28 +75,13 @@ export class CarsList extends React.Component<{}, any> {
             {carStore.state == State.DONE && carStore.cars.length == 0 && (
               <div>No cars...</div>
             )}
-            {carStore.state == State.DONE && carStore.cars.length > 0 && (
-              <table>
-                <tbody>
-                  <tr>
-                    <th>Make</th>
-                    <th>Model</th>
-                    <th>Maturity date</th>
-                    <th>Price</th>
-                  </tr>
-                  {carStore.cars.map((car, idx) => (
-                    <CarView key={idx} car={car} />
-                  ))}
-                </tbody>
-              </table>
-            )}
+            {carStore.state == State.DONE && carStore.cars.length > 0 && createTable()}
           </div>
         </div>
         <button
           type="button"
           className="btn btn-primary"
-          onClick={() => carStore.fetchCars()}
-        >
+          onClick={() => carStore.fetchCars()}>
           fetch cars
         </button>
       </div>

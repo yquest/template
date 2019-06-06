@@ -23,6 +23,16 @@ export class CarView extends React.Component<{ car: Car }, any> {
         <td>{car.model}</td>
         <td>{dateToString(car.maturityDate)}</td>
         <td>{car.price}</td>
+        <td>
+          <a href="#" className="btn">
+            <i className="fas fa-pen" />
+          </a>
+        </td>
+        <td>
+          <a href="#" className="btn">
+          <i className="fas fa-times"></i>
+          </a>
+        </td>
       </tr>
     );
   }

@@ -14,6 +14,7 @@ import { UserRegisterEditor } from "./components/app/UserRegisterEditor";
 configureMbox({ enforceActions: "observed" }); // don't allow state modifications outside actions
 
 interface AppStateValues {
+  wideSpace:boolean;
   selected:number;
   register: boolean;
   login: boolean;
@@ -30,6 +31,7 @@ enum AppState {
 class AppStateStore {
   @observable
   appStateValues: AppStateValues = {
+    wideSpace:true,
     selected : 0,
     login: false,
     register: false,
@@ -69,9 +71,19 @@ class AppStateStore {
   updateSelected(selected: number) {
     this.appStateValues.selected = selected;
   }
+  @action
+  updateWideSpace(wideSpace: boolean) {
+    this.appStateValues.wideSpace = wideSpace;
+  }
 }
 
+
 let appStateStore = new AppStateStore();
+function resizewindow() {
+  appStateStore.updateWideSpace(window.innerWidth>800);  
+}
+resizewindow();
+window.addEventListener('resize',resizewindow);
 
 window.addEventListener("popstate", e => {
   switch (window.location.hash) {
@@ -110,7 +122,7 @@ export class App extends React.Component<{}, {}> {
           <div>Hello {appStateStore.appStateValues.userName}</div>
         )}
         {(appStateStore.state === AppState.LIST_NO_AUTH ||
-          appStateStore.state === AppState.CAR_EDIT_AUTH) && <CarsList />}
+          appStateStore.state === AppState.CAR_EDIT_AUTH) && <CarsList wideWidth={appStateStore.appStateValues.wideSpace}/>}
         {appStateStore.state === AppState.CAR_EDIT_AUTH && (
           <CarEditor
             saveCarEvent={car => {

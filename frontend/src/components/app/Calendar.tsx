@@ -24,13 +24,17 @@ export const monthsStr = [
   "dec"
 ];
 
-export const Calendar = (props: {
+export interface CalendarProps{
+  className?:string;
   year: number;
   month: number;
   selectChange: (number) => void;
   selected?: number;
-}) => {
-  let yOffeset = 25;
+  open?:boolean;
+}
+
+export const Calendar = (props: CalendarProps) => {
+  let yOffeset = 15;
   let selected: number = props.selected | 0;
   let firstDayDate: Date = getFirstDay(props.month, props.year);
   let lastDayDate: Date = getLastDay(props.month, props.year);
@@ -98,7 +102,7 @@ export const Calendar = (props: {
   }
 
   return (
-    <svg viewBox="0 0 170 180" width="20rem" height="20rem">
+    <svg viewBox="0 0 170 180" width="20rem" height="20rem" className={props.className}>
       <rect
         x="10"
         y="10"
@@ -108,15 +112,6 @@ export const Calendar = (props: {
         height={15 + yOffeset + row * 20}
         style={{ fill: "rgba(223, 223, 223, .50)", stroke: "black", strokeWidth: 2 }}
       />
-      <text
-      x={85}
-      y={yOffeset}
-      style={{
-        textAnchor: "middle",
-        fontSize: "10px",
-        fontFamily: "Verdana"
-      }}
-    >{monthsStr[props.month-1]}</text>
       <line x1="50" y1="50" x2="200" y2="50" />
       {weekTr}
       {days}

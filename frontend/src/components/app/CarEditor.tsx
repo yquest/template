@@ -2,6 +2,7 @@ import { observer } from "mobx-react";
 import * as React from "react";
 import { MAKERS, Car } from "../../model/Car";
 import { userService, RestResult } from "../../services/UserService";
+import styled from "styled-components";
 import {
   DropDownInput,
   createDefaultDropDownInputStore
@@ -41,9 +42,15 @@ const creator = (idx: number) => {
   return "";
 };
 
-const carEditorStore = createGenericStore(5, creator, validation);
 
-window['carEditorStore'] = carEditorStore;
+const carEditorStore = createGenericStore(5, creator, validation);
+const StyledCalendar = styled(Calendar)`
+  height: ${props => (props.open ? "20rem" : "0")};
+  transition-timing-function: ease-in-out;
+  transition: all 1s;
+`;
+
+window["carEditorStore"] = carEditorStore;
 
 export interface CarEditorProps {
   saveCarEvent: (car) => void;
@@ -65,6 +72,7 @@ export class CarEditor extends React.Component<CarEditorProps, {}> {
             marginBottom: "1rem",
             padding: "1.5rem"
           }}>
+          <h4>New</h4>
           <div className="row">
             <div className="form-group col-sm-10 col-md-8 col-lg-6 mb-3 mb-sm-3">
               <label>Maturity Date</label>
@@ -171,21 +179,21 @@ export class CarEditor extends React.Component<CarEditorProps, {}> {
                     }}
                   />
                 </div>
-
-                {carEditorStore.values[CarEditorFields.SHOW_CALENDAR].value && (
-                  <Calendar
-                    month={maturityDate.getMonth() + 1}
-                    year={maturityDate.getFullYear()}
-                    selectChange={day => {
-                      maturityDate.setDate(day);
-                      carEditorStore.update(
-                        CarEditorFields.MATURITY_DATE,
-                        maturityDate
-                      );
-                    }}
-                    selected={maturityDate.getDate()}
-                  />
-                )}
+                <StyledCalendar
+                  open={
+                    carEditorStore.values[CarEditorFields.SHOW_CALENDAR].value
+                  }
+                  month={maturityDate.getMonth() + 1}
+                  year={maturityDate.getFullYear()}
+                  selectChange={day => {
+                    maturityDate.setDate(day);
+                    carEditorStore.update(
+                      CarEditorFields.MATURITY_DATE,
+                      maturityDate
+                    );
+                  }}
+                  selected={maturityDate.getDate()}
+                />
               </div>
             </div>
 
@@ -233,7 +241,7 @@ export class CarEditor extends React.Component<CarEditorProps, {}> {
               let values = carEditorStore.values;
               let car: Car = {
                 make: values[CarEditorFields.MAKE].value,
-                maturityDate:values[CarEditorFields.MATURITY_DATE].value,
+                maturityDate: values[CarEditorFields.MATURITY_DATE].value,
                 model: values[CarEditorFields.MODEL].value,
                 price: Number.parseInt(values[CarEditorFields.PRICE].value)
               };
