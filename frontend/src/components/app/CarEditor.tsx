@@ -1,4 +1,4 @@
-import { observer } from "mobx-react";
+import { observer, propTypes } from "mobx-react";
 import * as React from "react";
 import { MAKERS, Car } from "../../model/Car";
 import { userService, RestResult } from "../../services/UserService";

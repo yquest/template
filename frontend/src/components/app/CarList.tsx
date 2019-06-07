@@ -2,8 +2,9 @@ import { observer } from "mobx-react";
 import * as React from "react";
 import { CarView } from "./CarView";
 import { observable, flow, action } from "mobx";
-import { Car } from "../../model/Car";
+import { Car, MAKERS } from "../../model/Car";
 import { carService } from "../../services/CarService";
+import { dateToString, dateToStringReadable } from "../../util";
 
 enum State {
   PENDING,
@@ -17,7 +18,7 @@ export class CarStore {
   @observable dropDownOpen: boolean = false;
   detail: Car;
 
-  fetchCars = flow(function*() {
+  fetchCars = flow(function* () {
     this.state = State.PENDING;
     try {
       const cars = yield carService.fetchCars();
@@ -59,7 +60,36 @@ export class CarsList extends React.Component<{ wideWidth: boolean }, any> {
         </table>
       );
     } else {
-      createTable = () => <div>...no space left</div>;
+      createTable = () => <div className="card" style={{ width: "100%" }}>
+        {carStore.cars.map((car, idx) => (
+          <div key={idx} className="card-body">
+            <div className="row bg-light">
+              <strong className="col-sm">Make</strong>
+              <div className="col-sm">{MAKERS[car.make]}</div>
+            </div>
+            <div className="row">
+              <strong className="col-sm ">Model</strong>
+              <div className="col-sm">{car.model}</div>
+            </div>
+            <div className="row bg-light">
+              <strong className="col-sm">Date</strong>
+              <div className="col-sm">{dateToStringReadable(car.maturityDate)}</div>
+            </div>
+            <div className="row">
+              <strong className="col-sm">Price</strong>
+              <div className="col-sm">{car.price}</div>
+            </div>
+            <div className="row float-right" style={{ marginRight: "1rem", marginTop:"1rem" }} >
+              <a href="#" className="btn btn-light" style={{ marginRight: "1rem" }}>Edit{" "}
+                <i className="fas fa-pen" />
+              </a>
+              <a href="#" className="btn btn-light">Remove{" "}
+                <i className="fas fa-times" />
+              </a>
+            </div>
+          </div>
+        ))}
+      </div>;
     }
     return (
       <div>

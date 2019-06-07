@@ -80,7 +80,7 @@ class AppStateStore {
 
 let appStateStore = new AppStateStore();
 function resizewindow() {
-  appStateStore.updateWideSpace(window.innerWidth>800);  
+  appStateStore.updateWideSpace(window.innerWidth>1024);  
 }
 resizewindow();
 window.addEventListener('resize',resizewindow);
@@ -105,7 +105,6 @@ window.addEventListener("popstate", e => {
 @observer
 export class App extends React.Component<{}, {}> {
   render() {
-    console.log("render " + appStateStore.state);
     return (
       <div className="container" style={{ marginBottom: "5rem" }}>
         {appStateStore.state === AppState.LIST_NO_AUTH && (
