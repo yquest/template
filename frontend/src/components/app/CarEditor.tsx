@@ -140,7 +140,7 @@ export class CarEditor extends React.Component<CarEditorProps, {}> {
                     <span
                       className="input-group-text"
                       style={{ cursor: "pointer" }}>
-                      <i className="fa fa-calendar" />
+                      <i className={"fa fa-calendar"+(carEditorStore.values[CarEditorFields.SHOW_CALENDAR].value?"-day":"")} />
                     </span>
                   </div>
                 </div>
