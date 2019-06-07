@@ -57,7 +57,7 @@ class CarController(val vertx: Vertx) {
       }
   }
 
-  fun createCar(rc: RoutingContext): Single<RestResponse> {
+  fun createOrUpdateCar(createAction: Boolean, rc: RoutingContext): Single<RestResponse> {
 
     val rootKey = "car"
     val car = rc.bodyAsJson?.let { body ->
@@ -79,13 +79,34 @@ class CarController(val vertx: Vertx) {
         LocalDateTime.parse(strMaturityDate, DateTimeFormatter.ISO_DATE_TIME)
       )
     } ?: throw RequiredException(rootKey)
+
+    val strAction:String
+    if(createAction){
+      strAction = "create";
+    }else{
+      strAction = "update";
+    }
+
     return vertx.eventBus()
       .rxSend<Unit>(
-        "dao.car.create", car
+        "dao.car.${strAction}", car
       )
       .ignoreElement()
       .toSingle {
         RestResponse(statusCode = 204)
+      }
+  }
+
+  fun deleteCar(rc: RoutingContext): Single<RestResponse> {
+    val request = rc.request()
+    val model = request.getParam("model")
+    val make = request.getParam("make")
+
+    return vertx.eventBus().rxSend<Unit>(
+      "dao.car.delete", Pair(model, make)
+    ).ignoreElement()
+      .toSingle {
+        RestResponse(statusCode = 200)
       }
   }
 }

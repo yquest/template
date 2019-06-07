@@ -10,7 +10,7 @@ import pt.fabm.template.models.UserRegisterIn
 import java.security.MessageDigest
 
 class MemoryDao : AbstractVerticle() {
-  companion object{
+  companion object {
     val LOGGER = LoggerFactory.getLogger(MemoryDao::class.java)
   }
 
@@ -25,29 +25,43 @@ class MemoryDao : AbstractVerticle() {
     val eventBus = vertx.eventBus()
     val completeHandeleres = mutableListOf<Completable>()
 
-    completeHandeleres += eventBus.consumer<Car>("dao.car.create"){ message->
+    completeHandeleres += eventBus.consumer<Car>("dao.car.create") { message ->
+      val carMessage: Car = message.body()
+      val car:Car? = cars.find { it.make == carMessage.make && it.model == carMessage.model }
+      if(car != null){
+        throw DataAlreadyExists()
+      }
       cars += message.body()
       message.reply(null)
     }.rxCompletionHandler()
 
-    completeHandeleres += eventBus.consumer<List<Car>>("dao.car.list"){ message->
+    completeHandeleres += eventBus.consumer<Car>("dao.car.update") { message ->
+      val carMessage: Car = message.body()
+      val car:Car? = cars.find { it.make == carMessage.make && it.model == carMessage.model }
+      if(car == null){
+        throw DataNotFound()
+      }
+      message.reply(null)
+    }.rxCompletionHandler()
+
+    completeHandeleres += eventBus.consumer<List<Car>>("dao.car.list") { message ->
       message.reply(cars, DeliveryOptions().setCodecName("List"))
     }.rxCompletionHandler()
 
-    completeHandeleres += eventBus.consumer<UserRegisterIn>("dao.user.create"){ message->
+    completeHandeleres += eventBus.consumer<UserRegisterIn>("dao.user.create") { message ->
       val body = message.body()
       users[body.name] = body
       message.reply(null)
     }.rxCompletionHandler()
 
-    completeHandeleres += eventBus.consumer<JsonObject>("dao.user.login"){message->
+    completeHandeleres += eventBus.consumer<JsonObject>("dao.user.login") { message ->
       val body = message.body()
       val current = users.get(body.getString("user"))
 
       val auth = current?.takeIf {
         val argPass = body.getBinary("pass")
         argPass.contentEquals(it.pass)
-      } !=null
+      } != null
       message.reply(auth)
     }.rxCompletionHandler()
 

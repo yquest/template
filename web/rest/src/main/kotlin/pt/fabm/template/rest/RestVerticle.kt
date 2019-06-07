@@ -42,9 +42,8 @@ class RestVerticle : AbstractVerticle() {
     router.get("/api/user/logout").withCookies().handlerSRR(userService::userLogout)
     router.get("/api/car").handlerSRR(carController::getCar)
     router.get("/api/car/list").handlerSRR { carController.carList() }
-    router.post("/api/car").withBody().authHandler { carController.createCar(it.rc) }
-
-
+    router.post("/api/car").withBody().authHandler { carController.createOrUpdateCar(true,it.rc) }
+    router.put("/api/car").withBody().authHandler { carController.createOrUpdateCar(false,it.rc) }
 
     router.route().handler {
       if (!it.response().ended()) {
