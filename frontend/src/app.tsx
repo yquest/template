@@ -10,10 +10,12 @@ import {
 import { LoginEditor } from "./components/app/LoginEditor";
 import { observer } from "mobx-react";
 import { UserRegisterEditor } from "./components/app/UserRegisterEditor";
+import { Car } from "./model/Car";
 
 configureMbox({ enforceActions: "observed" }); // don't allow state modifications outside actions
 
 interface AppStateValues {
+  car:Car|null;
   wideSpace: boolean;
   selected: number;
   register: boolean;
@@ -31,6 +33,7 @@ enum AppState {
 class AppStateStore {
   @observable
   appStateValues: AppStateValues = {
+    car:null,
     wideSpace: true,
     selected: 0,
     login: false,
@@ -74,6 +77,10 @@ class AppStateStore {
   @action
   updateWideSpace(wideSpace: boolean) {
     this.appStateValues.wideSpace = wideSpace;
+  }
+  @action
+  updateCarToEdit(car:Car|null){
+    this.appStateValues.car = car;
   }
 }
 
@@ -124,6 +131,7 @@ export class App extends React.Component<{}, {}> {
           appStateStore.state === AppState.CAR_EDIT_AUTH) && <CarsList wideWidth={appStateStore.appStateValues.wideSpace} />}
         {appStateStore.state === AppState.CAR_EDIT_AUTH && (
           <CarEditor
+            car={appStateStore.appStateValues.car}            
             saveCarEvent={car => {
               carService.createCar(car).then(res => {
                 if (res.status == 204) {

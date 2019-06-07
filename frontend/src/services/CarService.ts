@@ -23,6 +23,22 @@ export class CarService {
             });
     }
 
+    updateCar(car: Car): Promise<RestResult> {
+        let serialized = {
+            make:MAKERS[car.make],
+            maturityDate:dateToString(car.maturityDate),
+            model:car.model,
+            price:car.price
+        };
+        console.log("saved car",serialized);
+        return Axios
+            .put("api/car", serialized, { withCredentials: true })        
+            .then(res => {                
+                console.log(res.data);
+                return res as RestResult
+            });
+    }
+
     getCar(car: Car): Promise<any> {
         return Axios.get("api/car")
     };    

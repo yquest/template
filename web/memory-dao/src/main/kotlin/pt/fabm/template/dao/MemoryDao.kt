@@ -60,7 +60,7 @@ class MemoryDao : AbstractVerticle() {
 
       val auth = current?.takeIf {
         val argPass = body.getBinary("pass")
-        argPass.contentEquals(it.pass)
+        argPass!!.contentEquals(it.pass)
       } != null
       message.reply(auth)
     }.rxCompletionHandler()

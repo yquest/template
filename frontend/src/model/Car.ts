@@ -2,9 +2,12 @@ export enum MAKERS {
   AUDI, VOLKSWAGEN, NISSAN, PEUGEOT, CITROEN
 }
 
-export interface Car {
+export interface CarPK {
   make: MAKERS;
   model: string;
+}
+
+export interface Car extends CarPK{
   maturityDate: Date;
   price: number;
 }

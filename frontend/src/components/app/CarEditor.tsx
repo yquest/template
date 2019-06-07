@@ -55,6 +55,7 @@ window["carEditorStore"] = carEditorStore;
 export interface CarEditorProps {
   saveCarEvent: (car) => void;
   logoutEvent: () => void;
+  car: Car|null;  
 }
 
 @observer
@@ -140,7 +141,7 @@ export class CarEditor extends React.Component<CarEditorProps, {}> {
                     <span
                       className="input-group-text"
                       style={{ cursor: "pointer" }}>
-                      <i className={"fa fa-calendar"+(carEditorStore.values[CarEditorFields.SHOW_CALENDAR].value?"-day":"")} />
+                      <i className={"fa fa-calendar" + (carEditorStore.values[CarEditorFields.SHOW_CALENDAR].value ? "-day" : "")} />
                     </span>
                   </div>
                 </div>
@@ -230,7 +231,6 @@ export class CarEditor extends React.Component<CarEditorProps, {}> {
             />
           </div>
         </div>
-
         <button
           style={{ marginRight: "0.5rem" }}
           type="button"
@@ -245,10 +245,13 @@ export class CarEditor extends React.Component<CarEditorProps, {}> {
                 model: values[CarEditorFields.MODEL].value,
                 price: Number.parseInt(values[CarEditorFields.PRICE].value)
               };
-
-              let createPromise: Promise<RestResult> = carService.createCar(
-                car
-              );
+              let saveAction: (car: Car) => Promise<RestResult>;
+              if(this.props.car === null){
+                saveAction = carService.createCar;
+              }else{
+                saveAction = carService.updateCar;
+              }
+              let createPromise: Promise<RestResult> = saveAction(car);
               let notification = notificationStore.createNotification();
               let promises: Array<Promise<any>> = [];
               promises.push(
