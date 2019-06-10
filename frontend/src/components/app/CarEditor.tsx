@@ -1,7 +1,7 @@
 import { observer, propTypes } from "mobx-react";
 import * as React from "react";
 import { MAKERS, Car } from "../../model/Car";
-import { userService, RestResult } from "../../services/UserService";
+import { RestResult } from "../../services/UserService";
 import styled from "styled-components";
 import {
   DropDownInput,
@@ -10,8 +10,8 @@ import {
 import { AppInput, InputType } from "../general/AppTextInput";
 import { createGenericStore } from "../GenericStoreValidator";
 import { carService } from "../../services/CarService";
-import { notificationStore, NotificationType } from "./Notifications";
 import { Calendar, monthsStr } from "./Calendar";
+import { uiStore, NotificationType } from "../../UIStore";
 
 const dropDownInputStore = createDefaultDropDownInputStore();
 
@@ -20,7 +20,8 @@ enum CarEditorFields {
   MODEL,
   MATURITY_DATE,
   PRICE,
-  SHOW_CALENDAR
+  SHOW_CALENDAR,
+  IS_CREATION_STATE
 }
 
 const validation: (idx: number, value: string) => string = (idx, value) => {
@@ -28,6 +29,9 @@ const validation: (idx: number, value: string) => string = (idx, value) => {
 };
 
 const creator = (idx: number) => {
+  if (idx === CarEditorFields.IS_CREATION_STATE) {
+    return true;
+  }
   if (idx === CarEditorFields.MATURITY_DATE) {
     let date = new Date();
     date.setSeconds(0);
@@ -42,30 +46,41 @@ const creator = (idx: number) => {
   return "";
 };
 
-
-const carEditorStore = createGenericStore(5, creator, validation);
+const carEditorStore = createGenericStore(6, creator, validation);
 const StyledCalendar = styled(Calendar)`
   height: ${props => (props.open ? "20rem" : "0")};
   transition-timing-function: ease-in-out;
   transition: all 1s;
 `;
 
-window["carEditorStore"] = carEditorStore;
-
 export interface CarEditorProps {
   saveCarEvent: (car) => void;
-  logoutEvent: () => void;
-  car: Car|null;  
+}
+
+export function updateEditorCar(car: Car | null) {
+  console.log("try to update car");
+  if (car === null) {
+    carEditorStore.reset();
+  } else {
+    carEditorStore.update(CarEditorFields.MAKE, car.make);
+    carEditorStore.update(CarEditorFields.MATURITY_DATE, car.maturityDate);
+    carEditorStore.update(CarEditorFields.MODEL, car.model);
+    carEditorStore.update(CarEditorFields.PRICE, car.price);
+    carEditorStore.update(CarEditorFields.IS_CREATION_STATE, false);
+  }
 }
 
 @observer
 export class CarEditor extends React.Component<CarEditorProps, {}> {
   render() {
+    let isCreateCarState: boolean =
+      carEditorStore.values[CarEditorFields.IS_CREATION_STATE].value;
+    let titleAction = isCreateCarState ? "creation" : "update";
     let maturityDate: Date =
       carEditorStore.values[CarEditorFields.MATURITY_DATE].value;
     return (
       <div>
-        <h3>Car edit</h3>
+        <h3>Car {titleAction}</h3>
         <div
           className="card"
           style={{
@@ -141,7 +156,15 @@ export class CarEditor extends React.Component<CarEditorProps, {}> {
                     <span
                       className="input-group-text"
                       style={{ cursor: "pointer" }}>
-                      <i className={"fa fa-calendar" + (carEditorStore.values[CarEditorFields.SHOW_CALENDAR].value ? "-day" : "")} />
+                      <i
+                        className={
+                          "fa fa-calendar" +
+                          (carEditorStore.values[CarEditorFields.SHOW_CALENDAR]
+                            .value
+                            ? "-day"
+                            : "")
+                        }
+                      />
                     </span>
                   </div>
                 </div>
@@ -207,6 +230,7 @@ export class CarEditor extends React.Component<CarEditorProps, {}> {
                 carEditorStore.update(CarEditorFields.MODEL, value);
               }}
               currentValue={carEditorStore.values[CarEditorFields.MODEL].value}
+              disabled={!isCreateCarState}
             />
             <AppInput
               label="Price"
@@ -225,6 +249,7 @@ export class CarEditor extends React.Component<CarEditorProps, {}> {
               updateValue={make =>
                 carEditorStore.update(CarEditorFields.MAKE, make)
               }
+              disabled={!isCreateCarState}
               name="make"
               store={dropDownInputStore}
               error={carEditorStore.values[CarEditorFields.MAKE].error}
@@ -243,16 +268,22 @@ export class CarEditor extends React.Component<CarEditorProps, {}> {
                 make: values[CarEditorFields.MAKE].value,
                 maturityDate: values[CarEditorFields.MATURITY_DATE].value,
                 model: values[CarEditorFields.MODEL].value,
-                price: Number.parseInt(values[CarEditorFields.PRICE].value)
+                price: Number.parseInt(values[CarEditorFields.PRICE].value),
+                getPK: () => {
+                  return {
+                    make: car.make,
+                    model: car.model
+                  };
+                }
               };
               let saveAction: (car: Car) => Promise<RestResult>;
-              if(this.props.car === null){
+              if (isCreateCarState) {
                 saveAction = carService.createCar;
-              }else{
+              } else {
                 saveAction = carService.updateCar;
               }
               let createPromise: Promise<RestResult> = saveAction(car);
-              let notification = notificationStore.createNotification();
+              let notification = uiStore.createNotification();
               let promises: Array<Promise<any>> = [];
               promises.push(
                 createPromise.then(res => {
@@ -263,30 +294,30 @@ export class CarEditor extends React.Component<CarEditorProps, {}> {
               );
               promises.push(
                 createPromise.catch(res => {
-                  notification.content = "Error inserting car";
+                  if(res.response.status===401){
+                    notification.content = "Car already exists";
+                  }else{
+                    notification.content = "Error inserting car";
+                  }
                   console.error(res.response.data.error);
                   notification.type = NotificationType.ERROR;
                 })
               );
 
               Promise.all(promises).finally(() => {
-                notificationStore.addNotificationTemp(notification, 3000);
+                uiStore.addNotificationTemp(notification, 3000);
               });
             }
           }}>
           save car
         </button>
-        <button
+        {!carEditorStore.values[CarEditorFields.IS_CREATION_STATE].value &&<button
           style={{ marginRight: "0.5rem" }}
           type="button"
           className="btn btn-primary"
-          onClick={() => {
-            userService.userLogout();
-            localStorage.removeItem("username");
-            this.props.logoutEvent();
-          }}>
-          logout
-        </button>
+          onClick={() => carEditorStore.reset()}>
+          cancel update
+        </button>}
       </div>
     );
   }

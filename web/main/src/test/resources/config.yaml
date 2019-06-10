@@ -13,6 +13,8 @@ confs:
       -  dao.reservation.list
       -  dao.reservation.create
       -  dao.car.create
+      -  dao.car.update
+      -  dao.car.delete
       -  dao.car.list
       -  dao.car.retrieve
     codecs:

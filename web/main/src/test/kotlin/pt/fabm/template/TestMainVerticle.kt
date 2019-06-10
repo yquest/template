@@ -16,6 +16,7 @@ import io.vertx.kotlin.core.json.jsonObjectOf
 import io.vertx.kotlin.core.json.obj
 import io.vertx.reactivex.core.Vertx
 import io.vertx.reactivex.core.buffer.Buffer
+import io.vertx.reactivex.ext.web.client.HttpRequest
 import io.vertx.reactivex.ext.web.client.HttpResponse
 import io.vertx.reactivex.ext.web.client.WebClient
 import org.junit.jupiter.api.Assertions.assertArrayEquals
@@ -31,7 +32,6 @@ import pt.fabm.template.models.CarMake
 import pt.fabm.template.models.UserRegisterIn
 import java.io.FileReader
 import java.security.MessageDigest
-import java.time.LocalDate
 import java.time.LocalDateTime
 import java.util.concurrent.TimeUnit
 
@@ -41,6 +41,9 @@ class TestMainVerticle {
 
   var port: Int? = null
   lateinit var host: String
+  val jws = Jwts.builder().setSubject("test-user")
+    .signWith(Consts.SIGNING_KEY)
+    .compact()
 
   @BeforeEach
   fun deployVerticle(vertx: Vertx, testContext: VertxTestContext) {
@@ -123,7 +126,7 @@ class TestMainVerticle {
         .rxSendJsonObject(entry)
         .subscribe { response: HttpResponse<Buffer> ->
           testContext.verify {
-            assertEquals(200, response.statusCode())
+            assertEquals(204, response.statusCode())
             testContext.completeNow()
           }
         }
@@ -198,10 +201,9 @@ class TestMainVerticle {
   @Timeout(value = 10, timeUnit = TimeUnit.SECONDS)
   @Throws(Throwable::class)
   fun showCar(vertx: Vertx, testContext: VertxTestContext) {
-
     val client = WebClient.create(vertx)
     val eventBus = vertx.eventBus()
-    val date = LocalDateTime.of(2019, 5, 1,3,6)
+    val date = LocalDateTime.of(2019, 5, 1, 3, 6)
 
     val car = Car("Golf V", CarMake.VOLKSWAGEN, 25000, date)
 
@@ -224,7 +226,14 @@ class TestMainVerticle {
           testContext.verify {
             assertEquals(200, response.statusCode())
             assertEquals(
-              JsonObject("""{"make":"VOLKSWAGEN","model":"Golf V","maturityDate":"2019-05-01","price":25000}"""),
+              JsonObject(
+                """{
+                  |"make":"VOLKSWAGEN",
+                  |"model":"Golf V",
+                  |"maturityDate":"2019-05-01T03:06:00",
+                  |"price":25000}"""
+                  .trimMargin()
+              ),
               response.bodyAsJsonObject()
             )
             testContext.completeNow()
@@ -236,14 +245,47 @@ class TestMainVerticle {
   }
 
   @Test
+  @DisplayName("Should update a car")
+  @Timeout(value = 10, timeUnit = TimeUnit.SECONDS)
+  @Throws(Throwable::class)
+  fun updateCar(vertx: Vertx, testContext: VertxTestContext) {
+    val client = WebClient.create(vertx)
+    val eventBus = vertx.eventBus()
+    val date = LocalDateTime.of(2019, 5, 1, 8, 9)
+
+    val car = Car("Golf V", CarMake.VOLKSWAGEN, 25000, date)
+
+    val ebConsumer = eventBus
+      .consumer<Car>("test.dao.car.update")
+      .handler { message ->
+        assertEquals(car, message.body())
+        message.reply(null)
+      }
+
+    ebConsumer.rxCompletionHandler().subscribe({
+      client.put(port!!, host, "/api/car")
+        .auth(jws)
+        .rxSendJsonObject(car.toJson())
+        .subscribe { response: HttpResponse<Buffer> ->
+          testContext.verify {
+            assertEquals(200, response.statusCode())
+            testContext.completeNow()
+          }
+        }
+    }, { error ->
+      testContext.failNow(error)
+    })
+  }
+
+
+  @Test
   @DisplayName("Should throw an response 404")
   @Timeout(value = 10, timeUnit = TimeUnit.SECONDS)
   @Throws(Throwable::class)
   fun carNotFound(vertx: Vertx, testContext: VertxTestContext) {
-
     val client = WebClient.create(vertx)
     val eventBus = vertx.eventBus()
-    val date = LocalDateTime.of(2019, 5, 1,8,9)
+    val date = LocalDateTime.of(2019, 5, 1, 8, 9)
 
     val car = Car("Golf V", CarMake.VOLKSWAGEN, 25000, date)
 
@@ -274,16 +316,11 @@ class TestMainVerticle {
   @Timeout(value = 10, timeUnit = TimeUnit.SECONDS)
   @Throws(Throwable::class)
   fun createCar(vertx: Vertx, testContext: VertxTestContext) {
-
     val client = WebClient.create(vertx)
     val eventBus = vertx.eventBus()
     val before1Month = LocalDateTime.now().minusMonths(1)
 
     val car = Car("Golf V", CarMake.VOLKSWAGEN, 25000, before1Month)
-
-    val jws = Jwts.builder().setSubject("test-user")
-      .signWith(Consts.SIGNING_KEY)
-      .compact()
 
     val ebConsumer = eventBus
       .consumer<Unit>("test.dao.car.create")
@@ -294,7 +331,7 @@ class TestMainVerticle {
 
     ebConsumer.rxCompletionHandler().subscribe({
       client.post(port!!, host, "/api/car")
-        .putHeader(HttpHeaders.COOKIE.toString(), "${Consts.ACCESS_TOKEN_COOKIE}=$jws")
+        .auth(jws)
         .rxSendJsonObject(car.toJson())
         .subscribe { response: HttpResponse<Buffer> ->
           testContext.verify {
@@ -312,19 +349,15 @@ class TestMainVerticle {
   @Timeout(value = 10, timeUnit = TimeUnit.SECONDS)
   @Throws(Throwable::class)
   fun showCars(vertx: Vertx, testContext: VertxTestContext) {
-
     val client = WebClient.create(vertx)
     val eventBus = vertx.eventBus()
     val car = Car(
       "Golf V",
       CarMake.VOLKSWAGEN,
       2000,
-      LocalDateTime.of(2019, 1, 1,7,8)
+      LocalDateTime.of(2019, 1, 1, 7, 8)
     )
 
-    val jws = Jwts.builder().setSubject("test-user")
-      .signWith(Consts.SIGNING_KEY)
-      .compact()
 
     val ebConsumer = eventBus
       .consumer<Unit>("test.dao.car.list")
@@ -334,7 +367,7 @@ class TestMainVerticle {
 
     ebConsumer.rxCompletionHandler().subscribe({
       client.get(port!!, host, "/api/car/list")
-        .putHeader(HttpHeaders.COOKIE.toString(), "${Consts.ACCESS_TOKEN_COOKIE}=$jws")
+        .auth(jws)
         .rxSend()
         .subscribe { response: HttpResponse<Buffer> ->
           testContext.verify {
@@ -344,7 +377,7 @@ class TestMainVerticle {
                   | {
                   |           "make":"VOLKSWAGEN",
                   |          "model":"Golf V",
-                  |   "maturityDate":"2019-01-01",
+                  |   "maturityDate":"2019-01-01T07:08",
                   |          "price":2000
                   | }
                   |]""".trimMargin()
@@ -374,5 +407,9 @@ class TestMainVerticle {
     assertEquals("watcher", claims.body["role"])
   }
 
+}
+
+private fun HttpRequest<Buffer>.auth(jws: String?): HttpRequest<Buffer> {
+  return this.putHeader(HttpHeaders.COOKIE.toString(), "${Consts.ACCESS_TOKEN_COOKIE}=$jws");
 }
 

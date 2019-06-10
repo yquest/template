@@ -44,6 +44,7 @@ class RestVerticle : AbstractVerticle() {
     router.get("/api/car/list").handlerSRR { carController.carList() }
     router.post("/api/car").withBody().authHandler { carController.createOrUpdateCar(true,it.rc) }
     router.put("/api/car").withBody().authHandler { carController.createOrUpdateCar(false,it.rc) }
+    router.delete("/api/car").handlerSRR(carController::deleteCar)
 
     router.route().handler {
       if (!it.response().ended()) {

@@ -1,4 +1,4 @@
-import { MAKERS, Car } from "../../model/Car";
+import { MAKERS, Car, CarPK } from "../../model/Car";
 import * as React from "react";
 import { observer } from "mobx-react";
 import { pad } from "../../util";
@@ -13,8 +13,14 @@ function dateToString(date: Date): string {
   )}`;
 }
 
+export interface CarViewProps{
+  car: Car;
+  edit:(car:Car)=>void;
+  remove:(carPK:CarPK)=>void;
+}
+
 @observer
-export class CarView extends React.Component<{ car: Car }, any> {
+export class CarView extends React.Component<CarViewProps, any> {
   render() {
     const car = this.props.car;
     return (
@@ -24,12 +30,12 @@ export class CarView extends React.Component<{ car: Car }, any> {
         <td>{dateToString(car.maturityDate)}</td>
         <td>{car.price}</td>
         <td>
-          <a href="#" className="btn">
+          <a href="javascript:void(0)" className="btn" onClick={()=>this.props.edit(car)}>
             <i className="fas fa-pen" />
           </a>
         </td>
         <td>
-          <a href="#" className="btn">
+          <a href="javascript:void(0)" className="btn" onClick={()=>this.props.remove(car.getPK())}>
           <i className="fas fa-times"></i>
           </a>
         </td>

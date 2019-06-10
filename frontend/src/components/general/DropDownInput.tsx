@@ -4,10 +4,11 @@ import { observer } from "mobx-react";
 import { observable, action } from "mobx";
 
 export interface DropDownInputProps {
+  disabled?: boolean;
   name: string;
   error: string;
   current: number;
-  label:string;
+  label: string;
   element: { [index: number]: string };
   updateValue: (value: number) => void;
   store: Store;
@@ -31,6 +32,17 @@ function resolveValue() {
   else return this.props.element[this.props.current];
 }
 
+function toggle(store:Store,disabled: boolean) {
+  if (!disabled) {
+    store.updateState(!store.isOpen);
+  }
+}
+
+function selectItem(updater,element,store:Store,item) {
+  updater(element[item]);
+  store.updateState(false);
+}
+
 @observer
 export class DropDownInput extends React.Component<DropDownInputProps, any> {
   render() {
@@ -45,6 +57,7 @@ export class DropDownInput extends React.Component<DropDownInputProps, any> {
       { "is-valid": this.props.error != null && this.props.error.length === 0 }
     );
 
+    let disabled = this.props.disabled || false;
     let labelsCount: number = Object.keys(this.props.element).length / 2;
     let labels: string[] = [...Array(labelsCount).keys()].map(
       key => this.props.element[key]
@@ -54,36 +67,28 @@ export class DropDownInput extends React.Component<DropDownInputProps, any> {
 
     return (
       <div className="form-group col-sm-10 col-md-8 col-lg-6 mb-3 mb-sm-3">
-      <label>{this.props.label}</label>
+        <label>{this.props.label}</label>
         <div className="input-group">
           <div className="input-group-prepend">
             <button
               className="btn btn-outline-secondary dropdown-toggle"
               type="button"
-              data-toggle="dropdown"
-              aria-haspopup="true"
-              aria-expanded="false"
-              onClick={() => {
-                this.props.store.updateState(!this.props.store.isOpen);
-              }}
-              onBlur={() => {
-                this.props.store.updateState(false);
-              }}>
+              disabled={this.props.disabled}
+              onClick={() => toggle(this.props.store,disabled)}
+              onBlur={() => this.props.store.updateState(false)}>
+              
               Choose maker...
             </button>
             <div className={classesIsOpen}>
-              {labels.map(label => {
+              {labels.map(item => {
                 return (
                   <a
-                    key={label}
+                    key={item}
                     onMouseDown={event => event.preventDefault()}
-                    onClick={() => {
-                      this.props.updateValue(this.props.element[label]);
-                      this.props.store.updateState(false);
-                    }}
+                    onClick={() => selectItem(this.props.updateValue,this.props.element,this.props.store,item)}
                     className="dropdown-item"
-                    href="#">
-                    {label}
+                    href="javascript:void(0)">
+                    {item}
                   </a>
                 );
               })}
@@ -93,7 +98,6 @@ export class DropDownInput extends React.Component<DropDownInputProps, any> {
             name={this.props.name}
             type="text"
             className={classesIsValid}
-            aria-label="Text input with dropdown button"
             value={resolveValue.apply(currentComponent)}
             disabled
           />

@@ -10,6 +10,7 @@ export interface CarPK {
 export interface Car extends CarPK{
   maturityDate: Date;
   price: number;
+  getPK:()=>CarPK
 }
 
 export function carToJson(car:Car){

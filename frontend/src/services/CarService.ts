@@ -1,5 +1,5 @@
 import Axios, { AxiosResponse } from "axios";
-import { Car, MAKERS } from "../model/Car";
+import { Car, MAKERS, CarPK } from "../model/Car";
 import { dateToString } from "../util";
 
 interface RestResult{
@@ -50,10 +50,25 @@ export class CarService {
                 return res.map((item) => { 
                     item.make = MAKERS[item.make];
                     item.maturityDate = new Date(item.maturityDate);
+                    let car = item as Car;
+                    car.getPK = ()=>{
+                        return {
+                            make: car.make,
+                            model: car.model
+                        }
+                    }
                     return item;
                 })
             });
     };
+    removeCar(carPK: CarPK): Promise<any> {
+        return Axios.delete("api/car",{
+            params:{
+                make:MAKERS[carPK.make],
+                model:carPK.model
+            }
+        })
+    };    
 
 }
 

@@ -3,6 +3,7 @@ package pt.fabm.template.rest.controllers
 import io.reactivex.Observable
 import io.reactivex.Single
 import io.vertx.core.eventbus.DeliveryOptions
+import io.vertx.core.eventbus.ReplyException
 import io.vertx.core.json.JsonArray
 import io.vertx.core.json.JsonObject
 import io.vertx.core.logging.LoggerFactory
@@ -13,6 +14,7 @@ import pt.fabm.template.extensions.toJson
 import pt.fabm.template.models.Car
 import pt.fabm.template.models.CarMake
 import pt.fabm.template.rest.RestResponse
+import pt.fabm.template.validation.DataAlreadyExists
 import pt.fabm.template.validation.InvalidEntryException
 import pt.fabm.template.validation.RequiredException
 import java.time.LocalDateTime
@@ -53,7 +55,7 @@ class CarController(val vertx: Vertx) {
       .map { message ->
         message.body()?.let {
           RestResponse(it.toJson(), 200)
-        } ?: RestResponse(statusCode = 200)
+        } ?: RestResponse(statusCode = 404)
       }
   }
 
@@ -79,21 +81,18 @@ class CarController(val vertx: Vertx) {
         LocalDateTime.parse(strMaturityDate, DateTimeFormatter.ISO_DATE_TIME)
       )
     } ?: throw RequiredException(rootKey)
-
-    val strAction:String
-    if(createAction){
-      strAction = "create";
-    }else{
-      strAction = "update";
-    }
-
     return vertx.eventBus()
       .rxSend<Unit>(
-        "dao.car.${strAction}", car
-      )
+        "dao.car.${if(createAction) "create" else "update"}", car
+      ).onErrorReturn { e->
+        if(e is ReplyException)
+          if(e.failureCode() == 1)
+            throw DataAlreadyExists()
+        throw IllegalStateException()
+      }
       .ignoreElement()
       .toSingle {
-        RestResponse(statusCode = 204)
+        RestResponse(statusCode = if(createAction) 204 else 200)
       }
   }
 
@@ -103,7 +102,7 @@ class CarController(val vertx: Vertx) {
     val make = request.getParam("make")
 
     return vertx.eventBus().rxSend<Unit>(
-      "dao.car.delete", Pair(model, make)
+      "dao.car.delete", JsonObject().put("model",model).put("make",make)
     ).ignoreElement()
       .toSingle {
         RestResponse(statusCode = 200)

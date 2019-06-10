@@ -2,9 +2,9 @@ import { observer } from "mobx-react";
 import * as React from "react";
 import { userService } from "../../services/UserService";
 import { User } from "../../model/User";
-import { notificationStore, NotificationType } from "./Notifications";
 import { AppInput, InputType } from "../general/AppTextInput";
 import { GenericStore, createGenericStore } from "../GenericStoreValidator";
+import { uiStore, NotificationType } from "../../UIStore";
 
 enum UserRegisterEditorFields {
   USERNAME,
@@ -106,7 +106,7 @@ export class UserRegisterEditor extends React.Component<UserRegisterProps, {}> {
             }
 
             userService.registerUser(user).then(res => {            
-              let notification = notificationStore.createNotification();
+              let notification = uiStore.createNotification();
               if (res.status === 204) {
                 notification.content = "Success creating user";
                 this.props.successefullyRegistered();
@@ -115,7 +115,7 @@ export class UserRegisterEditor extends React.Component<UserRegisterProps, {}> {
                 notification.content = "Error when try to create user";
                 notification.type = NotificationType.ERROR;
               }
-              notificationStore.addNotificationTemp(notification, 3000);
+              uiStore.addNotificationTemp(notification, 3000);
             });
           }}>
           save user

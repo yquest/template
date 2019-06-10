@@ -2,20 +2,22 @@ import { observable, configure as configureMbox, computed, action } from "mobx";
 import * as React from "react";
 import { carService } from "./services/CarService";
 import { CarsList, carStore } from "./components/app/CarList";
-import { CarEditor } from "./components/app/CarEditor";
-import {
-  Notifications,
-  notificationStore
-} from "./components/app/Notifications";
+import { CarEditor, updateEditorCar } from "./components/app/CarEditor";
+import { uiStore, ModalState, ModalContent } from "./UIStore";
 import { LoginEditor } from "./components/app/LoginEditor";
 import { observer } from "mobx-react";
 import { UserRegisterEditor } from "./components/app/UserRegisterEditor";
-import { Car } from "./model/Car";
+import { Car, CarPK, MAKERS } from "./model/Car";
+import { Notifications } from "./components/app/Notifications";
+import {
+  createModalContainer,
+  createModalOverlay
+} from "./components/app/Modal";
+import { userService } from "./services/UserService";
 
 configureMbox({ enforceActions: "observed" }); // don't allow state modifications outside actions
 
 interface AppStateValues {
-  car:Car|null;
   wideSpace: boolean;
   selected: number;
   register: boolean;
@@ -33,12 +35,11 @@ enum AppState {
 class AppStateStore {
   @observable
   appStateValues: AppStateValues = {
-    car:null,
     wideSpace: true,
     selected: 0,
     login: false,
     register: false,
-    userName: localStorage.getItem("username")
+    userName: localStorage.getItem("username"),
   };
 
   @computed
@@ -78,19 +79,14 @@ class AppStateStore {
   updateWideSpace(wideSpace: boolean) {
     this.appStateValues.wideSpace = wideSpace;
   }
-  @action
-  updateCarToEdit(car:Car|null){
-    this.appStateValues.car = car;
-  }
 }
-
 
 let appStateStore = new AppStateStore();
 function resizewindow() {
   appStateStore.updateWideSpace(window.innerWidth > 1024);
 }
 resizewindow();
-window.addEventListener('resize', resizewindow);
+window.addEventListener("resize", resizewindow);
 
 window.addEventListener("popstate", e => {
   switch (window.location.hash) {
@@ -109,11 +105,27 @@ window.addEventListener("popstate", e => {
   }
 });
 
+function onListRemoveCar(carPK: CarPK) {
+  uiStore.updateModalAction(()=>{
+    carService.removeCar(carPK);
+  });
+  let modalContent = new ModalContent();
+  modalContent.content = `Do you really want to remove car with model:${carPK.model} from maker:${MAKERS[carPK.make]}?`;
+  modalContent.title = "Remove car";
+  modalContent.actionButton = "Remove"; 
+  uiStore.updateModalContent(modalContent);
+  uiStore.updateModal(ModalState.CREATED);
+}
+function onListUpdateCar(car: Car) {
+  updateEditorCar(car);
+}
+
 @observer
-export class App extends React.Component<{}, {}> {
+export class App extends React.Component<any, any> {
   render() {
-    return (
+    let container = (
       <div className="container" style={{ marginBottom: "5rem" }}>
+        {createModalContainer()}
         {appStateStore.state === AppState.LIST_NO_AUTH && (
           <a
             href="#login"
@@ -125,26 +137,40 @@ export class App extends React.Component<{}, {}> {
         )}
         <Notifications />
         {appStateStore.state === AppState.CAR_EDIT_AUTH && (
-          <div>Hello {appStateStore.appStateValues.userName}</div>
+          [<div key="helloUsername">Hello {appStateStore.appStateValues.userName}</div>,<button
+          key="btnLogout"
+          style={{ marginRight: "0.5rem" }}
+          type="button"
+          className="btn btn-primary"
+          onClick={() => {
+            userService.userLogout();
+            localStorage.removeItem("username");
+            localStorage.removeItem(appStateStore.appStateValues.userName);
+            appStateStore.updateUserName(null);
+          }}>
+          logout
+        </button>]
         )}
         {(appStateStore.state === AppState.LIST_NO_AUTH ||
-          appStateStore.state === AppState.CAR_EDIT_AUTH) && <CarsList wideWidth={appStateStore.appStateValues.wideSpace} />}
+          appStateStore.state === AppState.CAR_EDIT_AUTH) && (
+          <CarsList
+            wideWidth={appStateStore.appStateValues.wideSpace}
+            updateCar={onListUpdateCar}
+            removeCar={onListRemoveCar}
+          />
+        )}
         {appStateStore.state === AppState.CAR_EDIT_AUTH && (
           <CarEditor
-            car={appStateStore.appStateValues.car}            
             saveCarEvent={car => {
-              carService.createCar(car).then(res => {
+              carService.createCar(car)
+              .then(res => {
                 if (res.status == 204) {
-                  let notification = notificationStore.createNotification();
+                  let notification = uiStore.createNotification();
                   notification.content = <div>Successefuly created</div>;
-                  notificationStore.addNotificationTemp(notification, 3000);
+                  uiStore.addNotificationTemp(notification, 3000);
                   carStore.createCar(car);
                 }
               });
-            }}
-            logoutEvent={() => {
-              localStorage.removeItem(appStateStore.appStateValues.userName);
-              appStateStore.updateUserName(null);
             }}
           />
         )}
@@ -172,7 +198,9 @@ export class App extends React.Component<{}, {}> {
             }}
           />
         )}
+        {createModalOverlay()}
       </div>
     );
+    return container;
   }
 }

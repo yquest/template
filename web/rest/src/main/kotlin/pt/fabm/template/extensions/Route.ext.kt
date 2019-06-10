@@ -4,6 +4,7 @@ import Consts
 import io.jsonwebtoken.Jwts
 import io.netty.handler.codec.http.cookie.ServerCookieDecoder
 import io.reactivex.Single
+import io.reactivex.exceptions.CompositeException
 import io.vertx.core.Handler
 import io.vertx.core.http.HttpHeaders
 import io.vertx.core.logging.LoggerFactory
@@ -23,6 +24,20 @@ typealias ToSingleRestResponse = (RoutingContext) -> Single<RestResponse>
 
 val LOGGER = LoggerFactory.getLogger(Route::class.java)
 
+private fun errorResolver(error:Throwable,applyResponse: (RestResponse) -> Unit){
+  when (error) {
+    is CompositeException -> {
+      errorResolver(error.exceptions[error.size()-1],applyResponse)
+    }
+    is ErrorResponse -> applyResponse(error.toRestResponse())
+    else -> {
+      LOGGER.error("technical error", error)
+      applyResponse(errorToRestResponse(error, 500))
+    }
+  }
+
+}
+
 private fun consumeRest(rc: RoutingContext, restResponse: Single<RestResponse>) {
 
   val response = rc.response()
@@ -35,13 +50,7 @@ private fun consumeRest(rc: RoutingContext, restResponse: Single<RestResponse>) 
   restResponse.subscribe({ rest ->
     applyResponse(rest)
   }, { error ->
-    when (error) {
-      is ErrorResponse -> applyResponse(error.toRestResponse())
-      else -> {
-        LOGGER.error("technical error", error)
-        applyResponse(errorToRestResponse(error, 500))
-      }
-    }
+    errorResolver(error,applyResponse)
   })
 }
 

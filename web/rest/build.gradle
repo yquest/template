@@ -15,6 +15,7 @@ dependencies {
   implementation "io.vertx:vertx-web:$vertxVersion"
   implementation "io.vertx:vertx-lang-kotlin:$vertxVersion"
 
+  testImplementation "io.vertx:vertx-junit5:$vertxVersion"
 }
 
 processResources {

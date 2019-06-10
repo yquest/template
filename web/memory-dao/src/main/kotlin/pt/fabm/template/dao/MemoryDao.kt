@@ -4,10 +4,11 @@ import io.reactivex.Completable
 import io.vertx.core.eventbus.DeliveryOptions
 import io.vertx.core.json.JsonObject
 import io.vertx.core.logging.LoggerFactory
+import io.vertx.kotlin.core.json.get
 import io.vertx.reactivex.core.AbstractVerticle
 import pt.fabm.template.models.Car
+import pt.fabm.template.models.CarMake
 import pt.fabm.template.models.UserRegisterIn
-import java.security.MessageDigest
 
 class MemoryDao : AbstractVerticle() {
   companion object {
@@ -27,20 +28,23 @@ class MemoryDao : AbstractVerticle() {
 
     completeHandeleres += eventBus.consumer<Car>("dao.car.create") { message ->
       val carMessage: Car = message.body()
-      val car:Car? = cars.find { it.make == carMessage.make && it.model == carMessage.model }
-      if(car != null){
-        throw DataAlreadyExists()
+      val car: Car? = cars.find { it.make == carMessage.make && it.model == carMessage.model }
+      if (car != null) {
+        message.fail(1,"already exists")
+        return@consumer
       }
       cars += message.body()
       message.reply(null)
     }.rxCompletionHandler()
 
     completeHandeleres += eventBus.consumer<Car>("dao.car.update") { message ->
-      val carMessage: Car = message.body()
-      val car:Car? = cars.find { it.make == carMessage.make && it.model == carMessage.model }
-      if(car == null){
-        throw DataNotFound()
+      val car: Car = message.body()
+      val isRemoved = cars.removeIf { it.make == car.make && it.model == car.model }
+      if (!isRemoved) {
+        message.fail(1,"not found")
+        return@consumer
       }
+      cars.add(car)
       message.reply(null)
     }.rxCompletionHandler()
 
@@ -51,6 +55,19 @@ class MemoryDao : AbstractVerticle() {
     completeHandeleres += eventBus.consumer<UserRegisterIn>("dao.user.create") { message ->
       val body = message.body()
       users[body.name] = body
+      message.reply(null)
+    }.rxCompletionHandler()
+
+    completeHandeleres += eventBus.consumer<JsonObject>("dao.car.retrieve") { message ->
+      val body = message.body()
+      val car: Car? = cars.find { it.make == body["make"] && it.model == body["model"] }
+      message.fail(1,"already exists")
+      message.reply(car)
+    }.rxCompletionHandler()
+
+    completeHandeleres += eventBus.consumer<JsonObject>("dao.car.delete") { message ->
+      val body = message.body()
+      cars.removeIf { it.make.name == body["make"] && it.model == body["model"] }
       message.reply(null)
     }.rxCompletionHandler()
 

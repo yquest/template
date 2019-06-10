@@ -1,4 +1,4 @@
-package pt.fabm.template.dao
+package pt.fabm.template.validation
 
 import pt.fabm.template.ErrorResponse
 
