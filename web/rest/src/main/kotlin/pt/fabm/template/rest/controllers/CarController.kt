@@ -9,9 +9,11 @@ import io.vertx.core.json.JsonObject
 import io.vertx.core.logging.LoggerFactory
 import io.vertx.reactivex.core.Vertx
 import io.vertx.reactivex.ext.web.RoutingContext
+import pt.fabm.template.EventBusAddresses
 import pt.fabm.template.extensions.nullIfEmpty
 import pt.fabm.template.extensions.toJson
 import pt.fabm.template.models.Car
+import pt.fabm.template.models.CarId
 import pt.fabm.template.models.CarMake
 import pt.fabm.template.rest.RestResponse
 import pt.fabm.template.validation.DataAlreadyExists
@@ -27,7 +29,7 @@ class CarController(val vertx: Vertx) {
 
   fun carList(): Single<RestResponse> {
     return vertx.eventBus().rxSend<List<Car>>(
-      "dao.car.list", null, DeliveryOptions().setCodecName("List")
+      EventBusAddresses.Dao.Car.list, null, DeliveryOptions().setCodecName("List")
     )
       .map { message -> message.body() }
       .flatMapObservable { list -> Observable.fromIterable(list) }
@@ -48,10 +50,9 @@ class CarController(val vertx: Vertx) {
       val current = request.getParam(it).nullIfEmpty() ?: throw RequiredException(it)
       CarMake.values().find { it.name == current } ?: throw InvalidEntryException(current, it)
     }
-    val model = "model".let { request.getParam(it).nullIfEmpty() ?: RequiredException(it) }
+    val model: String = "model".let { request.getParam(it).nullIfEmpty() ?: throw RequiredException(it) }
 
-    val jsonFind = JsonObject().put("make", make).put("model", model)
-    return vertx.eventBus().rxSend<Car>("dao.car.retrieve", jsonFind)
+    return vertx.eventBus().rxSend<Car>(EventBusAddresses.Dao.Car.retrieve, CarId(model = model, maker = make))
       .map { message ->
         message.body()?.let {
           RestResponse(it.toJson(), 200)
@@ -83,16 +84,16 @@ class CarController(val vertx: Vertx) {
     } ?: throw RequiredException(rootKey)
     return vertx.eventBus()
       .rxSend<Unit>(
-        "dao.car.${if(createAction) "create" else "update"}", car
-      ).onErrorReturn { e->
-        if(e is ReplyException)
-          if(e.failureCode() == 1)
+        if (createAction) EventBusAddresses.Dao.Car.create else EventBusAddresses.Dao.Car.update, car
+      ).onErrorReturn { e ->
+        if (e is ReplyException)
+          if (e.failureCode() == 1)
             throw DataAlreadyExists()
         throw IllegalStateException()
       }
       .ignoreElement()
       .toSingle {
-        RestResponse(statusCode = if(createAction) 204 else 200)
+        RestResponse(statusCode = if (createAction) 204 else 200)
       }
   }
 
@@ -102,7 +103,7 @@ class CarController(val vertx: Vertx) {
     val make = request.getParam("make")
 
     return vertx.eventBus().rxSend<Unit>(
-      "dao.car.delete", JsonObject().put("model",model).put("make",make)
+      EventBusAddresses.Dao.Car.delete, CarId(model = model, maker = CarMake.valueOf(make))
     ).ignoreElement()
       .toSingle {
         RestResponse(statusCode = 200)

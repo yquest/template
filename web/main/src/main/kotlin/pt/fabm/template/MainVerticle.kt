@@ -9,10 +9,7 @@ import io.vertx.core.logging.Logger
 import io.vertx.core.logging.LoggerFactory
 import io.vertx.reactivex.config.ConfigRetriever
 import io.vertx.reactivex.core.AbstractVerticle
-import pt.fabm.template.models.Car
-import pt.fabm.template.models.Reservation
-import pt.fabm.template.models.SimpleDate
-import pt.fabm.template.models.UserRegisterIn
+import pt.fabm.template.models.*
 
 
 class MainVerticle : AbstractVerticle() {
@@ -30,6 +27,8 @@ class MainVerticle : AbstractVerticle() {
     registerLocalCodec(SimpleDate::class.java)
     registerLocalCodec(Reservation::class.java)
     registerLocalCodec(Car::class.java)
+    registerLocalCodec(CarId::class.java)
+    registerLocalCodec(Login::class.java)
     registerLocalCodec(java.util.List::class.java)
   }
 
