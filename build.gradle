@@ -14,7 +14,6 @@ allprojects {
 }
 
 subprojects {
-  println "${project.path}:${project.findProperty('daoenv')}"
   if (['rest', 'shared', 'memory-dao', 'postgres-dao', 'main'].contains(it.name)) {
     apply plugin: 'org.jetbrains.kotlin.jvm'
 
@@ -79,5 +78,5 @@ task copyPublic(type: Copy) {
   into "web/rest/src/main/resources/public"
 }
 
-copyPublic.shouldRunAfter(':frontend:build')
-task compileAndCopy(dependsOn: [':frontend:build', 'copyPublic'])
+copyPublic.shouldRunAfter(':frontend:nodeBuild')
+task compileAndCopy(dependsOn: [':frontend:nodeBuild', 'copyPublic'])

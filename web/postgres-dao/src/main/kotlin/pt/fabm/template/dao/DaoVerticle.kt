@@ -4,19 +4,21 @@ import com.mchange.v2.c3p0.ComboPooledDataSource
 import io.reactivex.Completable
 import io.reactivex.SingleObserver
 import io.reactivex.functions.Consumer
+import io.vertx.core.eventbus.DeliveryOptions
+import io.vertx.core.json.JsonObject
 import io.vertx.core.logging.LoggerFactory
 import io.vertx.reactivex.core.AbstractVerticle
 import io.vertx.reactivex.core.eventbus.Message
 import pt.fabm.template.EventBusAddresses.Dao
-import pt.fabm.template.LocalCodec
-import pt.fabm.template.models.*
+import pt.fabm.template.models.Car
+import pt.fabm.template.models.CarId
+import pt.fabm.template.models.Login
+import pt.fabm.template.models.UserRegisterIn
 
 class DaoVerticle : AbstractVerticle() {
   companion object {
     val LOGGER = LoggerFactory.getLogger(DaoVerticle::class.java)
   }
-
-
 
   override fun rxStart(): Completable {
     //registerCodecs()
@@ -60,7 +62,7 @@ class DaoVerticle : AbstractVerticle() {
       val carDao = CarDao(cpds.connection)
       carDao.list()
         .toList()
-        .doOnSuccess { message.reply(it) }
+        .doOnSuccess { message.reply(it, DeliveryOptions(JsonObject().put("codecName","List"))) }
         .doOnError { unexpectedError(message) }
         .doFinally { carDao.close() }
         .subscribeWith(DisposableLoggerSingle(Dao.Car.list) { it.toString() })
