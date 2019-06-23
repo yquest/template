@@ -3,7 +3,6 @@ verticles:
   rest: pt.fabm.template.rest.RestVerticle
 confs:
   rest:
-    port: 8888
     host: localhost
   dao:
     #all the event bus consumers addresses to be forwarded

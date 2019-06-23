@@ -8,9 +8,8 @@ application {
 
 dependencies {
   implementation project(':web:rest')
-  implementation project(':web:memory-dao')
   api project(':web:shared')
-
+  
   implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8:$kotlinVersion"
   implementation "io.vertx:vertx-config:$vertxVersion"
   implementation "io.vertx:vertx-config-yaml:$vertxVersion"

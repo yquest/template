@@ -13,7 +13,6 @@ import pt.fabm.template.models.Car
 import pt.fabm.template.models.Reservation
 import pt.fabm.template.models.SimpleDate
 import pt.fabm.template.models.UserRegisterIn
-import java.lang.Exception
 
 
 class MainVerticle : AbstractVerticle() {
@@ -37,10 +36,15 @@ class MainVerticle : AbstractVerticle() {
   override fun rxStart(): Completable {
     registerCodecs()
 
+    println("${System.getProperty("conf")}/config.yaml")
+
     val store = ConfigStoreOptions()
       .setType("file")
       .setFormat("yaml")
-      .setConfig(config())
+      .setConfig(
+        JsonObject()
+          .put("path", "${System.getProperty("conf")}/config.yaml")
+      )
 
     val retriever = ConfigRetriever.create(
       vertx,
@@ -61,8 +65,8 @@ class MainVerticle : AbstractVerticle() {
     val daoVerticle = verticles.getString("dao")
     val confs = config.getJsonObject("confs")
     val restConf = confs.getJsonObject("rest")
+    restConf.put("port", System.getProperty("server.port").toInt())
     val daoConf = confs.getJsonObject("dao")
-
     return vertx
       .rxDeployVerticle(daoVerticle, DeploymentOptions().setConfig(daoConf))
       .ignoreElement()

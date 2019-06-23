@@ -2,17 +2,14 @@ package pt.fabm.template.dao
 
 import io.reactivex.Completable
 import io.vertx.core.eventbus.DeliveryOptions
-import io.vertx.core.json.JsonObject
 import io.vertx.core.logging.LoggerFactory
-import io.vertx.kotlin.core.json.get
 import io.vertx.reactivex.core.AbstractVerticle
-import pt.fabm.template.models.Car
-import pt.fabm.template.models.CarMake
-import pt.fabm.template.models.UserRegisterIn
+import pt.fabm.template.EventBusAddresses
+import pt.fabm.template.models.*
 
-class MemoryDao : AbstractVerticle() {
+class DaoVerticle : AbstractVerticle() {
   companion object {
-    val LOGGER = LoggerFactory.getLogger(MemoryDao::class.java)
+    val LOGGER = LoggerFactory.getLogger(DaoVerticle::class.java)
   }
 
   private val cars = mutableListOf<Car>()
@@ -26,7 +23,7 @@ class MemoryDao : AbstractVerticle() {
     val eventBus = vertx.eventBus()
     val completeHandeleres = mutableListOf<Completable>()
 
-    completeHandeleres += eventBus.consumer<Car>("dao.car.create") { message ->
+    completeHandeleres += eventBus.consumer<Car>(EventBusAddresses.Dao.Car.create) { message ->
       val carMessage: Car = message.body()
       val car: Car? = cars.find { it.make == carMessage.make && it.model == carMessage.model }
       if (car != null) {
@@ -37,7 +34,7 @@ class MemoryDao : AbstractVerticle() {
       message.reply(null)
     }.rxCompletionHandler()
 
-    completeHandeleres += eventBus.consumer<Car>("dao.car.update") { message ->
+    completeHandeleres += eventBus.consumer<Car>(EventBusAddresses.Dao.Car.update) { message ->
       val car: Car = message.body()
       val isRemoved = cars.removeIf { it.make == car.make && it.model == car.model }
       if (!isRemoved) {
@@ -48,36 +45,35 @@ class MemoryDao : AbstractVerticle() {
       message.reply(null)
     }.rxCompletionHandler()
 
-    completeHandeleres += eventBus.consumer<List<Car>>("dao.car.list") { message ->
+    completeHandeleres += eventBus.consumer<List<Car>>(EventBusAddresses.Dao.Car.list) { message ->
       message.reply(cars, DeliveryOptions().setCodecName("List"))
     }.rxCompletionHandler()
 
-    completeHandeleres += eventBus.consumer<UserRegisterIn>("dao.user.create") { message ->
+    completeHandeleres += eventBus.consumer<UserRegisterIn>(EventBusAddresses.Dao.User.create) { message ->
       val body = message.body()
       users[body.name] = body
       message.reply(null)
     }.rxCompletionHandler()
 
-    completeHandeleres += eventBus.consumer<JsonObject>("dao.car.retrieve") { message ->
+    completeHandeleres += eventBus.consumer<CarId>(EventBusAddresses.Dao.Car.retrieve) { message ->
       val body = message.body()
-      val car: Car? = cars.find { it.make == body["make"] && it.model == body["model"] }
+      val car: Car? = cars.find { it.make == body.maker && it.model == body.model }
       message.fail(1,"already exists")
       message.reply(car)
     }.rxCompletionHandler()
 
-    completeHandeleres += eventBus.consumer<JsonObject>("dao.car.delete") { message ->
+    completeHandeleres += eventBus.consumer<CarId>(EventBusAddresses.Dao.Car.delete) { message ->
       val body = message.body()
-      cars.removeIf { it.make.name == body["make"] && it.model == body["model"] }
+      cars.removeIf { it.make == body.maker && it.model == body.model }
       message.reply(null)
     }.rxCompletionHandler()
 
-    completeHandeleres += eventBus.consumer<JsonObject>("dao.user.login") { message ->
+    completeHandeleres += eventBus.consumer<Login>(EventBusAddresses.Dao.User.login) { message ->
       val body = message.body()
-      val current = users.get(body.getString("user"))
+      val current = users.get(body.username)
 
       val auth = current?.takeIf {
-        val argPass = body.getBinary("pass")
-        argPass!!.contentEquals(it.pass)
+        body.password.contentEquals(it.pass)
       } != null
       message.reply(auth)
     }.rxCompletionHandler()

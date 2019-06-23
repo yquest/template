@@ -12,9 +12,9 @@ node {
   workDir = file("${project.buildDir}/node")
   nodeModulesDir = file("${project.projectDir}")
 }
-
-task build(type: NpmTask) {
+task nodeBuild(type: NpmTask) {
   args = ['run', 'build']
 }
 
-build.dependsOn(npm_install)
+nodeBuild.dependsOn(npm_install)
+nodeBuild.enabled = true

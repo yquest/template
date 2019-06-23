@@ -2,7 +2,6 @@ package pt.fabm.template
 
 import Consts
 import io.jsonwebtoken.Jwts
-import io.vertx.core.DeploymentOptions
 import io.vertx.core.eventbus.DeliveryOptions
 import io.vertx.core.http.HttpHeaders
 import io.vertx.core.json.JsonArray
@@ -31,6 +30,7 @@ import pt.fabm.template.models.Car
 import pt.fabm.template.models.CarMake
 import pt.fabm.template.models.UserRegisterIn
 import java.io.FileReader
+import java.nio.file.Paths
 import java.security.MessageDigest
 import java.time.LocalDateTime
 import java.util.concurrent.TimeUnit
@@ -47,22 +47,22 @@ class TestMainVerticle {
 
   @BeforeEach
   fun deployVerticle(vertx: Vertx, testContext: VertxTestContext) {
-    val configPath = TestMainVerticle::class.java.getResource("/config.yaml").path
+    port = 8080
+    val configUri = TestMainVerticle::class.java.getResource("/config.yaml").toURI()
+    val configPath = Paths.get(configUri)
+      .parent.toAbsolutePath().toFile().absolutePath
+    System.setProperty("conf", configPath)
+    System.setProperty("server.port", port.toString())
+
     val yaml = Yaml()
-    val map: Map<String, Any> = yaml.load(FileReader(configPath))
+    val map: Map<String, Any> = yaml.load(FileReader(Paths.get(configUri).toFile()))
     map.get("confs").let { it as Map<*, *> }
       .get("rest").let { it as Map<*, *> }
       .also { portAndHost ->
-        port = portAndHost.get("port") as Int
         host = portAndHost.get("host") as String
       }
 
-    vertx.rxDeployVerticle(
-      MainVerticle(), DeploymentOptions().setConfig(
-        JsonObject()
-          .put("path", configPath)
-      )
-    ).subscribe({
+    vertx.rxDeployVerticle(MainVerticle()).subscribe({
 
       testContext.completeNow()
     }, {

@@ -24,7 +24,7 @@ The configuration file has the classes with the verticle implementation to make 
 
 ``` yaml
 verticles:
-  dao: pt.fabm.template.dao.MemoryDao
+  dao: pt.fabm.template.dao.DaoVerticle
   rest: pt.fabm.template.rest.RestVerticle
 ```
 It's also necessary to pass in the config file the host and the port to publish the services

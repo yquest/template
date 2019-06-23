@@ -8,21 +8,33 @@ repositories {
   jcenter()
 }
 
-
 allprojects {
   group = 'pt.fabm'
   version = '1.0.0-SNAPSHOT'
 }
 
-
 subprojects {
-  if (['rest','shared','memory-dao', 'main'].contains(it.name)) {
+  println "${project.path}:${project.findProperty('daoenv')}"
+  if (['rest', 'shared', 'memory-dao', 'postgres-dao', 'main'].contains(it.name)) {
     apply plugin: 'org.jetbrains.kotlin.jvm'
 
     repositories {
       mavenCentral()
       jcenter()
     }
+
+    if (it.name == 'main') {
+      if ('postgres' == project.findProperty('daoenv')) {
+        dependencies {
+          implementation project(':web:postgres-dao')
+        }
+      } else {
+        dependencies {
+          implementation project(':web:memory-dao')
+        }
+      }
+    }
+
 
     task copyIntellijMainResources(type: Copy) {
       from "$buildDir/resources/main"
@@ -33,7 +45,7 @@ subprojects {
       from "$buildDir/resources/test"
       into "out/test/classes"
     }
-    
+
     compileKotlin {
       kotlinOptions.jvmTarget = '1.8'
     }
@@ -56,7 +68,6 @@ subprojects {
     }
   }
 }
-
 
 task cleanPublic(type: Delete) {
   delete 'web/rest/src/main/resources/public'

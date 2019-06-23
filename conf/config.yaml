@@ -1,0 +1,6 @@
+verticles:
+  dao: pt.fabm.template.dao.DaoVerticle
+  rest: pt.fabm.template.rest.RestVerticle
+confs:
+  rest:
+    host: localhost
