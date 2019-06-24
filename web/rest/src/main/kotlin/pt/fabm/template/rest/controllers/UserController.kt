@@ -8,8 +8,10 @@ import io.vertx.kotlin.core.json.jsonObjectOf
 import io.vertx.reactivex.core.Vertx
 import io.vertx.reactivex.ext.web.Cookie
 import io.vertx.reactivex.ext.web.RoutingContext
+import pt.fabm.template.EventBusAddresses
 import pt.fabm.template.extensions.checkedString
 import pt.fabm.template.extensions.toHash
+import pt.fabm.template.models.Login
 import pt.fabm.template.models.UserRegisterIn
 import pt.fabm.template.rest.RestResponse
 
@@ -23,28 +25,28 @@ class UserController(val vertx: Vertx) {
     val singleBodyAsJson = Single.just(rc)
       .map { it.bodyAsJson }
       .map { jo ->
-        jsonObjectOf(
-          "user" to jo["user"],
-          "pass" to (jo.getString("pass").toHash())
+        Login(
+          username = jo["user"],
+          password = jo.getString("pass").toHash()
         )
       }
 
-    return singleBodyAsJson.flatMap { bodyAsJson ->
+    return singleBodyAsJson.flatMap { login ->
       vertx.eventBus()
-        .rxSend<Boolean>("dao.user.login", bodyAsJson)
+        .rxSend<Boolean>(EventBusAddresses.Dao.User.login, login)
         .map { message ->
           if (!message.body()) {
             return@map RestResponse(statusCode = 403)
           }
-          val username = bodyAsJson.getString("user")
+          val username = login.username
           val jws = Jwts.builder().setSubject(username).signWith(Consts.SIGNING_KEY).compact()
           var cookie = Cookie.cookie(Consts.ACCESS_TOKEN_COOKIE, jws)
           cookie.setHttpOnly(true)
-          cookie.setPath("/api/")
+          cookie.path = "/api/"
           rc.addCookie(cookie)
 
           cookie = Cookie.cookie(Consts.USER_NAME_COOKIE, username);
-          cookie.setPath("/api/*")
+          cookie.path = "/api/*"
           rc.addCookie(cookie)
 
           message.reply(null)
@@ -67,7 +69,7 @@ class UserController(val vertx: Vertx) {
           password.toHash()
         )
 
-        vertx.eventBus().rxSend<String>("dao.user.create", userRegister)
+        vertx.eventBus().rxSend<String>(EventBusAddresses.Dao.User.create, userRegister)
           .map {
             RestResponse(statusCode = 204)
           }

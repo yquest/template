@@ -26,9 +26,7 @@ import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.ExtendWith
 import org.yaml.snakeyaml.Yaml
 import pt.fabm.template.extensions.toJson
-import pt.fabm.template.models.Car
-import pt.fabm.template.models.CarMake
-import pt.fabm.template.models.UserRegisterIn
+import pt.fabm.template.models.*
 import java.io.FileReader
 import java.nio.file.Paths
 import java.security.MessageDigest
@@ -63,7 +61,6 @@ class TestMainVerticle {
       }
 
     vertx.rxDeployVerticle(MainVerticle()).subscribe({
-
       testContext.completeNow()
     }, {
       testContext.failNow(it)
@@ -82,7 +79,6 @@ class TestMainVerticle {
     val client = WebClient.create(vertx)
     client.get(port!!, host, "/index.html").send { response ->
       val result = response.result()
-      println(result.bodyAsString())
       testContext.verify {
         assertEquals(200, result.statusCode())
         testContext.completeNow()
@@ -112,7 +108,7 @@ class TestMainVerticle {
     val client = WebClient.create(vertx)
     val eventBus = vertx.eventBus()
     val ebConsumer = eventBus
-      .consumer<UserRegisterIn>("test.dao.user.create")
+      .consumer<UserRegisterIn>(EventBusAddresses.Dao.User.create.asTestAddress())
       .handler { message ->
         val body = message.body()
         assertEquals(entry["email"], body.email)
@@ -147,11 +143,11 @@ class TestMainVerticle {
     )
 
     val ebConsumer = eventBus
-      .consumer<JsonObject>("test.dao.user.login")
+      .consumer<Login>(EventBusAddresses.Dao.User.login.asTestAddress())
       .handler { message ->
         val body = message.body()
-        assertEquals(entry.getString("user"), body["user"])
-        assertArrayEquals(digestPass(entry["pass"]), body.getBinary("pass"))
+        assertEquals(entry.getString("user"), body.username)
+        assertArrayEquals(digestPass(entry["pass"]), body.password)
         message.reply(true)
       }
 
@@ -208,10 +204,10 @@ class TestMainVerticle {
     val car = Car("Golf V", CarMake.VOLKSWAGEN, 25000, date)
 
     val ebConsumer = eventBus
-      .consumer<Unit>("test.dao.car.retrieve")
+      .consumer<Unit>(EventBusAddresses.Dao.Car.retrieve.asTestAddress())
       .handler { message ->
         assertEquals(
-          JsonObject().put("model", car.model).put("make", car.make.name),
+          CarId(maker = car.make, model = car.model),
           message.body()
         )
         message.reply(car)
@@ -256,7 +252,7 @@ class TestMainVerticle {
     val car = Car("Golf V", CarMake.VOLKSWAGEN, 25000, date)
 
     val ebConsumer = eventBus
-      .consumer<Car>("test.dao.car.update")
+      .consumer<Car>(EventBusAddresses.Dao.Car.update.asTestAddress())
       .handler { message ->
         assertEquals(car, message.body())
         message.reply(null)
@@ -290,7 +286,7 @@ class TestMainVerticle {
     val car = Car("Golf V", CarMake.VOLKSWAGEN, 25000, date)
 
     val ebConsumer = eventBus
-      .consumer<Unit>("test.dao.car.retrieve")
+      .consumer<Unit>(EventBusAddresses.Dao.Car.retrieve.asTestAddress())
       .handler { message ->
         message.reply(null)
       }
@@ -323,7 +319,7 @@ class TestMainVerticle {
     val car = Car("Golf V", CarMake.VOLKSWAGEN, 25000, before1Month)
 
     val ebConsumer = eventBus
-      .consumer<Unit>("test.dao.car.create")
+      .consumer<Car>(EventBusAddresses.Dao.Car.create.asTestAddress())
       .handler { message ->
         assertEquals(car, message.body())
         message.reply(null)
@@ -360,9 +356,9 @@ class TestMainVerticle {
 
 
     val ebConsumer = eventBus
-      .consumer<Unit>("test.dao.car.list")
+      .consumer<List<Car>>(EventBusAddresses.Dao.Car.list.asTestAddress())
       .handler { message ->
-        message.reply(listOf(car), DeliveryOptions().setCodecName("List"))
+        message.reply(listOf(car), DeliveryOptions().setCodecName(List::class.java.simpleName))
       }
 
     ebConsumer.rxCompletionHandler().subscribe({
@@ -408,6 +404,8 @@ class TestMainVerticle {
   }
 
 }
+
+private fun String.asTestAddress(): String? = "test.$this"
 
 private fun HttpRequest<Buffer>.auth(jws: String?): HttpRequest<Buffer> {
   return this.putHeader(HttpHeaders.COOKIE.toString(), "${Consts.ACCESS_TOKEN_COOKIE}=$jws");
