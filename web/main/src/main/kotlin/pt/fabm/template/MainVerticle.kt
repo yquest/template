@@ -35,7 +35,7 @@ class MainVerticle : AbstractVerticle() {
   override fun rxStart(): Completable {
     registerCodecs()
 
-    println("${System.getProperty("conf")}/config.yaml")
+    LOGGER.info("${System.getProperty("conf")}/config.yaml")
 
     val store = ConfigStoreOptions()
       .setType("file")

@@ -3,4 +3,4 @@ verticles:
   rest: pt.fabm.template.rest.RestVerticle
 confs:
   rest:
-    host: localhost
+    host: 0.0.0.0

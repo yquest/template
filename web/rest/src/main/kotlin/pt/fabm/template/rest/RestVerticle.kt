@@ -64,7 +64,9 @@ class RestVerticle : AbstractVerticle() {
       .createHttpServer()
       .requestHandler(router)
       .rxListen(port, host)
-      .doOnSuccess{ LOGGER.info("connected in port ${port}") }
+      .doOnSuccess{
+        LOGGER.info("connected in host:$host and port:$port")
+      }
       .doOnError { LOGGER.error("Http server initialization error!", it) }
       .ignoreElement()
   }
