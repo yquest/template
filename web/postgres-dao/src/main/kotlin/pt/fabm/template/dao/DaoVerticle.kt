@@ -71,7 +71,7 @@ class DaoVerticle : AbstractVerticle() {
     completeHandleres += eventBus.consumer<UserRegisterIn>(Dao.User.create) { message ->
       val userDao = UserDao(cpds.connection)
       userDao.create(message.body())
-        .doOnComplete { }
+        .doOnComplete { message.reply(null) }
         .doFinally { userDao.close() }
         .subscribeWith(DisposableLoggerCompletable(Dao.User.create))
     }.rxCompletionHandler()

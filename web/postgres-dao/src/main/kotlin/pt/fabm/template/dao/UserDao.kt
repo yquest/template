@@ -10,11 +10,11 @@ import java.sql.Connection
 class UserDao(private val connection: Connection) : Closeable {
   companion object {
 
-    const val INSERT_QUERY = """insert into "user"(username,password_hash,email) values (?,?,?)"""
-    const val UPDATE_QUERY = """update "user" set email = ?, password_hash = ? where username = ?"""
-    const val FIND_ONE_PASSWORD_QUERY = """select password_hash from "user" where username = ?"""
-    const val TRUNCATE_QUERY = """truncate "user""""
-    const val REMOVE_QUERY = """delete from "user" where username = ?"""
+    const val INSERT_QUERY = """insert into app_user(username,password_hash,email) values (?,?,?)"""
+    const val UPDATE_QUERY = """update app_user set email = ?, password_hash = ? where username = ?"""
+    const val FIND_ONE_PASSWORD_QUERY = """select password_hash from app_user where username = ?"""
+    const val TRUNCATE_QUERY = """truncate app_user"""
+    const val REMOVE_QUERY = """delete from app_user where username = ?"""
   }
 
   private val insertPS = { connection.prepareCall(INSERT_QUERY) }
