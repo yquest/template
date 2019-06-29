@@ -67,17 +67,3 @@ subprojects {
     }
   }
 }
-
-task cleanPublic(type: Delete) {
-  delete 'web/rest/src/main/resources/public'
-  followSymlinks = true
-}
-
-task copyPublic(type: Copy) {
-  from "frontend/dist"
-  into "web/rest/src/main/resources/public"
-}
-
-copyPublic.shouldRunAfter(':frontend:nodeBuild')
-task compileAndCopy(dependsOn: [':frontend:nodeBuild', 'copyPublic'])
-

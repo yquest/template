@@ -19,7 +19,7 @@ dependencies {
 }
 
 ext {
-  pdir = "${project.rootDir}/frontend/dist"
+  pdir = "${project.rootDir}/frontend/dist" as String
 }
 
 processResources {
