@@ -80,3 +80,4 @@ task copyPublic(type: Copy) {
 
 copyPublic.shouldRunAfter(':frontend:nodeBuild')
 task compileAndCopy(dependsOn: [':frontend:nodeBuild', 'copyPublic'])
+

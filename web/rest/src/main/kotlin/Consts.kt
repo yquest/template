@@ -4,12 +4,17 @@ import java.util.*
 object Consts {
   val USER_NAME_COOKIE: String = "user_name"
   const val ACCESS_TOKEN_COOKIE = "access_token"
-  val PASS_PHRASE = loadPassPhrase()
+  private val PROPS = loadProps()
+  val PASS_PHRASE get() = PROPS[0]
+  val PUBLIC_DIR get() = PROPS[1]
   val SIGNING_KEY = Keys.hmacShaKeyFor(PASS_PHRASE.toByteArray())!!
 
-  private fun loadPassPhrase(): String {
+  private fun loadProps(): Array<String> {
     val props = Properties()
     props.load(Consts::class.java.getResourceAsStream("/app.properties"))
-    return props.getProperty("key")
+    return arrayOf(
+      props.getProperty("key"),
+      props.getProperty("pdir")
+    )
   }
 }

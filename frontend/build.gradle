@@ -16,5 +16,9 @@ task nodeBuild(type: NpmTask) {
   args = ['run', 'build']
 }
 
+task distClean(type: Delete) {
+  delete fileTree(dir: "${project.projectDir}/dist", exclude: '.gitattributes')
+}
+
 nodeBuild.dependsOn(npm_install)
 nodeBuild.enabled = true

@@ -5,7 +5,6 @@ import io.vertx.core.logging.Logger
 import io.vertx.core.logging.LoggerFactory
 import io.vertx.reactivex.core.AbstractVerticle
 import io.vertx.reactivex.ext.web.Router
-import io.vertx.reactivex.ext.web.handler.StaticHandler
 import pt.fabm.template.extensions.*
 import pt.fabm.template.rest.controllers.CarController
 import pt.fabm.template.rest.controllers.UserController
@@ -21,8 +20,16 @@ class RestVerticle : AbstractVerticle() {
     val host = config().checkedString("host")
 
     val router = Router.router(vertx)
-    val webRoot = StaticHandler.create().setWebRoot("public")
-    router.route().handler(webRoot)
+    val webRoot = StaticHandlerImpl(null,null)
+      .setAllowRootFileSystemAccess(true)
+      .setWebRoot(Consts.PUBLIC_DIR)
+      .skipCompressionForMediaTypes(setOf("font/woff2"))
+
+
+    router.route().handler{
+      webRoot.handle(it.delegate)
+    }
+
 
     val userService = UserController(vertx)
     val carController = CarController(vertx)

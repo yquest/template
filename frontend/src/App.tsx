@@ -125,6 +125,7 @@ export class App extends React.Component<any, any> {
   render() {
     let container = (
       <div className="container" style={{ marginBottom: "5rem" }}>
+
         {createModalContainer()}
         {appStateStore.state === AppState.LIST_NO_AUTH && (
           <a

@@ -38,8 +38,18 @@ def modulesToWatch = ['rest','memory-dao','shared']
 def watchForChange = "src/**/*, ${modulesToWatch.collect {"../$it/src/**/*"}.join(', ')}"
 logger.info(watchForChange)
 def doOnChange = '../../gradlew :web:main:assemble'
-def conf = "conf/start.json"
+def conf = "${project.rootProject.projectDir}/conf"
+def serverPort = 8081
 
 run {
-  args = ['run', mainVerticleName, "--redeploy=$watchForChange", "--launcher-class=$mainClassName","-conf=$conf", "--on-redeploy=$doOnChange"]
+  args = ['run', mainVerticleName, "--redeploy=$watchForChange", "--launcher-class=$mainClassName","-Dconf=$conf","-Dserver.port=$serverPort", "--on-redeploy=$doOnChange"]
+}
+
+task debugApp(type:JavaExec) {
+  main = 'io.vertx.core.Launcher'
+  classpath = sourceSets.main.runtimeClasspath
+  args('run', mainVerticleName)
+  systemProperty('server.port', serverPort)
+  systemProperty('conf', conf)
+  debug = true
 }
