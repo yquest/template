@@ -57,7 +57,7 @@ class RestVerticle : AbstractVerticle() {
 
     router.route().handler {
       if (!it.response().ended()) {
-        LOGGER.error("Attention, not ended route")
+        LOGGER.error("Attention, not ended route for url: ${it.normalisedPath()}")
         it.response().end()
       } else {
         LOGGER.info("end:${it.normalisedPath()}")
