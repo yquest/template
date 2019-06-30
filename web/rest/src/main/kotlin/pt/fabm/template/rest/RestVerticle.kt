@@ -1,8 +1,10 @@
 package pt.fabm.template.rest
 
+import Consts
 import io.reactivex.Completable
 import io.vertx.core.logging.Logger
 import io.vertx.core.logging.LoggerFactory
+import io.vertx.ext.web.handler.StaticHandler
 import io.vertx.reactivex.core.AbstractVerticle
 import io.vertx.reactivex.ext.web.Router
 import pt.fabm.template.extensions.*
@@ -20,13 +22,13 @@ class RestVerticle : AbstractVerticle() {
     val host = config().checkedString("host")
 
     val router = Router.router(vertx)
-    val webRoot = StaticHandlerImpl(null,null)
+    val webRoot = StaticHandler
+      .create()
       .setAllowRootFileSystemAccess(true)
       .setWebRoot(Consts.PUBLIC_DIR)
-      .skipCompressionForMediaTypes(setOf("font/woff2"))
+    LOGGER.info("Serving:${Consts.PUBLIC_DIR} static dir")
 
-
-    router.route().handler{
+    router.route().handler {
       webRoot.handle(it.delegate)
     }
 
@@ -36,9 +38,9 @@ class RestVerticle : AbstractVerticle() {
 
 
     //trace
-    router.route().handler { rc->
+    router.route().handler { rc ->
       LOGGER.info("start:${rc.normalisedPath()}")
-      rc.addBodyEndHandler{
+      rc.addBodyEndHandler {
         LOGGER.info("end:${rc.normalisedPath()}")
       }
       rc.next()
@@ -49,8 +51,8 @@ class RestVerticle : AbstractVerticle() {
     router.get("/api/user/logout").withCookies().handlerSRR(userService::userLogout)
     router.get("/api/car").handlerSRR(carController::getCar)
     router.get("/api/car/list").handlerSRR { carController.carList() }
-    router.post("/api/car").withBody().authHandler { carController.createOrUpdateCar(true,it.rc) }
-    router.put("/api/car").withBody().authHandler { carController.createOrUpdateCar(false,it.rc) }
+    router.post("/api/car").withBody().authHandler { carController.createOrUpdateCar(true, it.rc) }
+    router.put("/api/car").withBody().authHandler { carController.createOrUpdateCar(false, it.rc) }
     router.delete("/api/car").handlerSRR(carController::deleteCar)
 
     router.route().handler {
@@ -71,7 +73,7 @@ class RestVerticle : AbstractVerticle() {
       .createHttpServer()
       .requestHandler(router)
       .rxListen(port, host)
-      .doOnSuccess{
+      .doOnSuccess {
         LOGGER.info("connected in host:$host and port:$port")
       }
       .doOnError { LOGGER.error("Http server initialization error!", it) }
