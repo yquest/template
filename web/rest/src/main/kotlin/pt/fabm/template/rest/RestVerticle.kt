@@ -4,9 +4,9 @@ import Consts
 import io.reactivex.Completable
 import io.vertx.core.logging.Logger
 import io.vertx.core.logging.LoggerFactory
-import io.vertx.ext.web.handler.StaticHandler
 import io.vertx.reactivex.core.AbstractVerticle
 import io.vertx.reactivex.ext.web.Router
+import io.vertx.reactivex.ext.web.handler.StaticHandler
 import pt.fabm.template.extensions.*
 import pt.fabm.template.rest.controllers.CarController
 import pt.fabm.template.rest.controllers.UserController
@@ -28,10 +28,7 @@ class RestVerticle : AbstractVerticle() {
       .setWebRoot(Consts.PUBLIC_DIR)
     LOGGER.info("Serving:${Consts.PUBLIC_DIR} static dir")
 
-    router.route().handler {
-      webRoot.handle(it.delegate)
-    }
-
+    router.route().handler(webRoot)
 
     val userService = UserController(vertx)
     val carController = CarController(vertx)
@@ -57,6 +54,7 @@ class RestVerticle : AbstractVerticle() {
 
     router.route().handler {
       if (!it.response().ended()) {
+        it.response()
         LOGGER.error("Attention, not ended route for url: ${it.normalisedPath()}")
         it.response().end()
       } else {
