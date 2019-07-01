@@ -55,6 +55,7 @@ task debugApp(type: JavaExec) {
   args('run', mainVerticleName)
   systemProperty('server.port', serverPort)
   systemProperty('conf', conf)
+  systemProperty('pdir', "${project.rootDir}/frontend/dist")
   systemProperty('vertx.logger-delegate-factory-class-name', 'io.vertx.core.logging.SLF4JLogDelegateFactory')
   debug = false
 }

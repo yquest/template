@@ -26,16 +26,7 @@ class RestVerticle : AbstractVerticle() {
     val webRoot = StaticHandler
       .create()
       .setAllowRootFileSystemAccess(true)
-      .setWebRoot(Consts.PUBLIC_DIR)
-
-    vertx.fileSystem().props("/frontend/dist/index.html"){
-      if(it.succeeded()){
-        LOGGER.info("index.html props.regular:${it.result().isRegularFile}")
-        LOGGER.info("index.html props.size:${it.result().size()}")
-      }else{
-        LOGGER.warn("index.html props:no index.html")
-      }
-    }
+      .setWebRoot(System.getProperty("pdir"))
 
     router.route().handler(webRoot)
 
