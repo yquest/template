@@ -9,13 +9,17 @@ application {
 dependencies {
   implementation project(':web:rest')
   api project(':web:shared')
-  
+
   implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8:$kotlinVersion"
   implementation "io.vertx:vertx-config:$vertxVersion"
   implementation "io.vertx:vertx-config-yaml:$vertxVersion"
   implementation "io.vertx:vertx-core:$vertxVersion"
   implementation "io.vertx:vertx-rx-java2:$vertxVersion"
   implementation "io.vertx:vertx-lang-kotlin:$vertxVersion"
+  implementation 'org.slf4j:slf4j-api:1.7.25'
+  implementation 'ch.qos.logback:logback-core:1.2.3'
+  implementation 'ch.qos.logback:logback-classic:1.2.3'
+  implementation group: 'org.codehaus.groovy', name: 'groovy-all', version: '2.5.7'
 
   testImplementation "io.vertx:vertx-junit5:$vertxVersion"
   testImplementation "io.vertx:vertx-web-client:$vertxVersion"
@@ -34,22 +38,23 @@ distributions {
 }
 
 def mainVerticleName = 'pt.fabm.template.MainVerticle'
-def modulesToWatch = ['rest','memory-dao','shared']
-def watchForChange = "src/**/*, ${modulesToWatch.collect {"../$it/src/**/*"}.join(', ')}"
+def modulesToWatch = ['rest', 'memory-dao', 'shared']
+def watchForChange = "src/**/*, ${modulesToWatch.collect { "../$it/src/**/*" }.join(', ')}"
 logger.info(watchForChange)
 def doOnChange = '../../gradlew :web:main:assemble'
 def conf = "${project.rootProject.projectDir}/conf"
 def serverPort = 8081
 
 run {
-  args = ['run', mainVerticleName, "--redeploy=$watchForChange", "--launcher-class=$mainClassName","-Dconf=$conf","-Dserver.port=$serverPort", "--on-redeploy=$doOnChange"]
+  args = ['run', mainVerticleName, "--redeploy=$watchForChange", "--launcher-class=$mainClassName", "-Dconf=$conf", "-Dserver.port=$serverPort", "--on-redeploy=$doOnChange"]
 }
 
-task debugApp(type:JavaExec) {
+task debugApp(type: JavaExec) {
   main = 'io.vertx.core.Launcher'
   classpath = sourceSets.main.runtimeClasspath
   args('run', mainVerticleName)
   systemProperty('server.port', serverPort)
   systemProperty('conf', conf)
-  debug = true
+  systemProperty('vertx.logger-delegate-factory-class-name', 'io.vertx.core.logging.SLF4JLogDelegateFactory')
+  debug = false
 }

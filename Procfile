@@ -1,1 +1,1 @@
-web: java -Dserver.port=$PORT -Dconf="./conf" $JAVA_OPTS -cp "web/main/build/install/template/lib/*" io.vertx.core.Launcher run pt.fabm.template.MainVerticle
+web: java -Dserver.port=$PORT -Dvertx.logger-delegate-factory-class-name=io.vertx.core.logging.SLF4JLogDelegateFactory -Dconf="./conf" $JAVA_OPTS -cp "web/main/build/install/template/lib/*" io.vertx.core.Launcher run pt.fabm.template.MainVerticle

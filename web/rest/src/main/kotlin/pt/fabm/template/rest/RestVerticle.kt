@@ -26,22 +26,11 @@ class RestVerticle : AbstractVerticle() {
       .create()
       .setAllowRootFileSystemAccess(true)
       .setWebRoot(Consts.PUBLIC_DIR)
-    LOGGER.info("Serving:${Consts.PUBLIC_DIR} static dir")
 
     router.route().handler(webRoot)
 
     val userService = UserController(vertx)
     val carController = CarController(vertx)
-
-
-    //trace
-    router.route().handler { rc ->
-      LOGGER.info("start:${rc.normalisedPath()}")
-      rc.addBodyEndHandler {
-        LOGGER.info("end:${rc.normalisedPath()}")
-      }
-      rc.next()
-    }
 
     router.post("/api/user").withBody().handlerSRR(userService::createUser)
     router.post("/api/user/login").withCookies().withBody().handlerSRR(userService::userLogin)
@@ -57,8 +46,6 @@ class RestVerticle : AbstractVerticle() {
         it.response()
         LOGGER.error("Attention, not ended route for url: ${it.normalisedPath()}")
         it.response().end()
-      } else {
-        LOGGER.info("end:${it.normalisedPath()}")
       }
     }
 
