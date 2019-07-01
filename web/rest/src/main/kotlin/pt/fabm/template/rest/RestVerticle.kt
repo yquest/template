@@ -28,7 +28,7 @@ class RestVerticle : AbstractVerticle() {
       .setAllowRootFileSystemAccess(true)
       .setWebRoot(Consts.PUBLIC_DIR)
 
-    vertx.fileSystem().props("${Consts.PUBLIC_DIR}/index.html"){
+    vertx.fileSystem().props("/frontend/dist/index.html"){
       if(it.succeeded()){
         LOGGER.info("index.html props.regular:${it.result().isRegularFile}")
         LOGGER.info("index.html props.size:${it.result().size()}")
