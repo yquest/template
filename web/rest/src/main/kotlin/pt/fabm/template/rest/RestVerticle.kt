@@ -2,6 +2,7 @@ package pt.fabm.template.rest
 
 import Consts
 import io.reactivex.Completable
+import io.vertx.core.file.FileSystem
 import io.vertx.core.logging.Logger
 import io.vertx.core.logging.LoggerFactory
 import io.vertx.reactivex.core.AbstractVerticle
@@ -26,6 +27,15 @@ class RestVerticle : AbstractVerticle() {
       .create()
       .setAllowRootFileSystemAccess(true)
       .setWebRoot(Consts.PUBLIC_DIR)
+
+    vertx.fileSystem().props("${Consts.PUBLIC_DIR}/index.html"){
+      if(it.succeeded()){
+        LOGGER.info("index.html props.regular:${it.result().isRegularFile}")
+        LOGGER.info("index.html props.size:${it.result().size()}")
+      }else{
+        LOGGER.warn("index.html props:no index.html")
+      }
+    }
 
     router.route().handler(webRoot)
 
