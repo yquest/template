@@ -11,6 +11,8 @@ import io.vertx.reactivex.ext.web.handler.StaticHandler
 import pt.fabm.template.extensions.*
 import pt.fabm.template.rest.controllers.CarController
 import pt.fabm.template.rest.controllers.UserController
+import java.nio.file.Path
+import java.nio.file.Paths
 
 class RestVerticle : AbstractVerticle() {
 
@@ -28,7 +30,7 @@ class RestVerticle : AbstractVerticle() {
       .setAllowRootFileSystemAccess(true)
       .setWebRoot(System.getProperty("pdir"))
 
-    LOGGER.info("system pdir:${System.getProperty("pdir")}")
+    LOGGER.info("system pdir:${Paths.get(System.getProperty("pdir")).toAbsolutePath()}")
     LOGGER.info("properties pdir:${Consts.PUBLIC_DIR}")
 
     router.route().handler(webRoot)
