@@ -41,9 +41,9 @@ def sqlVersion = 'v0_0_1'
 processResources {
   filter ReplaceTokens, tokens: [
     "db.driver": project.property("db.driver"),
-    "db.url": project.property("db.url"),
-    "db.user": project.property("db.user"),
-    "db.password": project.property("db.password"),
+    "db.url": project.findProperty("db.url"),
+    "db.user": project.findProperty("db.user"),
+    "db.password": project.findProperty("db.password"),
   ]
 }
 

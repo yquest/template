@@ -4,4 +4,4 @@ verticles:
 confs:
   rest:
     host: 0.0.0.0
-    pdir:./frontend/dist
+    pdir: ./frontend/dist
