@@ -136,12 +136,14 @@ export class CarsList extends React.Component<CarListProps, any> {
               createTable()}
           </div>
         </div>
-        <button
-          type="button"
-          className="btn btn-primary"
-          onClick={() => carStore.fetchCars()}>
-          fetch cars
-        </button>
+        <div className="d-flex justify-content-end">
+          <button
+            type="button"
+            className="btn btn-primary"
+            onClick={() => carStore.fetchCars()}>
+            fetch cars
+          </button>
+        </div>
       </div>
     );
   }

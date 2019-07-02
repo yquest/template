@@ -23,14 +23,14 @@ const validation: (idx: LoginEditorFields, value: string) => string = (
   return value.length === 0 ? "required" : "";
 };
 
-let loginStore = createGenericStore(2, ()=>"", validation);
+let loginStore = createGenericStore(2, () => "", validation);
 
 @observer
 export class LoginEditor extends React.Component<LoginProps, {}> {
   render() {
     return (
       <div>
-        <h3>Login</h3>
+        <h3>Sign in</h3>
         <div
           className="card"
           style={{
@@ -62,43 +62,45 @@ export class LoginEditor extends React.Component<LoginProps, {}> {
           </div>
         </div>
 
-        <button
-          style={{ marginRight: "0.5rem" }}
-          type="button"
-          className="btn btn-primary"
-          onClick={() => {
-            loginStore.checkAllErrors();
-            if (!loginStore.isAllValidated) {
-              return;
-            }
-            let user: User = {
-              username: loginStore.values[LoginEditorFields.LOGIN].value,
-              password: loginStore.values[LoginEditorFields.PASSWORD].value
-            };
-            userService.userLogin(user).then(res => {
-              if (res.status === 200) {
-                this.props.loginSuccessefull(user.username);
-              } else {
-                let notification = uiStore.createNotification();
-                notification.content = "Authentication fails";
-                notification.type = NotificationType.ERROR;
-                uiStore.addNotificationTemp(notification, 3000);
+        <div className="d-flex justify-content-end">
+          <button
+            style={{ marginRight: "0.5rem" }}
+            type="button"
+            className="btn btn-primary"
+            onClick={() => {
+              loginStore.checkAllErrors();
+              if (!loginStore.isAllValidated) {
+                return;
               }
+              let user: User = {
+                username: loginStore.values[LoginEditorFields.LOGIN].value,
+                password: loginStore.values[LoginEditorFields.PASSWORD].value
+              };
+              userService.userLogin(user).then(res => {
+                if (res.status === 200) {
+                  this.props.loginSuccessefull(user.username);
+                } else {
+                  let notification = uiStore.createNotification();
+                  notification.content = "Authentication fails";
+                  notification.type = NotificationType.ERROR;
+                  uiStore.addNotificationTemp(notification, 3000);
+                }
+                loginStore.reset();
+              });
+            }}>
+            Sign in
+          </button>
+          <button
+            style={{ marginRight: "0.5rem" }}
+            type="button"
+            className="btn btn-primary"
+            onClick={() => {
+              this.props.showUserRegister();
               loginStore.reset();
-            });
-          }}>
-          login
-        </button>
-        <button
-          style={{ marginRight: "0.5rem" }}
-          type="button"
-          className="btn btn-primary"
-          onClick={() => {
-            this.props.showUserRegister();
-            loginStore.reset();
-          }}>
-          sign in
-        </button>
+            }}>
+            Sign up
+          </button>
+        </div>
       </div>
     );
   }

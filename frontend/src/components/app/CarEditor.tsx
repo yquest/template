@@ -256,71 +256,73 @@ export class CarEditor extends React.Component<CarEditorProps, {}> {
             />
           </div>
         </div>
-        <button
-          style={{ marginRight: "0.5rem" }}
-          type="button"
-          className="btn btn-primary"
-          onClick={() => {
-            carEditorStore.checkAllErrors();
-            if (carEditorStore.isAllValidated) {
-              let values = carEditorStore.values;
-              let car: Car = {
-                make: values[CarEditorFields.MAKE].value,
-                maturityDate: values[CarEditorFields.MATURITY_DATE].value,
-                model: values[CarEditorFields.MODEL].value,
-                price: Number.parseInt(values[CarEditorFields.PRICE].value),
-                getPK: () => {
-                  return {
-                    make: car.make,
-                    model: car.model
-                  };
-                }
-              };
-              let saveAction: (car: Car) => Promise<RestResult>;
-              if (isCreateCarState) {
-                saveAction = carService.createCar;
-              } else {
-                saveAction = carService.updateCar;
-              }
-              let createPromise: Promise<RestResult> = saveAction(car);
-              let notification = uiStore.createNotification();
-              let promises: Array<Promise<any>> = [];
-              promises.push(
-                createPromise.then(res => {
-                  notification.content = "Created car succesefully";
-                  notification.type = NotificationType.SUCCESS;
-                  carEditorStore.reset();
-                })
-              );
-              promises.push(
-                createPromise.catch(res => {
-                  if(res.response.status===401){
-                    notification.content = "Car already exists";
-                  }else{
-                    notification.content = "Error inserting car";
+        <div className="d-flex justify-content-end">
+          <button
+            style={{ marginRight: "0.5rem" }}
+            type="button"
+            className="btn btn-primary"
+            onClick={() => {
+              carEditorStore.checkAllErrors();
+              if (carEditorStore.isAllValidated) {
+                let values = carEditorStore.values;
+                let car: Car = {
+                  make: values[CarEditorFields.MAKE].value,
+                  maturityDate: values[CarEditorFields.MATURITY_DATE].value,
+                  model: values[CarEditorFields.MODEL].value,
+                  price: Number.parseInt(values[CarEditorFields.PRICE].value),
+                  getPK: () => {
+                    return {
+                      make: car.make,
+                      model: car.model
+                    };
                   }
-                  console.error(res.response.data.error);
-                  notification.type = NotificationType.ERROR;
-                })
-              );
+                };
+                let saveAction: (car: Car) => Promise<RestResult>;
+                if (isCreateCarState) {
+                  saveAction = carService.createCar;
+                } else {
+                  saveAction = carService.updateCar;
+                }
+                let createPromise: Promise<RestResult> = saveAction(car);
+                let notification = uiStore.createNotification();
+                let promises: Array<Promise<any>> = [];
+                promises.push(
+                  createPromise.then(res => {
+                    notification.content = "Created car succesefully";
+                    notification.type = NotificationType.SUCCESS;
+                    carEditorStore.reset();
+                  })
+                );
+                promises.push(
+                  createPromise.catch(res => {
+                    if (res.response.status === 401) {
+                      notification.content = "Car already exists";
+                    } else {
+                      notification.content = "Error inserting car";
+                    }
+                    console.error(res.response.data.error);
+                    notification.type = NotificationType.ERROR;
+                  })
+                );
 
-              Promise.all(promises).finally(() => {
-                uiStore.addNotificationTemp(notification, 3000);
-              });
-            }
-          }}>
-          save car
-        </button>
-        {!carEditorStore.values[CarEditorFields.IS_CREATION_STATE].value &&<button
-          style={{ marginRight: "0.5rem" }}
-          type="button"
-          className="btn btn-primary"
-          onClick={() => carEditorStore.reset()}>
-          cancel update
-        </button>}
+                Promise.all(promises).finally(() => {
+                  uiStore.addNotificationTemp(notification, 3000);
+                });
+              }
+            }}>
+            save car
+          </button>
+          {!carEditorStore.values[CarEditorFields.IS_CREATION_STATE].value && (
+            <button
+              style={{ marginRight: "0.5rem" }}
+              type="button"
+              className="btn btn-primary"
+              onClick={() => carEditorStore.reset()}>
+              cancel update
+            </button>
+          )}
+        </div>
       </div>
     );
   }
 }
-
-window["carStore"] = carEditorStore;

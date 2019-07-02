@@ -39,15 +39,17 @@ class AppStateStore {
     selected: 0,
     login: false,
     register: false,
-    userName: localStorage.getItem("username"),
+    userName: localStorage.getItem("username")
   };
 
-@computed 
-get authenticated():boolean {
-  return !(this.appStateValues.userName === "" ||
-  this.appStateValues.userName === null ||
-  this.appStateValues.userName === undefined)
-}
+  @computed
+  get authenticated(): boolean {
+    return !(
+      this.appStateValues.userName === "" ||
+      this.appStateValues.userName === null ||
+      this.appStateValues.userName === undefined
+    );
+  }
 
   @computed
   get state(): AppState {
@@ -109,13 +111,15 @@ window.addEventListener("popstate", e => {
 });
 
 function onListRemoveCar(carPK: CarPK) {
-  uiStore.updateModalAction(()=>{
+  uiStore.updateModalAction(() => {
     carService.removeCar(carPK);
   });
   let modalContent = new ModalContent();
-  modalContent.content = `Do you really want to remove car with model:${carPK.model} from maker:${MAKERS[carPK.make]}?`;
+  modalContent.content = `Do you really want to remove car with model:${
+    carPK.model
+  } from maker:${MAKERS[carPK.make]}?`;
   modalContent.title = "Remove car";
-  modalContent.actionButton = "Remove"; 
+  modalContent.actionButton = "Remove";
   uiStore.updateModalContent(modalContent);
   uiStore.updateModal(ModalState.CREATED);
 }
@@ -128,33 +132,32 @@ export class App extends React.Component<any, any> {
   render() {
     let container = (
       <div className="container" style={{ marginBottom: "5rem" }}>
-
         {createModalContainer()}
         {appStateStore.state === AppState.LIST_NO_AUTH && (
-          <a
+          <a className="float-right"
             href="#login"
             onClick={() => {
               appStateStore.updateLogin(true);
             }}>
-            login
+            Sign in <i className="fas fa-sign-in-alt" />
           </a>
         )}
         <Notifications />
-        {appStateStore.state === AppState.CAR_EDIT_AUTH && (
-          [<div key="helloUsername">Hello {appStateStore.appStateValues.userName}</div>,<button
-          key="btnLogout"
-          style={{ marginRight: "0.5rem" }}
-          type="button"
-          className="btn btn-primary"
-          onClick={() => {
-            userService.userLogout();
-            localStorage.removeItem("username");
-            localStorage.removeItem(appStateStore.appStateValues.userName);
-            appStateStore.updateUserName(null);
-          }}>
-          logout
-        </button>]
-        )}
+        {appStateStore.state === AppState.CAR_EDIT_AUTH && [
+          <div key="helloUsername" className="float-right">
+            Hello {appStateStore.appStateValues.userName + " "}
+            <a
+              href="javascript:void(0)"
+              onClick={() => {
+                userService.userLogout();
+                localStorage.removeItem("username");
+                localStorage.removeItem(appStateStore.appStateValues.userName);
+                appStateStore.updateUserName(null);
+              }}>
+              log off <i className="fas fa-sign-out-alt" />
+            </a>
+          </div>
+        ]}
         {(appStateStore.state === AppState.LIST_NO_AUTH ||
           appStateStore.state === AppState.CAR_EDIT_AUTH) && (
           <CarsList
@@ -167,8 +170,7 @@ export class App extends React.Component<any, any> {
         {appStateStore.state === AppState.CAR_EDIT_AUTH && (
           <CarEditor
             saveCarEvent={car => {
-              carService.createCar(car)
-              .then(res => {
+              carService.createCar(car).then(res => {
                 if (res.status == 204) {
                   let notification = uiStore.createNotification();
                   notification.content = <div>Successefuly created</div>;
