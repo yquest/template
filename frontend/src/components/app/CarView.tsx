@@ -13,10 +13,11 @@ function dateToString(date: Date): string {
   )}`;
 }
 
-export interface CarViewProps{
+export interface CarViewProps {
   car: Car;
-  edit:(car:Car)=>void;
-  remove:(carPK:CarPK)=>void;
+  edit: (car: Car) => void;
+  remove: (carPK: CarPK) => void;
+  authenticated: boolean;
 }
 
 @observer
@@ -29,16 +30,24 @@ export class CarView extends React.Component<CarViewProps, any> {
         <td>{car.model}</td>
         <td>{dateToString(car.maturityDate)}</td>
         <td>{car.price}</td>
-        <td>
-          <a href="javascript:void(0)" className="btn" onClick={()=>this.props.edit(car)}>
-            <i className="fas fa-pen" />
-          </a>
-        </td>
-        <td>
-          <a href="javascript:void(0)" className="btn" onClick={()=>this.props.remove(car.getPK())}>
-          <i className="fas fa-times"></i>
-          </a>
-        </td>
+        {this.props.authenticated && [
+          <td>
+            <a
+              href="javascript:void(0)"
+              className="btn"
+              onClick={() => this.props.edit(car)}>
+              <i className="fas fa-pen" />
+            </a>
+          </td>,
+          <td>
+            <a
+              href="javascript:void(0)"
+              className="btn"
+              onClick={() => this.props.remove(car.getPK())}>
+              <i className="fas fa-times" />
+            </a>
+          </td>
+        ]}
       </tr>
     );
   }

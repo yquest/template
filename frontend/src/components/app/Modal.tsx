@@ -58,7 +58,7 @@ export const createModalContainer = () => {
                 type="button"
                 className="btn btn-primary"
                 onClick={onAction}>
-                Save changes
+                Confirm
               </button>
             </div>
           </div>

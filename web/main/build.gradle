@@ -53,6 +53,7 @@ task debugApp(type: JavaExec) {
   main = 'io.vertx.core.Launcher'
   classpath = sourceSets.main.runtimeClasspath
   args('run', mainVerticleName)
+  workingDir = '../..' as File
   systemProperty('server.port', serverPort)
   systemProperty('conf', conf)
   systemProperty('pdir', "${project.rootDir}/frontend/dist")

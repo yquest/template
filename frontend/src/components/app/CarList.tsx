@@ -37,6 +37,7 @@ export class CarStore {
 }
 export interface CarListProps {
   wideWidth: boolean;
+  authenticated: boolean;
   updateCar: (car: Car) => void;
   removeCar: (car: CarPK) => void;
 }
@@ -55,12 +56,13 @@ export class CarsList extends React.Component<CarListProps, any> {
               <th>Model</th>
               <th>Maturity date</th>
               <th>Price</th>
-              <th colSpan={2}>Actions</th>
+              {this.props.authenticated && <th colSpan={2}>Actions</th>}
             </tr>
             {carStore.cars.map((car, idx) => (
               <CarView
                 key={idx}
                 car={car}
+                authenticated={this.props.authenticated}
                 edit={this.props.updateCar}
                 remove={this.props.removeCar}
               />
@@ -91,23 +93,25 @@ export class CarsList extends React.Component<CarListProps, any> {
                 <strong className="col-sm">Price</strong>
                 <div className="col-sm">{car.price}</div>
               </div>
-              <div
-                className="row float-right"
-                style={{ marginRight: "1rem", marginTop: "1rem" }}>
-                <a
-                  href="#"
-                  className="btn btn-light"
-                  onClick={() => this.props.updateCar(car)}
-                  style={{ marginRight: "1rem" }}>
-                  Edit <i className="fas fa-pen" />
-                </a>
-                <a
-                  href="#"
-                  className="btn btn-light"
-                  onClick={() => this.props.removeCar(car.getPK())}>
-                  Remove <i className="fas fa-times" />
-                </a>
-              </div>
+              {this.props.authenticated && (
+                <div
+                  className="row float-right"
+                  style={{ marginRight: "1rem", marginTop: "1rem" }}>
+                  <a
+                    href="#"
+                    className="btn btn-light"
+                    onClick={() => this.props.updateCar(car)}
+                    style={{ marginRight: "1rem" }}>
+                    Edit <i className="fas fa-pen" />
+                  </a>
+                  <a
+                    href="#"
+                    className="btn btn-light"
+                    onClick={() => this.props.removeCar(car.getPK())}>
+                    Remove <i className="fas fa-times" />
+                  </a>
+                </div>
+              )}
             </div>
           ))}
         </div>

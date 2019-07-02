@@ -42,13 +42,16 @@ class AppStateStore {
     userName: localStorage.getItem("username"),
   };
 
+@computed 
+get authenticated():boolean {
+  return !(this.appStateValues.userName === "" ||
+  this.appStateValues.userName === null ||
+  this.appStateValues.userName === undefined)
+}
+
   @computed
   get state(): AppState {
-    if (
-      this.appStateValues.userName === "" ||
-      this.appStateValues.userName === null ||
-      this.appStateValues.userName === undefined
-    ) {
+    if (!this.authenticated) {
       if (this.appStateValues.register) {
         return AppState.REGISTER_NO_AUTH;
       } else if (this.appStateValues.login) {
@@ -158,6 +161,7 @@ export class App extends React.Component<any, any> {
             wideWidth={appStateStore.appStateValues.wideSpace}
             updateCar={onListUpdateCar}
             removeCar={onListRemoveCar}
+            authenticated={appStateStore.authenticated}
           />
         )}
         {appStateStore.state === AppState.CAR_EDIT_AUTH && (
