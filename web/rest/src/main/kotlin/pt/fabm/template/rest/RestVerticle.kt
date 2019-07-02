@@ -28,6 +28,9 @@ class RestVerticle : AbstractVerticle() {
       .setAllowRootFileSystemAccess(true)
       .setWebRoot(System.getProperty("pdir"))
 
+    LOGGER.info("system pdir:${System.getProperty("pdir")}")
+    LOGGER.info("properties pdir:${Consts.PUBLIC_DIR}")
+
     router.route().handler(webRoot)
 
     val userService = UserController(vertx)
