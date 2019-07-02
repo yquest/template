@@ -28,10 +28,7 @@ class RestVerticle : AbstractVerticle() {
     val webRoot = StaticHandler
       .create()
       .setAllowRootFileSystemAccess(true)
-      .setWebRoot(System.getProperty("pdir"))
-
-    LOGGER.info("system pdir:${Paths.get(System.getProperty("pdir")).toAbsolutePath()}")
-    LOGGER.info("properties pdir:${Consts.PUBLIC_DIR}")
+      .setWebRoot(config().checkedString("pdir"))
 
     router.route().handler(webRoot)
 
