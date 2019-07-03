@@ -6,8 +6,24 @@ application {
   mainClassName = 'io.vertx.core.Launcher'
 }
 
+configurations {
+  integrationTestImplementation.extendsFrom testImplementation
+  integrationTestRuntimeOnly.extendsFrom testRuntimeOnly
+}
+
 dependencies {
+  if ('postgres' == project.rootProject.findProperty('daoenv')) {
+    dependencies {
+      implementation project(':web:postgres-dao')
+    }
+  } else {
+    dependencies {
+      implementation project(':web:memory-dao')
+    }
+  }
+
   implementation project(':web:rest')
+
   api project(':web:shared')
 
   implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8:$kotlinVersion"
@@ -21,11 +37,10 @@ dependencies {
   implementation 'ch.qos.logback:logback-classic:1.2.3'
   implementation group: 'org.codehaus.groovy', name: 'groovy-all', version: '2.5.7'
 
-  testImplementation "io.vertx:vertx-junit5:$vertxVersion"
-  testImplementation "io.vertx:vertx-web-client:$vertxVersion"
-  testRuntimeOnly "org.junit.jupiter:junit-jupiter-engine:$junitJupiterEngineVersion"
-  testImplementation "org.junit.jupiter:junit-jupiter-api:$junitJupiterEngineVersion"
-
+  integrationTestImplementation "io.vertx:vertx-junit5:$vertxVersion"
+  integrationTestImplementation "io.vertx:vertx-web-client:$vertxVersion"
+  integrationTestRuntimeOnly "org.junit.jupiter:junit-jupiter-engine:$junitJupiterEngineVersion"
+  integrationTestImplementation "org.junit.jupiter:junit-jupiter-api:$junitJupiterEngineVersion"
 }
 
 distributions {
@@ -59,4 +74,28 @@ task debugApp(type: JavaExec) {
   systemProperty('pdir', "${project.rootDir}/frontend/dist")
   systemProperty('vertx.logger-delegate-factory-class-name', 'io.vertx.core.logging.SLF4JLogDelegateFactory')
   debug = false
+}
+
+sourceSets {
+  integrationTest {
+    kotlin.srcDir file('src/integration-test/kotlin')
+    resources.srcDir file('src/integration-test/resources')
+    compileClasspath += sourceSets.main.output + sourceSets.test.output + configurations.testRuntime
+    runtimeClasspath += sourceSets.main.output + sourceSets.test.output + configurations.testRuntime
+  }
+}
+
+task integrationTest(type: Test) {
+  group 'Verification'
+  description 'Runs the integration tests.'
+  testClassesDirs = sourceSets.integrationTest.output.classesDirs
+  classpath = sourceSets.integrationTest.runtimeClasspath
+}
+
+compileTestKotlin {
+  kotlinOptions.jvmTarget = '1.8'
+}
+
+compileIntegrationTestKotlin{
+  kotlinOptions.jvmTarget = '1.8'
 }

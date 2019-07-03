@@ -1,5 +1,5 @@
 verticles:
-  dao: pt.fabm.template.EBForwarderVerticleTest
+  dao: EBForwarderVerticleTest
   rest: pt.fabm.template.rest.RestVerticle
 confs:
   rest:

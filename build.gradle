@@ -22,19 +22,6 @@ subprojects {
       jcenter()
     }
 
-    if (it.name == 'main') {
-      if ('postgres' == project.findProperty('daoenv')) {
-        dependencies {
-          implementation project(':web:postgres-dao')
-        }
-      } else {
-        dependencies {
-          implementation project(':web:memory-dao')
-        }
-      }
-    }
-
-
     task copyIntellijMainResources(type: Copy) {
       from "$buildDir/resources/main"
       into "out/production/classes"
