@@ -38,8 +38,11 @@ class CarDaoMemory : CarDao {
   override fun find(message: Message<CarId>) {
     val body = message.body()
     val car: Car? = cars.find { it.make == body.maker && it.model == body.model }
-    message.fail(1, "not found")
-    message.reply(car)
+    if (car == null) {
+      message.fail(1, "not found")
+    } else {
+      message.reply(car)
+    }
   }
 
   override fun delete(message: Message<CarId>) {

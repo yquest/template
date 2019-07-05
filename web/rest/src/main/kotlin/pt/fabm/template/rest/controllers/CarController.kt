@@ -57,6 +57,13 @@ class CarController(val vertx: Vertx) {
         message.body()?.let {
           RestResponse(it.toJson(), 200)
         } ?: RestResponse(statusCode = 404)
+      }.onErrorReturn {
+        if (it is ReplyException && it.failureCode() == 1) {
+          RestResponse(statusCode = 404)
+        } else {
+          LOGGER.error("error on event bus ${EventBusAddresses.Dao.Car.retrieve}",it)
+          RestResponse(statusCode = 500)
+        }
       }
   }
 

@@ -2,7 +2,6 @@ package pt.fabm.template
 
 import Consts
 import io.jsonwebtoken.Jwts
-import io.vertx.core.eventbus.DeliveryOptions
 import io.vertx.core.http.HttpHeaders
 import io.vertx.core.json.JsonArray
 import io.vertx.core.json.JsonObject
@@ -27,7 +26,6 @@ import org.yaml.snakeyaml.Yaml
 import pt.fabm.template.dao.DaoMemoryShared
 import pt.fabm.template.extensions.toJson
 import pt.fabm.template.models.Car
-import pt.fabm.template.models.CarId
 import pt.fabm.template.models.CarMake
 import pt.fabm.template.models.UserRegisterIn
 import java.io.FileReader
@@ -156,7 +154,7 @@ class TestMainVerticle {
       }
   }
 
-  //@Test
+  @Test
   @DisplayName("Should fail on authentication when tries to show the reservation")
   @Timeout(value = 10, timeUnit = TimeUnit.SECONDS)
   @Throws(Throwable::class)
@@ -175,10 +173,9 @@ class TestMainVerticle {
           testContext.completeNow()
         }
       }
-
   }
 
-  //@Test
+  @Test
   @DisplayName("Should show a car")
   @Timeout(value = 10, timeUnit = TimeUnit.SECONDS)
   @Throws(Throwable::class)
@@ -188,174 +185,125 @@ class TestMainVerticle {
     val date = LocalDateTime.of(2019, 5, 1, 3, 6)
 
     val car = Car("Golf V", CarMake.VOLKSWAGEN, 25000, date)
+    DaoMemoryShared.cars.add(car)
 
-    val ebConsumer = eventBus
-      .consumer<Unit>(EventBusAddresses.Dao.Car.retrieve.asTestAddress())
-      .handler { message ->
-        assertEquals(
-          CarId(maker = car.make, model = car.model),
-          message.body()
-        )
-        message.reply(car)
-      }
-
-    ebConsumer.rxCompletionHandler().subscribe({
-      client.get(port!!, host, "/api/car")
-        .addQueryParam("make", car.make.name)
-        .addQueryParam("model", car.model)
-        .rxSend()
-        .subscribe { response: HttpResponse<Buffer> ->
-          testContext.verify {
-            assertEquals(200, response.statusCode())
-            assertEquals(
-              JsonObject(
-                """{
+    client.get(port!!, host, "/api/car")
+      .addQueryParam("make", car.make.name)
+      .addQueryParam("model", car.model)
+      .rxSend()
+      .subscribe { response: HttpResponse<Buffer> ->
+        testContext.verify {
+          assertEquals(200, response.statusCode())
+          assertEquals(
+            JsonObject(
+              """{
                   |"make":"VOLKSWAGEN",
                   |"model":"Golf V",
                   |"maturityDate":"2019-05-01T03:06:00",
                   |"price":25000}"""
-                  .trimMargin()
-              ),
-              response.bodyAsJsonObject()
-            )
-            testContext.completeNow()
-          }
+                .trimMargin()
+            ),
+            response.bodyAsJsonObject()
+          )
+          testContext.completeNow()
         }
-    }, { error ->
-      testContext.failNow(error)
-    })
+      }
   }
 
-  //@Test
+  @Test
   @DisplayName("Should update a car")
   @Timeout(value = 10, timeUnit = TimeUnit.SECONDS)
   @Throws(Throwable::class)
   fun updateCar(vertx: Vertx, testContext: VertxTestContext) {
     val client = WebClient.create(vertx)
-    val eventBus = vertx.eventBus()
-    val date = LocalDateTime.of(2019, 5, 1, 8, 9)
+    val date1 = LocalDateTime.of(2019, 5, 1, 8, 9)
+    val date2 = LocalDateTime.of(2019, 5, 1, 8, 10)
 
-    val car = Car("Golf V", CarMake.VOLKSWAGEN, 25000, date)
+    val car1 = Car("Golf V", CarMake.VOLKSWAGEN, 25000, date1)
+    val car2 = Car("Golf V", CarMake.VOLKSWAGEN, 2000, date2)
 
-    val ebConsumer = eventBus
-      .consumer<Car>(EventBusAddresses.Dao.Car.update.asTestAddress())
-      .handler { message ->
-        assertEquals(car, message.body())
-        message.reply(null)
-      }
+    DaoMemoryShared.cars.add(car1)
 
-    ebConsumer.rxCompletionHandler().subscribe({
-      client.put(port!!, host, "/api/car")
-        .auth(jws)
-        .rxSendJsonObject(car.toJson())
-        .subscribe { response: HttpResponse<Buffer> ->
-          testContext.verify {
-            assertEquals(200, response.statusCode())
-            testContext.completeNow()
-          }
+    client.put(port!!, host, "/api/car")
+      .auth(jws)
+      .rxSendJsonObject(car2.toJson())
+      .subscribe { response: HttpResponse<Buffer> ->
+        testContext.verify {
+          assertEquals(200, response.statusCode())
+          assertEquals(car2, DaoMemoryShared.cars[0])
+          testContext.completeNow()
         }
-    }, { error ->
-      testContext.failNow(error)
-    })
+      }
   }
 
 
-  //@Test
+  @Test
   @DisplayName("Should throw an response 404")
   @Timeout(value = 10, timeUnit = TimeUnit.SECONDS)
   @Throws(Throwable::class)
   fun carNotFound(vertx: Vertx, testContext: VertxTestContext) {
     val client = WebClient.create(vertx)
-    val eventBus = vertx.eventBus()
     val date = LocalDateTime.of(2019, 5, 1, 8, 9)
 
     val car = Car("Golf V", CarMake.VOLKSWAGEN, 25000, date)
 
-    val ebConsumer = eventBus
-      .consumer<Unit>(EventBusAddresses.Dao.Car.retrieve.asTestAddress())
-      .handler { message ->
-        message.reply(null)
-      }
-
-    ebConsumer.rxCompletionHandler().subscribe({
-      client.get(port!!, host, "/api/car")
-        .addQueryParam("make", car.make.name)
-        .addQueryParam("model", car.model)
-        .rxSend()
-        .subscribe { response: HttpResponse<Buffer> ->
-          testContext.verify {
-            assertEquals(404, response.statusCode())
-            testContext.completeNow()
-          }
+    client.get(port!!, host, "/api/car")
+      .addQueryParam("make", car.make.name)
+      .addQueryParam("model", car.model)
+      .rxSend()
+      .subscribe { response: HttpResponse<Buffer> ->
+        testContext.verify {
+          assertEquals(404, response.statusCode())
+          testContext.completeNow()
         }
-    }, { error ->
-      testContext.failNow(error)
-    })
+      }
   }
 
-  //@Test
+  @Test
   @DisplayName("Should persist a car")
   @Timeout(value = 10, timeUnit = TimeUnit.SECONDS)
   @Throws(Throwable::class)
   fun createCar(vertx: Vertx, testContext: VertxTestContext) {
     val client = WebClient.create(vertx)
-    val eventBus = vertx.eventBus()
     val before1Month = LocalDateTime.now().minusMonths(1)
 
     val car = Car("Golf V", CarMake.VOLKSWAGEN, 25000, before1Month)
 
-    val ebConsumer = eventBus
-      .consumer<Car>(EventBusAddresses.Dao.Car.create.asTestAddress())
-      .handler { message ->
-        assertEquals(car, message.body())
-        message.reply(null)
-      }
-
-    ebConsumer.rxCompletionHandler().subscribe({
-      client.post(port!!, host, "/api/car")
-        .auth(jws)
-        .rxSendJsonObject(car.toJson())
-        .subscribe { response: HttpResponse<Buffer> ->
-          testContext.verify {
-            assertEquals(204, response.statusCode())
-            testContext.completeNow()
-          }
+    client.post(port!!, host, "/api/car")
+      .auth(jws)
+      .rxSendJsonObject(car.toJson())
+      .subscribe { response: HttpResponse<Buffer> ->
+        testContext.verify {
+          assertEquals(car, DaoMemoryShared.cars[0])
+          assertEquals(204, response.statusCode())
+          testContext.completeNow()
         }
-    }, { error ->
-      testContext.failNow(error)
-    })
+      }
   }
 
-  //@Test
+  @Test
   @DisplayName("Should show cars")
   @Timeout(value = 10, timeUnit = TimeUnit.SECONDS)
   @Throws(Throwable::class)
   fun showCars(vertx: Vertx, testContext: VertxTestContext) {
     val client = WebClient.create(vertx)
-    val eventBus = vertx.eventBus()
-    val car = Car(
-      "Golf V",
-      CarMake.VOLKSWAGEN,
-      2000,
-      LocalDateTime.of(2019, 1, 1, 7, 8)
+    DaoMemoryShared.cars.add(
+      Car(
+        "Golf V",
+        CarMake.VOLKSWAGEN,
+        2000,
+        LocalDateTime.of(2019, 1, 1, 7, 8)
+      )
     )
 
-
-    val ebConsumer = eventBus
-      .consumer<List<Car>>(EventBusAddresses.Dao.Car.list.asTestAddress())
-      .handler { message ->
-        message.reply(listOf(car), DeliveryOptions().setCodecName(List::class.java.simpleName))
-      }
-
-    ebConsumer.rxCompletionHandler().subscribe({
-      client.get(port!!, host, "/api/car/list")
-        .auth(jws)
-        .rxSend()
-        .subscribe { response: HttpResponse<Buffer> ->
-          testContext.verify {
-            assertEquals(
-              JsonArray(
-                """[
+    client.get(port!!, host, "/api/car/list")
+      .auth(jws)
+      .rxSend()
+      .subscribe { response: HttpResponse<Buffer> ->
+        testContext.verify {
+          assertEquals(
+            JsonArray(
+              """[
                   | {
                   |           "make":"VOLKSWAGEN",
                   |          "model":"Golf V",
@@ -363,18 +311,15 @@ class TestMainVerticle {
                   |          "price":2000
                   | }
                   |]""".trimMargin()
-              ),
-              response.bodyAsJsonArray()
-            )
-            testContext.completeNow()
-          }
+            ),
+            response.bodyAsJsonArray()
+          )
+          testContext.completeNow()
         }
-    }, { error ->
-      testContext.failNow(error)
-    })
+      }
   }
 
-  //@Test
+  @Test
   @DisplayName("Should generate a token")
   fun jwtTest() {
     val username = "user-name"
@@ -390,8 +335,6 @@ class TestMainVerticle {
   }
 
 }
-
-private fun String.asTestAddress(): String? = "test.$this"
 
 private fun HttpRequest<Buffer>.auth(jws: String?): HttpRequest<Buffer> {
   return this.putHeader(HttpHeaders.COOKIE.toString(), "${Consts.ACCESS_TOKEN_COOKIE}=$jws");
