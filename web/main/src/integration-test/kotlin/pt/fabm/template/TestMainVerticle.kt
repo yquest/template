@@ -25,6 +25,7 @@ import org.junit.jupiter.api.DisplayName
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.ExtendWith
 import org.yaml.snakeyaml.Yaml
+import pt.fabm.template.dao.DaoMemoryShared
 import pt.fabm.template.extensions.toJson
 import pt.fabm.template.models.*
 import java.io.FileReader
