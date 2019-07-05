@@ -1,3 +1,5 @@
+import org.apache.tools.ant.filters.ReplaceTokens
+
 plugins {
   id 'application'
 }
@@ -10,6 +12,7 @@ configurations {
   integrationTestImplementation.extendsFrom testImplementation
   integrationTestRuntimeOnly.extendsFrom testRuntimeOnly
 }
+
 
 dependencies {
   if ('postgres' == project.rootProject.findProperty('daoenv')) {
@@ -37,6 +40,7 @@ dependencies {
   implementation 'ch.qos.logback:logback-classic:1.2.3'
   implementation group: 'org.codehaus.groovy', name: 'groovy-all', version: '2.5.7'
 
+  testImplementation "io.vertx:vertx-junit5:$vertxVersion"
   integrationTestImplementation "io.vertx:vertx-junit5:$vertxVersion"
   integrationTestImplementation "io.vertx:vertx-web-client:$vertxVersion"
   integrationTestRuntimeOnly "org.junit.jupiter:junit-jupiter-engine:$junitJupiterEngineVersion"
@@ -86,7 +90,7 @@ sourceSets {
 }
 
 task integrationTest(type: Test) {
-  group 'Verification'
+  group 'verification'
   description 'Runs the integration tests.'
   testClassesDirs = sourceSets.integrationTest.output.classesDirs
   classpath = sourceSets.integrationTest.runtimeClasspath
@@ -96,6 +100,27 @@ compileTestKotlin {
   kotlinOptions.jvmTarget = '1.8'
 }
 
-compileIntegrationTestKotlin{
+compileIntegrationTestKotlin {
   kotlinOptions.jvmTarget = '1.8'
 }
+
+task copyIntellijIntegrationTestResources(type: Copy) {
+  group 'intellij'
+  from "$buildDir/resources/integrationTest"
+  into "out/integrationTest/resources"
+}
+copyIntellijIntegrationTestResources.dependsOn(processIntegrationTestResources)
+
+processIntegrationTestResources {
+  filter ReplaceTokens, tokens: [
+    "pdir": rootProject.property("pdir")
+  ]
+}
+
+integrationTest {
+  useJUnitPlatform()
+  testLogging {
+    events 'PASSED', 'FAILED', 'SKIPPED'
+  }
+}
+check.dependsOn integrationTest

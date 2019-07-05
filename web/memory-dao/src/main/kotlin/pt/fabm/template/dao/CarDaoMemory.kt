@@ -7,7 +7,7 @@ import pt.fabm.template.models.CarId
 
 class CarDaoMemory : CarDao {
 
-  private val cars = mutableListOf<Car>()
+  val cars = mutableListOf<Car>()
 
   override fun create(message: Message<Car>) {
     val carMessage: Car = message.body()

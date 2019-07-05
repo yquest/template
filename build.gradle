@@ -13,6 +13,10 @@ allprojects {
   version = '1.0.0-SNAPSHOT'
 }
 
+ext {
+  pdir = "${project.rootDir}/frontend/dist" as String
+}
+
 subprojects {
   if (['rest', 'shared', 'memory-dao', 'postgres-dao', 'main'].contains(it.name)) {
     apply plugin: 'org.jetbrains.kotlin.jvm'

@@ -18,13 +18,9 @@ dependencies {
   testImplementation "io.vertx:vertx-junit5:$vertxVersion"
 }
 
-ext {
-  pdir = "${project.rootDir}/frontend/dist" as String
-}
-
 processResources {
   filter ReplaceTokens, tokens: [
     "app.key": project.property("app.key"),
-    "pdir"   : project.property("pdir")
+    "pdir"   : rootProject.property("pdir")
   ]
 }

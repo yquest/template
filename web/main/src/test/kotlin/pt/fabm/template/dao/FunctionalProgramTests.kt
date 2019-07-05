@@ -1,4 +1,4 @@
-package pt.fabm.template
+package pt.fabm.template.dao
 
 import io.reactivex.Observable
 import org.junit.jupiter.api.Assertions.assertEquals

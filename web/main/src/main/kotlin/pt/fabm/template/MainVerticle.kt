@@ -55,7 +55,6 @@ class MainVerticle : AbstractVerticle() {
         LOGGER.error("Verticles load error", Exception(error))
       }
     }
-
   }
 
   private fun deployVerticles(config: JsonObject): Completable {

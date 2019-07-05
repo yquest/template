@@ -1,13 +1,15 @@
 package pt.fabm.template.dao
 
-import io.reactivex.Completable
 import io.vertx.reactivex.core.eventbus.Message
 import pt.fabm.template.models.Login
 import pt.fabm.template.models.UserRegisterIn
+import java.security.MessageDigest
 
-class UserDaoMemory :UserDao{
+class UserDaoMemory : UserDao {
 
-  private val users = mutableMapOf<String, UserRegisterIn>()
+  val users = mutableMapOf<String, UserRegisterIn>()
+  fun digestPass(pass: ByteArray ):ByteArray = MessageDigest.getInstance("SHA-512").digest(pass)
+
 
   override fun create(message: Message<UserRegisterIn>) {
     val body = message.body()

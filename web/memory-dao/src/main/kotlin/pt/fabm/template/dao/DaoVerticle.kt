@@ -1,10 +1,15 @@
 package pt.fabm.template.dao
 
 import io.reactivex.Completable
+import io.vertx.core.shareddata.Shareable
 import io.vertx.reactivex.core.AbstractVerticle
+import io.vertx.reactivex.core.shareddata.LocalMap
 import pt.fabm.template.EventBusAddresses
+import pt.fabm.template.models.Car
+import pt.fabm.template.models.UserRegisterIn
 
 class DaoVerticle : AbstractVerticle() {
+
   override fun rxStart(): Completable {
     return createMessageConsumers()
   }
@@ -13,6 +18,9 @@ class DaoVerticle : AbstractVerticle() {
     val eventBus = vertx.eventBus()
     val userDao = UserDaoMemory()
     val carDao = CarDaoMemory()
+
+    DaoMemoryShared.cars = carDao.cars
+    DaoMemoryShared.users = userDao.users
 
     return Completable.mergeArray(
       eventBus.consumer(EventBusAddresses.Dao.Car.create, carDao::create).rxCompletionHandler(),
