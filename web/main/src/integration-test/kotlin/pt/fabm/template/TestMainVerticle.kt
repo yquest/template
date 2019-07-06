@@ -181,7 +181,6 @@ class TestMainVerticle {
   @Throws(Throwable::class)
   fun showCar(vertx: Vertx, testContext: VertxTestContext) {
     val client = WebClient.create(vertx)
-    val eventBus = vertx.eventBus()
     val date = LocalDateTime.of(2019, 5, 1, 3, 6)
 
     val car = Car("Golf V", CarMake.VOLKSWAGEN, 25000, date)

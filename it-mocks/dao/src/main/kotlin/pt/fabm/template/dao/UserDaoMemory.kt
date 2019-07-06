@@ -8,8 +8,6 @@ import java.security.MessageDigest
 class UserDaoMemory : UserDao {
 
   val users = mutableMapOf<String, UserRegisterIn>()
-  fun digestPass(pass: ByteArray ):ByteArray = MessageDigest.getInstance("SHA-512").digest(pass)
-
 
   override fun create(message: Message<UserRegisterIn>) {
     val body = message.body()

@@ -1,12 +1,8 @@
 package pt.fabm.template.dao
 
 import io.reactivex.Completable
-import io.vertx.core.shareddata.Shareable
 import io.vertx.reactivex.core.AbstractVerticle
-import io.vertx.reactivex.core.shareddata.LocalMap
 import pt.fabm.template.EventBusAddresses
-import pt.fabm.template.models.Car
-import pt.fabm.template.models.UserRegisterIn
 
 class DaoVerticle : AbstractVerticle() {
 
