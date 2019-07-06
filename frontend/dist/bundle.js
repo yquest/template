@@ -47011,7 +47011,8 @@ let App = class App extends react__WEBPACK_IMPORTED_MODULE_1__["Component"] {
     let container = react__WEBPACK_IMPORTED_MODULE_1__["createElement"]("div", {
       className: "container",
       style: {
-        marginBottom: "5rem"
+        marginBottom: "5rem",
+        marginTop: "2rem"
       }
     }, Object(_components_app_Modal__WEBPACK_IMPORTED_MODULE_11__["createModalContainer"])(), appStateStore.state === AppState.LIST_NO_AUTH && react__WEBPACK_IMPORTED_MODULE_1__["createElement"]("a", {
       className: "float-right",
