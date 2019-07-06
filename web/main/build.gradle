@@ -21,7 +21,7 @@ dependencies {
     }
   } else {
     dependencies {
-      implementation project(':web:memory-dao')
+      implementation project(':it-mocks:dao')
     }
   }
 

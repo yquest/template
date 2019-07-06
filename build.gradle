@@ -18,22 +18,13 @@ ext {
 }
 
 subprojects {
-  if (['rest', 'shared', 'memory-dao', 'postgres-dao', 'main'].contains(it.name)) {
+
+  if ([':web:rest', ':web:shared', ':web:postgres-dao', ':web:main', ':it-mocks:dao'].contains(it.path)) {
     apply plugin: 'org.jetbrains.kotlin.jvm'
 
     repositories {
       mavenCentral()
       jcenter()
-    }
-
-    task copyIntellijMainResources(type: Copy) {
-      from "$buildDir/resources/main"
-      into "out/production/classes"
-    }
-
-    task copyIntellijTestResources(type: Copy) {
-      from "$buildDir/resources/test"
-      into "out/test/classes"
     }
 
     compileKotlin {

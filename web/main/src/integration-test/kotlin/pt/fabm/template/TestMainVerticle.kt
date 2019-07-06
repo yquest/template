@@ -93,7 +93,7 @@ class TestMainVerticle {
   fun createUser(vertx: Vertx, testContext: VertxTestContext) {
 
     val digestPass = { pass: String ->
-      MessageDigest.getInstance("SHA-512").digest(pass.toByteArray()) ?: throw requiredError()
+      MessageDigest.getInstance("SHA-512").digest(pass.toByteArray())
     }
 
     val entry = json {
@@ -114,10 +114,9 @@ class TestMainVerticle {
           val users = DaoMemoryShared.users
 
           Assert.assertEquals(1, users.size)
-          val expectedUserRegister = users.get("testName") ?: throw requiredError()
-
-          Assert.assertEquals("testName", expectedUserRegister.name)
-          Assert.assertTrue(digestPass("myPassword").contentEquals(expectedUserRegister.pass))
+          val expectedUserRegister = users.get("testName")
+          Assert.assertEquals("testName", expectedUserRegister?.name)
+          Assert.assertTrue(digestPass("myPassword")!!.contentEquals(expectedUserRegister!!.pass))
           Assert.assertEquals("my@email.com", expectedUserRegister.email)
           testContext.completeNow()
         }
@@ -182,6 +181,7 @@ class TestMainVerticle {
   @Throws(Throwable::class)
   fun showCar(vertx: Vertx, testContext: VertxTestContext) {
     val client = WebClient.create(vertx)
+    val eventBus = vertx.eventBus()
     val date = LocalDateTime.of(2019, 5, 1, 3, 6)
 
     val car = Car("Golf V", CarMake.VOLKSWAGEN, 25000, date)
@@ -342,5 +342,3 @@ private fun HttpRequest<Buffer>.auth(jws: String?): HttpRequest<Buffer> {
 
 @Suppress("UNCHECKED_CAST")
 private fun <V> Map<String, *>.getTypedValue(key: String): V = this.get(key) as V
-
-private fun requiredError() = AssertionError("not null expected")
