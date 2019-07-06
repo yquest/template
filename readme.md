@@ -80,19 +80,26 @@ The **config.yaml** is the yaml file used to store the configuration.
 To run the app in path `web/main/build/install/template` execute the command:
 
 ```shell
-./bin/main run pt.fabm.template.MainVerticle -conf="{\"path\":\"config.yaml\"}"
+./bin/main run pt.fabm.template.MainVerticle -Pconf=../conf
 ```
 
-# Authentication
-The autentication is made with a custom handler, the handler creates a jwt token in a cookie. The token security is based on a key and that key is not in the sources for security reasons, but in compile time gradle will apply a filter in a resource *app.properties*, since the key is not directly in the build scripts is necessary to introduce the parameter *app.key* to be executed when gradle process the resources
+# Authentication hashes
+The authentication is made with a custom handler, the handler creates a jwt token in a cookie. 
+The token security is based on a key and that key is not in the sources for security reasons, 
+but in compile time gradle will apply a filter in a resource *app.properties*, 
+since the key is not directly in the build scripts is necessary to introduce the parameter *app.key* to be executed when gradle process the resources
+The same is applied to the database parameters
+
+To help with that we can pass the parameters to the compilation passing by parameter like in the point 1 or in the init script for instance like in the point 2
 
 1. pass parameter when call gradle
     ``` shell 
     ./gradlew build -Papp.key=myKeyValue
     ```
-1. or save it in init script
+2. or save it in init script
     
     ``` groovy
+    //
     gradle.allprojects{
       if(!project.hasProperty('app.key')){
           project.ext['app.key'] = 'my pass phrase must be long enough to be safe'
@@ -103,3 +110,9 @@ The autentication is made with a custom handler, the handler creates a jwt token
     By default located at USER_HOME/.gradle/init.gradle if it doesn't exist yet, you can create it
   
     more about init script [here](https://docs.gradle.org/current/userguide/init_scripts.html) 
+
+# Database properties
+work in progress ...
+
+# Integration tests and mocks
+work in progress
