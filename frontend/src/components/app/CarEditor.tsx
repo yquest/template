@@ -54,7 +54,7 @@ const StyledCalendar = styled(Calendar)`
 `;
 
 export interface CarEditorProps {
-  saveCarEvent: (car) => void;
+  saveCarEvent: (car:Car, creation:boolean) => void;
 }
 
 export function updateEditorCar(car: Car | null) {
@@ -287,10 +287,11 @@ export class CarEditor extends React.Component<CarEditorProps, {}> {
                 let notification = uiStore.createNotification();
                 let promises: Array<Promise<any>> = [];
                 promises.push(
-                  createPromise.then(res => {
+                  createPromise.then(() => {
                     notification.content = "Created car succesefully";
                     notification.type = NotificationType.SUCCESS;
-                    carEditorStore.reset();
+                    carEditorStore.reset();                    
+                    this.props.saveCarEvent(car,isCreateCarState);
                   })
                 );
                 promises.push(

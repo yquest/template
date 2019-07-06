@@ -34,6 +34,16 @@ export class CarStore {
   createCar(car: Car) {
     this.cars.push(car);
   }
+  @action
+  updateCar(car: Car) {
+    let idx: number;
+    for (let i = 0; i < this.cars.length; i++) {
+      const carInList = this.cars[i];
+      idx = i;
+      if (car.make == carInList.make && car.model === carInList.model) break;
+    }
+    this.cars[idx] = car;
+  }
 }
 export interface CarListProps {
   wideWidth: boolean;

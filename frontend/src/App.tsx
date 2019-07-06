@@ -169,15 +169,12 @@ export class App extends React.Component<any, any> {
         )}
         {appStateStore.state === AppState.CAR_EDIT_AUTH && (
           <CarEditor
-            saveCarEvent={car => {
-              carService.createCar(car).then(res => {
-                if (res.status == 204) {
-                  let notification = uiStore.createNotification();
-                  notification.content = <div>Successefuly created</div>;
-                  uiStore.addNotificationTemp(notification, 3000);
-                  carStore.createCar(car);
-                }
-              });
+            saveCarEvent={(car:Car,isCreateCar:boolean) => {
+              if(isCreateCar){
+                carStore.createCar(car);
+              }else{
+                carStore.updateCar(car);
+              }
             }}
           />
         )}

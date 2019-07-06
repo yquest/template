@@ -15,7 +15,7 @@ configurations {
 
 
 dependencies {
-  if ('postgres' == project.rootProject.findProperty('daoenv')) {
+  if ('postgres' == findProperty('daoenv')) {
     dependencies {
       implementation project(':web:postgres-dao')
     }
@@ -62,7 +62,7 @@ def watchForChange = "src/**/*, ${modulesToWatch.collect { "../$it/src/**/*" }.j
 logger.info(watchForChange)
 def doOnChange = '../../gradlew :web:main:assemble'
 def conf = "${project.rootProject.projectDir}/conf"
-def serverPort = 8081
+def serverPort = 8888
 
 run {
   args = ['run', mainVerticleName, "--redeploy=$watchForChange", "--launcher-class=$mainClassName", "-Dconf=$conf", "-Dserver.port=$serverPort", "--on-redeploy=$doOnChange"]
