@@ -31,6 +31,17 @@ export class CarStore {
   });
 
   @action
+  removeCar(carPK: CarPK) {
+    let idx:number;
+    for (let i = 0; i < carStore.cars.length; i++) {
+      const found = carStore.cars[i];      
+      idx = i;
+      if(found.model === carPK.model && found.make === carPK.make) break;
+    }
+    carStore.cars.splice(idx,1);
+  }
+
+  @action
   createCar(car: Car) {
     this.cars.push(car);
   }

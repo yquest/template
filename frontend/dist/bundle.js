@@ -46993,6 +46993,7 @@ window.addEventListener("popstate", e => {
 function onListRemoveCar(carPK) {
   _UIStore__WEBPACK_IMPORTED_MODULE_5__["uiStore"].updateModalAction(() => {
     _services_CarService__WEBPACK_IMPORTED_MODULE_2__["carService"].removeCar(carPK);
+    _components_app_CarList__WEBPACK_IMPORTED_MODULE_3__["carStore"].removeCar(carPK);
   });
   let modalContent = new _UIStore__WEBPACK_IMPORTED_MODULE_5__["ModalContent"]();
   modalContent.content = `Do you really want to remove car with model:${carPK.model} from maker:${_model_Car__WEBPACK_IMPORTED_MODULE_9__["MAKERS"][carPK.make]}?`;
@@ -47770,6 +47771,18 @@ class CarStore {
     });
   }
 
+  removeCar(carPK) {
+    let idx;
+
+    for (let i = 0; i < carStore.cars.length; i++) {
+      const found = carStore.cars[i];
+      idx = i;
+      if (found.model === carPK.model && found.make === carPK.make) break;
+    }
+
+    carStore.cars.splice(idx, 1);
+  }
+
   createCar(car) {
     this.cars.push(car);
   }
@@ -47793,6 +47806,8 @@ __decorate([mobx__WEBPACK_IMPORTED_MODULE_3__["observable"]], CarStore.prototype
 __decorate([mobx__WEBPACK_IMPORTED_MODULE_3__["observable"]], CarStore.prototype, "state", void 0);
 
 __decorate([mobx__WEBPACK_IMPORTED_MODULE_3__["observable"]], CarStore.prototype, "dropDownOpen", void 0);
+
+__decorate([mobx__WEBPACK_IMPORTED_MODULE_3__["action"]], CarStore.prototype, "removeCar", null);
 
 __decorate([mobx__WEBPACK_IMPORTED_MODULE_3__["action"]], CarStore.prototype, "createCar", null);
 

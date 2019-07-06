@@ -113,6 +113,7 @@ window.addEventListener("popstate", e => {
 function onListRemoveCar(carPK: CarPK) {
   uiStore.updateModalAction(() => {
     carService.removeCar(carPK);
+    carStore.removeCar(carPK);
   });
   let modalContent = new ModalContent();
   modalContent.content = `Do you really want to remove car with model:${
