@@ -1,5 +1,6 @@
 package pt.fabm.template.dao
 
+import io.vertx.core.eventbus.DeliveryOptions
 import io.vertx.reactivex.core.eventbus.Message
 import pt.fabm.template.models.Car
 import pt.fabm.template.models.CarId
@@ -10,6 +11,21 @@ import java.sql.ResultSet
 import java.sql.Timestamp
 
 class CarDaoPostgres(private val connection: Connection) : Closeable, CarDao {
+
+  companion object {
+    private const val INSERT_QUERY = "insert into car(maker,maturity_date,model,price) values (?,?,?,?)"
+    private const val UPDATE_QUERY = "update car set maturity_date = ?, price = ? where maker = ? and model = ?"
+    private const val DELETE_QUERY = "delete from car where maker = ? and model = ?"
+    private const val FIND_ONE_QUERY =
+      "select maker, maturity_date, model, price from car where maker = ? and model = ?"
+    private const val FIND_ALL_QUERY = "select maker, maturity_date, model, price from car"
+    private fun toCar(row: ResultSet) = Car(
+      make = CarMake.values()[row.getInt(1)],
+      maturityDate = row.getTimestamp(2).toLocalDateTime(),
+      model = row.getString(3),
+      price = row.getInt(4)
+    )
+  }
 
   private val createPS = { connection.prepareCall(INSERT_QUERY) }
   private val updatePS = { connection.prepareCall(UPDATE_QUERY) }
@@ -63,7 +79,7 @@ class CarDaoPostgres(private val connection: Connection) : Closeable, CarDao {
     val query = findAllPS()
     val rs = query.executeQuery()
     val list = rs.iterable(::toCar).toList()
-    message.reply(list)
+    message.reply(list, DeliveryOptions().setCodecName("List"))
   }
 
 
@@ -84,24 +100,7 @@ class CarDaoPostgres(private val connection: Connection) : Closeable, CarDao {
     ps.execute()
   }
 
-  companion object {
-    private const val INSERT_QUERY = "insert into car(maker,maturity_date,model,price) values (?,?,?,?)"
-    private const val UPDATE_QUERY = "update car set maturity_date = ?, price = ? where maker = ? and model = ?"
-    private const val DELETE_QUERY = "delete from car where maker = ? and model = ?"
-    private const val FIND_ONE_QUERY =
-      "select maker, maturity_date, model, price from car where maker = ? and model = ?"
-    private const val FIND_ALL_QUERY = "select maker, maturity_date, model, price from car"
-    private fun toCar(row: ResultSet) = Car(
-      make = CarMake.values()[row.getInt(1)],
-      maturityDate = row.getTimestamp(2).toLocalDateTime(),
-      model = row.getString(3),
-      price = row.getInt(4)
-    )
-  }
-
   override fun close() {
     connection.close()
   }
-
-
 }
