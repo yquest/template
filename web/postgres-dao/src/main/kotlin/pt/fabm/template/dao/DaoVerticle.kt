@@ -51,6 +51,8 @@ class DaoVerticle : AbstractVerticle() {
       daoExecution(Dao.Car.create, carDaoSupplier, CarDaoPostgres::create),
       daoExecution(Dao.Car.update, carDaoSupplier, CarDaoPostgres::update),
       daoExecution(Dao.Car.list, carDaoSupplier, CarDaoPostgres::list),
+      daoExecution(Dao.Car.delete, carDaoSupplier, CarDaoPostgres::delete),
+      daoExecution(Dao.Car.retrieve, carDaoSupplier, CarDaoPostgres::find),
       daoExecution(Dao.User.create, userDaoSupplier, UserDaoPostgres::create),
       daoExecution(Dao.User.login, userDaoSupplier, UserDaoPostgres::login)
     )
