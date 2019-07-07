@@ -57,6 +57,7 @@ class CarDaoPostgres(private val connection: Connection) : Closeable, CarDao {
     ps.setString(3, car.model)
     ps.setInt(4, car.price)
     ps.execute()
+    message.reply(null)
   }
 
   override fun update(message: Message<Car>) {
@@ -73,6 +74,7 @@ class CarDaoPostgres(private val connection: Connection) : Closeable, CarDao {
     ps.setInt(3, car.make.ordinal)
     ps.setString(4, car.model)
     ps.execute()
+    message.reply(null)
   }
 
   override fun list(message: Message<Unit>) {
@@ -98,6 +100,7 @@ class CarDaoPostgres(private val connection: Connection) : Closeable, CarDao {
     ps.setInt(1, carId.maker.ordinal)
     ps.setString(2, carId.model)
     ps.execute()
+    message.reply(null)
   }
 
   override fun close() {
