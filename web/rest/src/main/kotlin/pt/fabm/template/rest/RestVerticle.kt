@@ -1,8 +1,6 @@
 package pt.fabm.template.rest
 
-import Consts
 import io.reactivex.Completable
-import io.vertx.core.file.FileSystem
 import io.vertx.core.logging.Logger
 import io.vertx.core.logging.LoggerFactory
 import io.vertx.reactivex.core.AbstractVerticle
@@ -11,8 +9,6 @@ import io.vertx.reactivex.ext.web.handler.StaticHandler
 import pt.fabm.template.extensions.*
 import pt.fabm.template.rest.controllers.CarController
 import pt.fabm.template.rest.controllers.UserController
-import java.nio.file.Path
-import java.nio.file.Paths
 
 class RestVerticle : AbstractVerticle() {
 

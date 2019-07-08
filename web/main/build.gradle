@@ -58,11 +58,11 @@ distributions {
 
 def mainVerticleName = 'pt.fabm.template.MainVerticle'
 def modulesToWatch = ['rest', 'memory-dao', 'shared']
-def watchForChange = "src/**/*, ${modulesToWatch.collect { "../$it/src/**/*" }.join(', ')}"
+def watchForChange = "src/**/*, ${modulesToWatch.collect { "../$it/src/**/*" as String }.join(', ')}"
 logger.info(watchForChange)
 def doOnChange = '../../gradlew :web:main:assemble'
 def conf = "${project.rootProject.projectDir}/conf"
-def serverPort = 8081
+def serverPort = 8888
 
 run {
   args = ['run', mainVerticleName, "--redeploy=$watchForChange", "--launcher-class=$mainClassName", "-Dconf=$conf", "-Dserver.port=$serverPort", "--on-redeploy=$doOnChange"]
@@ -71,13 +71,13 @@ run {
 task debugApp(type: JavaExec) {
   main = 'io.vertx.core.Launcher'
   classpath = sourceSets.main.runtimeClasspath
-  args('run', mainVerticleName)
+  args = ['run', mainVerticleName]
   workingDir = '../..' as File
   systemProperty('server.port', serverPort)
   systemProperty('conf', conf)
   systemProperty('pdir', "${project.rootDir}/frontend/dist")
   systemProperty('vertx.logger-delegate-factory-class-name', 'io.vertx.core.logging.SLF4JLogDelegateFactory')
-  debug = false
+  debug = true
 }
 
 sourceSets {

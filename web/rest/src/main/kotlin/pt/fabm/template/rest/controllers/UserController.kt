@@ -9,6 +9,7 @@ import io.vertx.reactivex.core.Vertx
 import io.vertx.reactivex.ext.web.Cookie
 import io.vertx.reactivex.ext.web.RoutingContext
 import pt.fabm.template.EventBusAddresses
+import pt.fabm.template.extensions.cachedUsers
 import pt.fabm.template.extensions.checkedString
 import pt.fabm.template.extensions.toHash
 import pt.fabm.template.models.Login
@@ -48,8 +49,7 @@ class UserController(val vertx: Vertx) {
           cookie = Cookie.cookie(Consts.USER_NAME_COOKIE, username);
           cookie.path = "/api/*"
           rc.addCookie(cookie)
-
-          message.reply(null)
+          cachedUsers.put(username, true)
           RestResponse(statusCode = 200)
         }
     }
