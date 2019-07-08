@@ -84,18 +84,18 @@ fun Route.authHandler(handler: (AuthContext) -> Single<RestResponse>): Route {
     val cookieHeader = rc.request().headers().get(HttpHeaders.COOKIE) ?: throw AuthException()
     val allCookies = ServerCookieDecoder.STRICT.decode(cookieHeader).map { Cookie.newInstance(CookieImpl(it)) }
     val cookie = allCookies.find { cookie -> cookie.name == Consts.ACCESS_TOKEN_COOKIE } ?: throw AuthException()
-    val claims = Jwts.parser()
-      .setSigningKey(Consts.SIGNING_KEY)
-      .parseClaimsJws(cookie.value)
+    val claims = try {
+      Jwts.parser()
+        .setSigningKey(Consts.SIGNING_KEY)
+        .parseClaimsJws(cookie.value)
+    } catch (e: Exception) {
+      throw AuthException()
+    }
 
-    val subject = Jwts.parser()
-      .setSigningKey(Consts.SIGNING_KEY)
-      .parseClaimsJws(cookie.value)
-      .body
-      .subject ?: AuthException()
+    val subject = claims.body.subject ?: throw AuthException()
 
-    val user = cachedUsers.getIfPresent(subject) ?: throw AuthException()
-    handler(AuthContext(claims,rc))
+    cachedUsers.getIfPresent(subject) ?: throw AuthException()
+    handler(AuthContext(claims, rc))
   }
 
   val mainHandler = Handler<RoutingContext> { rc ->

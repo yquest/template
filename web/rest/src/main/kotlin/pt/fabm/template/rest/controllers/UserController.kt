@@ -3,8 +3,6 @@ package pt.fabm.template.rest.controllers
 import Consts
 import io.jsonwebtoken.Jwts
 import io.reactivex.Single
-import io.vertx.kotlin.core.json.get
-import io.vertx.kotlin.core.json.jsonObjectOf
 import io.vertx.reactivex.core.Vertx
 import io.vertx.reactivex.ext.web.Cookie
 import io.vertx.reactivex.ext.web.RoutingContext
@@ -22,37 +20,35 @@ class UserController(val vertx: Vertx) {
     return Single.just(RestResponse())
   }
 
-  fun userLogin(rc: RoutingContext): Single<RestResponse> {
-    val singleBodyAsJson = Single.just(rc)
-      .map { it.bodyAsJson }
-      .map { jo ->
-        Login(
-          username = jo["user"],
-          password = jo.getString("pass").toHash()
-        )
-      }
-
-    return singleBodyAsJson.flatMap { login ->
-      vertx.eventBus()
-        .rxSend<Boolean>(EventBusAddresses.Dao.User.login, login)
-        .map { message ->
-          if (!message.body()) {
-            return@map RestResponse(statusCode = 403)
-          }
-          val username = login.username
-          val jws = Jwts.builder().setSubject(username).signWith(Consts.SIGNING_KEY).compact()
-          var cookie = Cookie.cookie(Consts.ACCESS_TOKEN_COOKIE, jws)
-          cookie.setHttpOnly(true)
-          cookie.path = "/api/"
-          rc.addCookie(cookie)
-
-          cookie = Cookie.cookie(Consts.USER_NAME_COOKIE, username);
-          cookie.path = "/api/*"
-          rc.addCookie(cookie)
-          cachedUsers.put(username, true)
-          RestResponse(statusCode = 200)
+  fun userLogin(rc: RoutingContext): Single<RestResponse> = Single.just(rc).map {
+    val body = rc.bodyAsJson
+    Login(
+      username = body.getString("user"),
+      password = body.getString("pass").toHash()
+    )
+  }.flatMap { login ->
+    vertx.eventBus()
+      .rxSend<Boolean>(EventBusAddresses.Dao.User.login, login)
+      .map { message ->
+        if (!message.body()) {
+          return@map RestResponse(statusCode = 403)
         }
-    }
+        val username = login.username
+        val jws = Jwts.builder()
+          .setSubject(username)
+          .signWith(Consts.SIGNING_KEY)
+          .compact()
+        var cookie = Cookie.cookie(Consts.ACCESS_TOKEN_COOKIE, jws)
+        cookie.setHttpOnly(true)
+        cookie.path = "/api/"
+        rc.addCookie(cookie)
+
+        cookie = Cookie.cookie(Consts.USER_NAME_COOKIE, username);
+        cookie.path = "/api/*"
+        rc.addCookie(cookie)
+        cachedUsers.put(login.username, true)
+        RestResponse(statusCode = 200)
+      }
   }
 
   fun createUser(rc: RoutingContext): Single<RestResponse> {
@@ -75,6 +71,4 @@ class UserController(val vertx: Vertx) {
           }
       }
   }
-
-
 }
