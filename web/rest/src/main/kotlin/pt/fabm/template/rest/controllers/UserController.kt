@@ -46,6 +46,7 @@ class UserController(val vertx: Vertx) {
         cookie = Cookie.cookie(Consts.USER_NAME_COOKIE, username);
         cookie.path = "/api/*"
         rc.addCookie(cookie)
+        //todo change to vertx.timer
         cachedUsers.put(login.username, true)
         RestResponse(statusCode = 200)
       }
