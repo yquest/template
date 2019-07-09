@@ -54,7 +54,7 @@ const StyledCalendar = styled(Calendar)`
 `;
 
 export interface CarEditorProps {
-  saveCarEvent: (car:Car, creation:boolean) => void;
+  saveCarEvent: (car: Car, creation: boolean) => void;
 }
 
 export function updateEditorCar(car: Car | null) {
@@ -96,6 +96,7 @@ export class CarEditor extends React.Component<CarEditorProps, {}> {
                 <small>date</small>
                 <div className="input-group">
                   <input
+                    tabIndex={1}
                     type="number"
                     placeholder="Year"
                     className="form-control"
@@ -112,6 +113,7 @@ export class CarEditor extends React.Component<CarEditorProps, {}> {
                     }}
                   />
                   <select
+                    tabIndex={2}
                     className="form-control"
                     onChange={e => {
                       maturityDate.setMonth(Number(e.target.value));
@@ -128,6 +130,7 @@ export class CarEditor extends React.Component<CarEditorProps, {}> {
                     ))}
                   </select>
                   <input
+                    tabIndex={3}
                     type="number"
                     placeholder="Day"
                     className="form-control"
@@ -171,6 +174,7 @@ export class CarEditor extends React.Component<CarEditorProps, {}> {
                 <small>hour</small>
                 <div className="input-group">
                   <input
+                    tabIndex={4}
                     type="number"
                     placeholder="Hour"
                     className="form-control"
@@ -187,6 +191,7 @@ export class CarEditor extends React.Component<CarEditorProps, {}> {
                     }}
                   />
                   <input
+                    tabIndex={5}
                     type="number"
                     placeholder="Hour"
                     className="form-control"
@@ -222,6 +227,7 @@ export class CarEditor extends React.Component<CarEditorProps, {}> {
             </div>
 
             <AppInput
+              tabIndex={6}
               label="Model"
               labelId="model"
               inputType={InputType.TEXT}
@@ -233,6 +239,7 @@ export class CarEditor extends React.Component<CarEditorProps, {}> {
               disabled={!isCreateCarState}
             />
             <AppInput
+              tabIndex={7}
               label="Price"
               labelId="price"
               inputType={InputType.NUMBER}
@@ -243,6 +250,7 @@ export class CarEditor extends React.Component<CarEditorProps, {}> {
               currentValue={carEditorStore.values[CarEditorFields.PRICE].value}
             />
             <DropDownInput
+              tabIndex={8}
               label="Make"
               current={carEditorStore.values[CarEditorFields.MAKE].value}
               element={MAKERS}
@@ -290,8 +298,8 @@ export class CarEditor extends React.Component<CarEditorProps, {}> {
                   createPromise.then(() => {
                     notification.content = "Created car succesefully";
                     notification.type = NotificationType.SUCCESS;
-                    carEditorStore.reset();                    
-                    this.props.saveCarEvent(car,isCreateCarState);
+                    carEditorStore.reset();
+                    this.props.saveCarEvent(car, isCreateCarState);
                   })
                 );
                 promises.push(

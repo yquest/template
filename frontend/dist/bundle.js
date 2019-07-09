@@ -47520,6 +47520,7 @@ let CarEditor = class CarEditor extends react__WEBPACK_IMPORTED_MODULE_1__["Comp
     }, react__WEBPACK_IMPORTED_MODULE_1__["createElement"]("small", null, "date"), react__WEBPACK_IMPORTED_MODULE_1__["createElement"]("div", {
       className: "input-group"
     }, react__WEBPACK_IMPORTED_MODULE_1__["createElement"]("input", {
+      tabIndex: 1,
       type: "number",
       placeholder: "Year",
       className: "form-control",
@@ -47534,6 +47535,7 @@ let CarEditor = class CarEditor extends react__WEBPACK_IMPORTED_MODULE_1__["Comp
         carEditorStore.update(CarEditorFields.MATURITY_DATE, maturityDate);
       }
     }), react__WEBPACK_IMPORTED_MODULE_1__["createElement"]("select", {
+      tabIndex: 2,
       className: "form-control",
       onChange: e => {
         maturityDate.setMonth(Number(e.target.value));
@@ -47544,6 +47546,7 @@ let CarEditor = class CarEditor extends react__WEBPACK_IMPORTED_MODULE_1__["Comp
       key: "month-" + i,
       value: i
     }, m))), react__WEBPACK_IMPORTED_MODULE_1__["createElement"]("input", {
+      tabIndex: 3,
       type: "number",
       placeholder: "Day",
       className: "form-control",
@@ -47572,6 +47575,7 @@ let CarEditor = class CarEditor extends react__WEBPACK_IMPORTED_MODULE_1__["Comp
     })))), react__WEBPACK_IMPORTED_MODULE_1__["createElement"]("small", null, "hour"), react__WEBPACK_IMPORTED_MODULE_1__["createElement"]("div", {
       className: "input-group"
     }, react__WEBPACK_IMPORTED_MODULE_1__["createElement"]("input", {
+      tabIndex: 4,
       type: "number",
       placeholder: "Hour",
       className: "form-control",
@@ -47586,6 +47590,7 @@ let CarEditor = class CarEditor extends react__WEBPACK_IMPORTED_MODULE_1__["Comp
         carEditorStore.update(CarEditorFields.MATURITY_DATE, maturityDate);
       }
     }), react__WEBPACK_IMPORTED_MODULE_1__["createElement"]("input", {
+      tabIndex: 5,
       type: "number",
       placeholder: "Hour",
       className: "form-control",
@@ -47609,6 +47614,7 @@ let CarEditor = class CarEditor extends react__WEBPACK_IMPORTED_MODULE_1__["Comp
       },
       selected: maturityDate.getDate()
     }))), react__WEBPACK_IMPORTED_MODULE_1__["createElement"](_general_AppTextInput__WEBPACK_IMPORTED_MODULE_5__["AppInput"], {
+      tabIndex: 6,
       label: "Model",
       labelId: "model",
       inputType: _general_AppTextInput__WEBPACK_IMPORTED_MODULE_5__["InputType"].TEXT,
@@ -47619,6 +47625,7 @@ let CarEditor = class CarEditor extends react__WEBPACK_IMPORTED_MODULE_1__["Comp
       currentValue: carEditorStore.values[CarEditorFields.MODEL].value,
       disabled: !isCreateCarState
     }), react__WEBPACK_IMPORTED_MODULE_1__["createElement"](_general_AppTextInput__WEBPACK_IMPORTED_MODULE_5__["AppInput"], {
+      tabIndex: 7,
       label: "Price",
       labelId: "price",
       inputType: _general_AppTextInput__WEBPACK_IMPORTED_MODULE_5__["InputType"].NUMBER,
@@ -47628,6 +47635,7 @@ let CarEditor = class CarEditor extends react__WEBPACK_IMPORTED_MODULE_1__["Comp
       },
       currentValue: carEditorStore.values[CarEditorFields.PRICE].value
     }), react__WEBPACK_IMPORTED_MODULE_1__["createElement"](_general_DropDownInput__WEBPACK_IMPORTED_MODULE_4__["DropDownInput"], {
+      tabIndex: 8,
       label: "Make",
       current: carEditorStore.values[CarEditorFields.MAKE].value,
       element: _model_Car__WEBPACK_IMPORTED_MODULE_2__["MAKERS"],
@@ -48421,6 +48429,7 @@ class AppInput extends react__WEBPACK_IMPORTED_MODULE_0__["Component"] {
     return react__WEBPACK_IMPORTED_MODULE_0__["createElement"]("div", {
       className: "form-group col-sm-10 col-md-8 col-lg-6 mb-3 mb-sm-3"
     }, react__WEBPACK_IMPORTED_MODULE_0__["createElement"]("label", null, this.props.label), react__WEBPACK_IMPORTED_MODULE_0__["createElement"]("input", {
+      tabIndex: this.props.tabIndex,
       disabled: disabled,
       className: "form-control " + validationClass,
       type: getInputTypeRef(this.props.inputType, this.props.currentValue),
@@ -48551,6 +48560,7 @@ let DropDownInput = class DropDownInput extends react__WEBPACK_IMPORTED_MODULE_0
         href: "javascript:void(0)"
       }, item);
     }))), react__WEBPACK_IMPORTED_MODULE_0__["createElement"]("input", {
+      tabIndex: this.props.tabIndex,
       name: this.props.name,
       type: "text",
       className: classesIsValid,

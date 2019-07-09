@@ -12,6 +12,7 @@ export interface DropDownInputProps {
   element: { [index: number]: string };
   updateValue: (value: number) => void;
   store: Store;
+  tabIndex?: number;
 }
 
 class Store {
@@ -32,13 +33,13 @@ function resolveValue() {
   else return this.props.element[this.props.current];
 }
 
-function toggle(store:Store,disabled: boolean) {
+function toggle(store: Store, disabled: boolean) {
   if (!disabled) {
     store.updateState(!store.isOpen);
   }
 }
 
-function selectItem(updater,element,store:Store,item) {
+function selectItem(updater, element, store: Store, item) {
   updater(element[item]);
   store.updateState(false);
 }
@@ -74,9 +75,8 @@ export class DropDownInput extends React.Component<DropDownInputProps, any> {
               className="btn btn-outline-secondary dropdown-toggle"
               type="button"
               disabled={this.props.disabled}
-              onClick={() => toggle(this.props.store,disabled)}
+              onClick={() => toggle(this.props.store, disabled)}
               onBlur={() => this.props.store.updateState(false)}>
-              
               Choose maker...
             </button>
             <div className={classesIsOpen}>
@@ -85,7 +85,14 @@ export class DropDownInput extends React.Component<DropDownInputProps, any> {
                   <a
                     key={item}
                     onMouseDown={event => event.preventDefault()}
-                    onClick={() => selectItem(this.props.updateValue,this.props.element,this.props.store,item)}
+                    onClick={() =>
+                      selectItem(
+                        this.props.updateValue,
+                        this.props.element,
+                        this.props.store,
+                        item
+                      )
+                    }
                     className="dropdown-item"
                     href="javascript:void(0)">
                     {item}
@@ -95,6 +102,7 @@ export class DropDownInput extends React.Component<DropDownInputProps, any> {
             </div>
           </div>
           <input
+            tabIndex={this.props.tabIndex}
             name={this.props.name}
             type="text"
             className={classesIsValid}

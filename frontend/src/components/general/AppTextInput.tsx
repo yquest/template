@@ -17,6 +17,7 @@ export interface AppInputProps {
   placeholder?: string;
   disabled?:boolean;
   currentValue: string;
+  tabIndex?:number;
 }
 
 function getInputTypeRef(inputType: InputType, value: any) {
@@ -54,6 +55,7 @@ export class AppInput extends React.Component<AppInputProps, {}> {
       <div className="form-group col-sm-10 col-md-8 col-lg-6 mb-3 mb-sm-3">
         <label>{this.props.label}</label>
         <input
+          tabIndex={this.props.tabIndex}
           disabled={disabled}
           className={"form-control " + validationClass}
           type={getInputTypeRef(this.props.inputType, this.props.currentValue)}
