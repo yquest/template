@@ -47487,8 +47487,6 @@ const StyledCalendar = Object(styled_components__WEBPACK_IMPORTED_MODULE_3__["de
   transition: all 1s;
 `;
 function updateEditorCar(car) {
-  console.log("try to update car");
-
   if (car === null) {
     carEditorStore.reset();
   } else {
@@ -47687,13 +47685,19 @@ let CarEditor = class CarEditor extends react__WEBPACK_IMPORTED_MODULE_1__["Comp
             this.props.saveCarEvent(car, isCreateCarState);
           }));
           promises.push(createPromise.catch(res => {
-            if (res.response.status === 401) {
-              notification.content = "Car already exists";
-            } else {
-              notification.content = "Error inserting car";
+            switch (res.response.status) {
+              case 400:
+                notification.content = "Not authorized";
+                break;
+
+              case 401:
+                notification.content = "Not authorized";
+                break;
+
+              default:
+                notification.content = "Error inserting car";
             }
 
-            console.error(res.response.data.error);
             notification.type = _UIStore__WEBPACK_IMPORTED_MODULE_9__["NotificationType"].ERROR;
           }));
           Promise.all(promises).finally(() => {
@@ -48029,6 +48033,7 @@ let LoginEditor = class LoginEditor extends react__WEBPACK_IMPORTED_MODULE_1__["
     }, react__WEBPACK_IMPORTED_MODULE_1__["createElement"]("div", {
       className: "col-12"
     }, react__WEBPACK_IMPORTED_MODULE_1__["createElement"](_general_AppTextInput__WEBPACK_IMPORTED_MODULE_3__["AppInput"], {
+      tabIndex: 1,
       label: "Username",
       labelId: "username",
       inputType: _general_AppTextInput__WEBPACK_IMPORTED_MODULE_3__["InputType"].TEXT,
@@ -48036,6 +48041,7 @@ let LoginEditor = class LoginEditor extends react__WEBPACK_IMPORTED_MODULE_1__["
       error: loginStore.values[LoginEditorFields.LOGIN].error,
       currentValue: loginStore.values[LoginEditorFields.LOGIN].value
     }), react__WEBPACK_IMPORTED_MODULE_1__["createElement"](_general_AppTextInput__WEBPACK_IMPORTED_MODULE_3__["AppInput"], {
+      tabIndex: 2,
       label: "Password",
       labelId: "password",
       inputType: _general_AppTextInput__WEBPACK_IMPORTED_MODULE_3__["InputType"].PASSWORD,

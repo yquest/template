@@ -40,6 +40,7 @@ export class LoginEditor extends React.Component<LoginProps, {}> {
           }}>
           <div className="col-12">
             <AppInput
+              tabIndex={1}
               label="Username"
               labelId="username"
               inputType={InputType.TEXT}
@@ -50,6 +51,7 @@ export class LoginEditor extends React.Component<LoginProps, {}> {
               currentValue={loginStore.values[LoginEditorFields.LOGIN].value}
             />
             <AppInput
+              tabIndex={2}
               label="Password"
               labelId="password"
               inputType={InputType.PASSWORD}

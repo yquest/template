@@ -58,7 +58,6 @@ export interface CarEditorProps {
 }
 
 export function updateEditorCar(car: Car | null) {
-  console.log("try to update car");
   if (car === null) {
     carEditorStore.reset();
   } else {
@@ -304,12 +303,16 @@ export class CarEditor extends React.Component<CarEditorProps, {}> {
                 );
                 promises.push(
                   createPromise.catch(res => {
-                    if (res.response.status === 401) {
-                      notification.content = "Car already exists";
-                    } else {
-                      notification.content = "Error inserting car";
+                    switch (res.response.status) {
+                      case 400:
+                        notification.content = "Not authorized";
+                        break;
+                      case 401:
+                        notification.content = "Not authorized";
+                        break;
+                      default:
+                        notification.content = "Error inserting car";
                     }
-                    console.error(res.response.data.error);
                     notification.type = NotificationType.ERROR;
                   })
                 );
