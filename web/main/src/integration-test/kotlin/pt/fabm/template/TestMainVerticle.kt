@@ -2,6 +2,7 @@ package pt.fabm.template
 
 import Consts
 import io.jsonwebtoken.Jwts
+import io.vertx.core.Handler
 import io.vertx.core.http.HttpHeaders
 import io.vertx.core.json.JsonArray
 import io.vertx.core.json.JsonObject
@@ -25,6 +26,7 @@ import org.junit.jupiter.api.extension.ExtendWith
 import org.yaml.snakeyaml.Yaml
 import pt.fabm.template.dao.DaoMemoryShared
 import pt.fabm.template.extensions.toJson
+import pt.fabm.template.extensions.userTimers
 import pt.fabm.template.models.Car
 import pt.fabm.template.models.CarMake
 import pt.fabm.template.models.UserRegisterIn
@@ -346,23 +348,8 @@ class TestMainVerticle {
     assertEquals("watcher", claims.body["role"])
   }
 
-  @Test
-  @DisplayName("test timer")
-  @Timeout(value = 10, timeUnit = TimeUnit.SECONDS)
-  @Throws(Throwable::class)
-  fun testTimer(vertx: Vertx, testContext: VertxTestContext) {
-    val idTimer = vertx.setTimer(5) {
-      throw IllegalStateException("this is will not be executed")
-    }
-    vertx.setTimer(1){
-      Assert.assertTrue(vertx.cancelTimer(idTimer))
-      testContext.completeNow()
-    }
-  }
 
 }
-
-
 
 
 private fun HttpRequest<Buffer>.auth(jws: String?): HttpRequest<Buffer> {

@@ -3,13 +3,14 @@ package pt.fabm.template.rest.controllers
 import Consts
 import io.jsonwebtoken.Jwts
 import io.reactivex.Single
+import io.vertx.core.Handler
 import io.vertx.reactivex.core.Vertx
 import io.vertx.reactivex.ext.web.Cookie
 import io.vertx.reactivex.ext.web.RoutingContext
 import pt.fabm.template.EventBusAddresses
-import pt.fabm.template.extensions.cachedUsers
 import pt.fabm.template.extensions.checkedString
 import pt.fabm.template.extensions.toHash
+import pt.fabm.template.extensions.userTimers
 import pt.fabm.template.models.Login
 import pt.fabm.template.models.UserRegisterIn
 import pt.fabm.template.rest.RestResponse
@@ -46,8 +47,18 @@ class UserController(val vertx: Vertx) {
         cookie = Cookie.cookie(Consts.USER_NAME_COOKIE, username);
         cookie.path = "/api/*"
         rc.addCookie(cookie)
-        //todo change to vertx.timer
-        cachedUsers.put(login.username, true)
+
+        val timerCallback = Handler<Long> { userTimers.remove(username) }
+
+        userTimers.computeIfPresent(username) { _, id ->
+          vertx.cancelTimer(id)
+          id
+        }
+
+        userTimers.compute(username) { _, _ ->
+          vertx.setTimer(1000 * 60 * 30, timerCallback)
+        }
+
         RestResponse(statusCode = 200)
       }
   }

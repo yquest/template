@@ -1,7 +1,6 @@
 package pt.fabm.template.extensions
 
 import Consts
-import com.github.benmanes.caffeine.cache.Caffeine
 import io.jsonwebtoken.Jwts
 import io.netty.handler.codec.http.cookie.ServerCookieDecoder
 import io.reactivex.Single
@@ -19,16 +18,11 @@ import pt.fabm.template.ErrorResponse
 import pt.fabm.template.rest.RestResponse
 import pt.fabm.template.validation.AuthContext
 import pt.fabm.template.validation.AuthException
-import java.util.concurrent.TimeUnit
 
 typealias ToSingleRestResponse = (RoutingContext) -> Single<RestResponse>
 
 val LOGGER = LoggerFactory.getLogger(Route::class.java)
-val cachedUsers = Caffeine
-  .newBuilder()
-  .expireAfterAccess(30, TimeUnit.MINUTES)
-  .build<String, Boolean>()
-
+val userTimers: MutableMap<String, Long> = mutableMapOf()
 
 fun errorResolver(error: Throwable, applyResponse: (RestResponse) -> Unit) {
   when (error) {
@@ -93,8 +87,7 @@ fun Route.authHandler(handler: (AuthContext) -> Single<RestResponse>): Route {
     }
 
     val subject = claims.body.subject ?: throw AuthException()
-
-    cachedUsers.getIfPresent(subject) ?: throw AuthException()
+    if (!userTimers.contains(subject)) throw AuthException()
     handler(AuthContext(claims, rc))
   }
 
