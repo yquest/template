@@ -14,9 +14,9 @@ import pt.fabm.template.extensions.userTimers
 import java.util.concurrent.TimeUnit
 
 @ExtendWith(VertxExtension::class)
-class FunctionalProgramTests {
+class LooseTests {
   @Test
-  fun filterList(vertx: Vertx, testContext: VertxTestContext) {
+  fun filterList(testContext: VertxTestContext) {
     var count = 0
     val array = arrayListOf("1a", "1b", "1c")
     var str = array.map { str ->
@@ -51,7 +51,7 @@ class FunctionalProgramTests {
     val username = "abcd"
     var counter = 0
     val timerCallback = Handler<Long> { idTimer ->
-      println("do checkpoint 3 with timerId:${idTimer}")
+      println("do timer:${idTimer}")
       userTimers.remove(username)
       assertEquals(7,counter)
       testContext.completeNow()
@@ -60,28 +60,27 @@ class FunctionalProgramTests {
     fun doOnLogin(firstTime: Boolean = false) {
       userTimers.computeIfPresent(username) { _, idTimer ->
         if (firstTime) throw IllegalStateException("unexpected call!!")
-        println("do checkpoint 1 with timerId:${idTimer}")
+        println("cancel timer:${idTimer}")
         vertx.cancelTimer(idTimer)
         counter++
-        vertx.setTimer(1000, timerCallback)
+        val timerId = vertx.setTimer(1000, timerCallback)
+        println("create timer:${timerId}")
+        timerId
       }
 
-      userTimers.computeIfAbsent(username) { username ->
-        println("do checkpoint 2")
+      userTimers.computeIfAbsent(username) {
         counter++
-        vertx.setTimer(2000, timerCallback)
+        val timerId = vertx.setTimer(2000, timerCallback)
+        println("create first timer:${timerId}")
+        timerId
       }
-
     }
 
     doOnLogin(true)
     (1..6).forEach {
-      //do after 1 seconds
       vertx.setTimer((it*500).toLong()) {
         doOnLogin()
       }
     }
   }
-
-
 }
