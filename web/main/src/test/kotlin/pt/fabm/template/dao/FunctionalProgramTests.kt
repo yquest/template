@@ -49,38 +49,39 @@ class FunctionalProgramTests {
   @Throws(Throwable::class)
   fun testTimer(vertx: Vertx, testContext: VertxTestContext) {
     val username = "abcd"
-
-    testContext.checkpoint(2)
-
-    val timerCallback = Handler<Long> {
+    var counter = 0
+    val timerCallback = Handler<Long> { idTimer ->
+      println("do checkpoint 3 with timerId:${idTimer}")
       userTimers.remove(username)
+      assertEquals(7,counter)
       testContext.completeNow()
     }
 
-    userTimers.computeIfPresent(username) { _, _ ->
-      throw IllegalStateException("unexpected call!!")
-    }
-
-    userTimers.compute(username) { _, _ ->
-      vertx.setTimer(1000 * 30, timerCallback)
-    }
-
-    //do after 2 seconds
-    vertx.setTimer(2000) {
-      userTimers.computeIfPresent(username) { _, id ->
-        vertx.cancelTimer(id)
-        testContext.checkpoint()
-        id
-      }
-
-      userTimers.compute(username) { _, _ ->
-        testContext.checkpoint()
+    fun doOnLogin(firstTime: Boolean = false) {
+      userTimers.computeIfPresent(username) { _, idTimer ->
+        if (firstTime) throw IllegalStateException("unexpected call!!")
+        println("do checkpoint 1 with timerId:${idTimer}")
+        vertx.cancelTimer(idTimer)
+        counter++
         vertx.setTimer(1000, timerCallback)
       }
+
+      userTimers.computeIfAbsent(username) { username ->
+        println("do checkpoint 2")
+        counter++
+        vertx.setTimer(2000, timerCallback)
+      }
+
     }
 
+    doOnLogin(true)
+    (1..6).forEach {
+      //do after 1 seconds
+      vertx.setTimer((it*500).toLong()) {
+        doOnLogin()
+      }
+    }
   }
-
 
 
 }
