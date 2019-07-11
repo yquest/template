@@ -5,7 +5,6 @@ import io.reactivex.Single
 import io.vertx.core.eventbus.DeliveryOptions
 import io.vertx.core.eventbus.ReplyException
 import io.vertx.core.json.JsonArray
-import io.vertx.core.json.JsonObject
 import io.vertx.core.logging.LoggerFactory
 import io.vertx.reactivex.core.Vertx
 import io.vertx.reactivex.ext.web.RoutingContext
@@ -28,75 +27,76 @@ class CarController(val vertx: Vertx) {
   }
 
   fun carList(): Single<RestResponse> {
+
+    fun messageSent(message: Message<List<Car>>): RestResponse {
+      val list = message.body()
+      val jsonArray = JsonArray()
+      for (car in list) {
+        jsonArray.add(car.toJson())
+      }
+      return RestResponse(jsonArray, 200)
+    }
+
     return vertx.eventBus().rxSend<List<Car>>(
       EventBusAddresses.Dao.Car.list, null, DeliveryOptions().setCodecName("List")
-    )
-      .map { message -> message.body() }
-      .flatMapObservable { list -> Observable.fromIterable(list) }
-      .map { car ->
-        JsonObject()
-          .put("make", car.make.name)
-          .put("model", car.model)
-          .put("maturityDate", car.maturityDate.toString())
-          .put("price", car.price)
-      }
-      .collect({ JsonArray() }, { jsonArray, element -> jsonArray.add(element) })
-      .map { RestResponse(it, 200) }
+    ).map(::messageSent)
   }
 
   fun getCar(rc: RoutingContext): Single<RestResponse> {
     val request = rc.request()
-    val make = "make".let {
-      val current = request.getParam(it).nullIfEmpty() ?: throw RequiredException(it)
-      CarMake.values().find { it.name == current } ?: throw InvalidEntryException(current, it)
+
+    val make = request.getParam(Car.MAKE).nullIfEmpty()
+      .let { it ?: throw RequiredException(Car.MAKE) }
+      .let { (it toEnum CarMake::class.java) ?: throw InvalidEntryException(it, Car.MAKE) }
+
+    val model = request.getParam(Car.MODEL).nullIfEmpty() ?: throw RequiredException(Car.MODEL)
+
+    fun sentMessage(message: Message<Car>): RestResponse {
+      val body = message.body()
+      return if (body == null) RestResponse(statusCode = 404)
+      else RestResponse(body.toJson(), statusCode = 200)
     }
-    val model: String = "model".let { request.getParam(it).nullIfEmpty() ?: throw RequiredException(it) }
+
+    fun handleError(error: Throwable): RestResponse {
+      if (error !is ReplyException || error.failureCode() != 1) {
+        LOGGER.error("error on event bus ${EventBusAddresses.Dao.Car.retrieve}", error)
+        return RestResponse(statusCode = 500)
+      }
+      return RestResponse(statusCode = 404)
+    }
 
     return vertx.eventBus().rxSend<Car>(EventBusAddresses.Dao.Car.retrieve, CarId(model = model, maker = make))
-      .map { message ->
-        message.body()?.let {
-          RestResponse(it.toJson(), 200)
-        } ?: RestResponse(statusCode = 404)
-      }.onErrorReturn {
-        if (it is ReplyException && it.failureCode() == 1) {
-          RestResponse(statusCode = 404)
-        } else {
-          LOGGER.error("error on event bus ${EventBusAddresses.Dao.Car.retrieve}",it)
-          RestResponse(statusCode = 500)
-        }
-      }
+      .map(::sentMessage)
+      .onErrorReturn(::handleError)
   }
 
   fun createOrUpdateCar(createAction: Boolean, rc: RoutingContext): Single<RestResponse> {
+    val body = rc.bodyAsJson
+    if (rc.bodyAsJson == null) throw RequiredException(Car.CAR)
 
-    val rootKey = "car"
-    val car = rc.bodyAsJson?.let { body ->
-      val notEmptyString: (String) -> String? = {
-        body.getString(it).nullIfEmpty()
-      }
+    fun lbCar(lb: String) = "${Car.CAR}.$lb"
 
-      val strModel = "model".let { notEmptyString(it) ?: throw RequiredException("$rootKey.$it") }
-      val strMake = "make".let { notEmptyString(it) ?: throw RequiredException("$rootKey.$it") }
-      val price = "price".let { body.getInteger(it) ?: throw RequiredException("$rootKey.$it") }
-      val strMaturityDate = "maturityDate".let { notEmptyString(it) ?: throw RequiredException("$rootKey.$it") }
+    val car = Car(
+      model = body.getString(Car.MODEL).nullIfEmpty() ?: throw RequiredException(lbCar(Car.MODEL)),
+      make = body.getString(Car.MAKE).nullIfEmpty()
+        .let { it ?: throw RequiredException(lbCar(Car.MAKE)) }
+        .let { strMake ->
+          val make = strMake toEnum CarMake::class.java
+          make ?: throw InvalidEntryException(strMake, lbCar(Car.MAKE))
+        },
+      price = body.getInteger(Car.PRICE) ?: throw RequiredException(lbCar(Car.PRICE)),
+      maturityDate = body.getString(Car.MATURITY_DATE).nullIfEmpty()
+        .let { it ?: throw RequiredException(lbCar(Car.MATURITY_DATE)) }
+        .let { it.toLocalDateTime() }
+    )
 
-      return@let Car(
-        strModel,
-        CarMake.values().find {
-          it.name.equals(strMake)
-        } ?: throw InvalidEntryException(strMake, "$rootKey.make"),
-        price,
-        LocalDateTime.parse(strMaturityDate, DateTimeFormatter.ISO_DATE_TIME)
-      )
-    } ?: throw RequiredException(rootKey)
-    return vertx.eventBus()
-      .rxSend<Unit>(
-        if (createAction) EventBusAddresses.Dao.Car.create else EventBusAddresses.Dao.Car.update, car
-      ).onErrorReturn { e ->
-        if (e is ReplyException)
-          if (e.failureCode() == 1)
-            throw DataAlreadyExists()
-        throw IllegalStateException()
+    val ebAddress = if (createAction) EventBusAddresses.Dao.Car.create
+    else EventBusAddresses.Dao.Car.update
+
+    fun handleError(error: Throwable): RestResponse {
+      if (error !is ReplyException || error.failureCode() != 1) {
+        LOGGER.error("error on event bus $ebAddress", error)
+        return RestResponse(statusCode = 500)
       }
       .ignoreElement()
       .toSingle {

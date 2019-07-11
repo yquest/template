@@ -196,8 +196,8 @@ class TestMainVerticle {
     DaoMemoryShared.cars.add(car)
 
     client.get(port!!, host, "/api/car")
-      .addQueryParam("make", car.make.name)
-      .addQueryParam("model", car.model)
+      .addQueryParam(Car.MAKE, car.make.name)
+      .addQueryParam(Car.MODEL, car.model)
       .rxSend()
       .subscribe { response: HttpResponse<Buffer> ->
         testContext.verify {
@@ -258,8 +258,8 @@ class TestMainVerticle {
     val car = Car("Golf V", CarMake.VOLKSWAGEN, 25000, date)
 
     client.get(port!!, host, "/api/car")
-      .addQueryParam("make", car.make.name)
-      .addQueryParam("model", car.model)
+      .addQueryParam(Car.MAKE, car.make.name)
+      .addQueryParam(Car.MODEL, car.model)
       .rxSend()
       .subscribe { response: HttpResponse<Buffer> ->
         testContext.verify {
@@ -321,7 +321,7 @@ class TestMainVerticle {
                   | {
                   |           "make":"VOLKSWAGEN",
                   |          "model":"Golf V",
-                  |   "maturityDate":"2019-01-01T07:08",
+                  |   "maturityDate":"2019-01-01T07:08:00",
                   |          "price":2000
                   | }
                   |]""".trimMargin()
