@@ -2,7 +2,6 @@ package pt.fabm.template
 
 import Consts
 import io.jsonwebtoken.Jwts
-import io.vertx.core.Handler
 import io.vertx.core.http.HttpHeaders
 import io.vertx.core.json.JsonArray
 import io.vertx.core.json.JsonObject
@@ -26,7 +25,6 @@ import org.junit.jupiter.api.extension.ExtendWith
 import org.yaml.snakeyaml.Yaml
 import pt.fabm.template.dao.DaoMemoryShared
 import pt.fabm.template.extensions.toJson
-import pt.fabm.template.extensions.userTimers
 import pt.fabm.template.models.Car
 import pt.fabm.template.models.CarMake
 import pt.fabm.template.models.UserRegisterIn
@@ -40,9 +38,9 @@ import java.util.concurrent.TimeUnit
 @ExtendWith(VertxExtension::class)
 class TestMainVerticle {
 
-  var port: Int? = null
-  lateinit var host: String
-  val jws = Jwts.builder().setSubject("testUser")
+  private var port: Int? = null
+  private lateinit var host: String
+  private val jws = Jwts.builder().setSubject("testUser")
     .signWith(Consts.SIGNING_KEY)
     .compact()
 
@@ -116,7 +114,7 @@ class TestMainVerticle {
           val users = DaoMemoryShared.users
 
           Assert.assertEquals(1, users.size)
-          val expectedUserRegister = users.get("testName")
+          val expectedUserRegister = users["testName"]
           Assert.assertEquals("testName", expectedUserRegister?.name)
           Assert.assertTrue(digestPass("myPassword")!!.contentEquals(expectedUserRegister!!.pass))
           Assert.assertEquals("my@email.com", expectedUserRegister.email)
@@ -353,8 +351,8 @@ class TestMainVerticle {
 
 
 private fun HttpRequest<Buffer>.auth(jws: String?): HttpRequest<Buffer> {
-  return this.putHeader(HttpHeaders.COOKIE.toString(), "${Consts.ACCESS_TOKEN_COOKIE}=$jws");
+  return this.putHeader(HttpHeaders.COOKIE.toString(), "${Consts.ACCESS_TOKEN_COOKIE}=$jws")
 }
 
 @Suppress("UNCHECKED_CAST")
-private fun <V> Map<String, *>.getTypedValue(key: String): V = this.get(key) as V
+private fun <V> Map<String, *>.getTypedValue(key: String): V = this[key] as V
