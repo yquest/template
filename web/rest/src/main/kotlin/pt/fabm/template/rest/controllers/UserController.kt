@@ -5,6 +5,7 @@ import io.jsonwebtoken.Jwts
 import io.reactivex.Single
 import io.vertx.core.Handler
 import io.vertx.reactivex.core.Vertx
+import io.vertx.reactivex.core.eventbus.Message
 import io.vertx.reactivex.ext.web.Cookie
 import io.vertx.reactivex.ext.web.RoutingContext
 import pt.fabm.template.EventBusAddresses
@@ -21,66 +22,66 @@ class UserController(val vertx: Vertx) {
     return Single.just(RestResponse())
   }
 
-  fun userLogin(rc: RoutingContext): Single<RestResponse> = Single.just(rc).map {
+  fun userLogin(rc: RoutingContext): Single<RestResponse> {
     val body = rc.bodyAsJson
-    Login(
+    val login = Login(
       username = body.getString("user"),
       password = body.getString("pass").toHash()
     )
-  }.flatMap { login ->
-    vertx.eventBus()
-      .rxSend<Boolean>(EventBusAddresses.Dao.User.login, login)
-      .map { message ->
-        if (!message.body()) {
-          return@map RestResponse(statusCode = 403)
-        }
-        val username = login.username
-        val jws = Jwts.builder()
-          .setSubject(username)
-          .signWith(Consts.SIGNING_KEY)
-          .compact()
-        var cookie = Cookie.cookie(Consts.ACCESS_TOKEN_COOKIE, jws)
-        cookie.setHttpOnly(true)
-        cookie.path = "/api/"
-        rc.addCookie(cookie)
 
-        cookie = Cookie.cookie(Consts.USER_NAME_COOKIE, username);
-        cookie.path = "/api/*"
-        rc.addCookie(cookie)
-
-        val timerCallback = Handler<Long> { userTimers.remove(username) }
-
-        userTimers.computeIfPresent(username) { _, id ->
-          vertx.cancelTimer(id)
-          id
-        }
-
-        userTimers.compute(username) { _, _ ->
-          vertx.setTimer(1000 * 60 * 30, timerCallback)
-        }
-
-        RestResponse(statusCode = 200)
+    fun messageSent(message: Message<Boolean>): RestResponse {
+      if (!message.body()) {
+        return RestResponse(statusCode = 403)
       }
+      val username = login.username
+      val jws = Jwts.builder()
+        .setSubject(username)
+        .signWith(Consts.SIGNING_KEY)
+        .compact()
+      var cookie = Cookie.cookie(Consts.ACCESS_TOKEN_COOKIE, jws)
+      cookie.setHttpOnly(true)
+      cookie.path = "/api/"
+      rc.addCookie(cookie)
+
+      cookie = Cookie.cookie(Consts.USER_NAME_COOKIE, username)
+      cookie.path = "/api/*"
+      rc.addCookie(cookie)
+
+      val timerTimeout = 30000L
+
+      val timerCallback = Handler<Long> { userTimers.remove(username)}
+
+      userTimers.computeIfPresent(username) { _, idTimer ->
+        vertx.cancelTimer(idTimer)
+        val timerId = vertx.setTimer(timerTimeout, timerCallback)
+        timerId
+      }
+
+      userTimers.computeIfAbsent(username) { vertx.setTimer(timerTimeout, timerCallback)}
+
+      return RestResponse(statusCode = 200)
+    }
+
+    return vertx.eventBus()
+      .rxSend<Boolean>(EventBusAddresses.Dao.User.login, login)
+      .map(::messageSent)
   }
 
   fun createUser(rc: RoutingContext): Single<RestResponse> {
-    return Single.just(rc).map { it.response() }
-      .flatMap {
-        val bodyAsJson = rc.bodyAsJson
-        val name: String = bodyAsJson.checkedString("name")
-        val email: String = bodyAsJson.checkedString("email")
-        val password: String = bodyAsJson.checkedString("password")
+    val bodyAsJson = rc.bodyAsJson
+    val name: String = bodyAsJson.checkedString("name")
+    val email: String = bodyAsJson.checkedString("email")
+    val password: String = bodyAsJson.checkedString("password")
 
-        val userRegister = UserRegisterIn(
-          name,
-          email,
-          password.toHash()
-        )
+    val userRegister = UserRegisterIn(
+      name,
+      email,
+      password.toHash()
+    )
 
-        vertx.eventBus().rxSend<String>(EventBusAddresses.Dao.User.create, userRegister)
-          .map {
-            RestResponse(statusCode = 204)
-          }
+    return vertx.eventBus().rxSend<String>(EventBusAddresses.Dao.User.create, userRegister)
+      .map {
+        RestResponse(statusCode = 204)
       }
   }
 }

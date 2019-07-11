@@ -1,29 +1,28 @@
 package pt.fabm.template.rest.controllers
 
-import io.reactivex.Observable
 import io.reactivex.Single
 import io.vertx.core.eventbus.DeliveryOptions
 import io.vertx.core.eventbus.ReplyException
 import io.vertx.core.json.JsonArray
 import io.vertx.core.logging.LoggerFactory
 import io.vertx.reactivex.core.Vertx
+import io.vertx.reactivex.core.eventbus.Message
 import io.vertx.reactivex.ext.web.RoutingContext
 import pt.fabm.template.EventBusAddresses
 import pt.fabm.template.extensions.nullIfEmpty
+import pt.fabm.template.extensions.toEnum
 import pt.fabm.template.extensions.toJson
+import pt.fabm.template.extensions.toLocalDateTime
 import pt.fabm.template.models.Car
 import pt.fabm.template.models.CarId
 import pt.fabm.template.models.CarMake
 import pt.fabm.template.rest.RestResponse
-import pt.fabm.template.validation.DataAlreadyExists
 import pt.fabm.template.validation.InvalidEntryException
 import pt.fabm.template.validation.RequiredException
-import java.time.LocalDateTime
-import java.time.format.DateTimeFormatter
 
 class CarController(val vertx: Vertx) {
   companion object {
-    val LOGGER = LoggerFactory.getLogger(CarController::class.java)
+    val LOGGER = LoggerFactory.getLogger(CarController::class.java)!!
   }
 
   fun carList(): Single<RestResponse> {
@@ -98,20 +97,30 @@ class CarController(val vertx: Vertx) {
         LOGGER.error("error on event bus $ebAddress", error)
         return RestResponse(statusCode = 500)
       }
+      return RestResponse(statusCode = 400)
+    }
+
+    return vertx.eventBus().rxSend<Unit>(ebAddress, car)
       .ignoreElement()
       .toSingle {
         RestResponse(statusCode = if (createAction) 204 else 200)
       }
+      .onErrorReturn(::handleError)
   }
 
   fun deleteCar(rc: RoutingContext): Single<RestResponse> {
     val request = rc.request()
-    val model = request.getParam("model")
-    val make = request.getParam("make")
-
-    return vertx.eventBus().rxSend<Unit>(
-      EventBusAddresses.Dao.Car.delete, CarId(model = model, maker = CarMake.valueOf(make))
-    ).ignoreElement()
+    val carId = CarId(
+      model = request.getParam(Car.MODEL).nullIfEmpty() ?: throw RequiredException(Car.MODEL),
+      maker = request.getParam(Car.MAKE).nullIfEmpty()
+        .let { it ?: throw RequiredException(Car.MAKE) }
+        .let { strMake ->
+          val make = strMake toEnum CarMake::class.java
+          make ?: throw InvalidEntryException(strMake, Car.MAKE)
+        }
+    )
+    return vertx.eventBus().rxSend<Unit>(EventBusAddresses.Dao.Car.delete, carId)
+      .ignoreElement()
       .toSingle {
         RestResponse(statusCode = 200)
       }
