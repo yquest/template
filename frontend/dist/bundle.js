@@ -47497,8 +47497,121 @@ function updateEditorCar(car) {
     carEditorStore.update(CarEditorFields.IS_CREATION_STATE, false);
   }
 }
+
+function saveButtonClick(isCreateCarState) {
+  carEditorStore.checkAllErrors();
+
+  if (carEditorStore.isAllValidated) {
+    let values = carEditorStore.values;
+    let car = {
+      make: values[CarEditorFields.MAKE].value,
+      maturityDate: values[CarEditorFields.MATURITY_DATE].value,
+      model: values[CarEditorFields.MODEL].value,
+      price: Number.parseInt(values[CarEditorFields.PRICE].value),
+      getPK: () => {
+        return {
+          make: car.make,
+          model: car.model
+        };
+      }
+    };
+    let saveAction;
+
+    if (isCreateCarState) {
+      saveAction = _services_CarService__WEBPACK_IMPORTED_MODULE_7__["carService"].createCar;
+    } else {
+      saveAction = _services_CarService__WEBPACK_IMPORTED_MODULE_7__["carService"].updateCar;
+    }
+
+    let createPromise = saveAction(car);
+    let notification = _UIStore__WEBPACK_IMPORTED_MODULE_9__["uiStore"].createNotification();
+    let promises = [];
+    promises.push(createPromise.then(() => {
+      notification.content = "Created car succesefully";
+      notification.type = _UIStore__WEBPACK_IMPORTED_MODULE_9__["NotificationType"].SUCCESS;
+      carEditorStore.reset();
+      this.props.saveCarEvent(car, isCreateCarState);
+    }));
+    promises.push(createPromise.catch(res => {
+      switch (res.response.status) {
+        case 400:
+          notification.content = "Not authorized";
+          break;
+
+        case 401:
+          notification.content = "Not authorized";
+          break;
+
+        default:
+          notification.content = "Error inserting car";
+      }
+
+      notification.type = _UIStore__WEBPACK_IMPORTED_MODULE_9__["NotificationType"].ERROR;
+    }));
+    Promise.all(promises).finally(() => {
+      _UIStore__WEBPACK_IMPORTED_MODULE_9__["uiStore"].addNotificationTemp(notification, 3000);
+    });
+  }
+}
+
+function onChangeYear(maturityDate) {
+  return e => {
+    let year = Number(e.target.value);
+
+    if (year !== NaN || year !== 0) {
+      maturityDate.setFullYear(year);
+    }
+
+    carEditorStore.update(CarEditorFields.MATURITY_DATE, maturityDate);
+  };
+}
+
+function onChangeMonth(maturityDate) {
+  return e => {
+    maturityDate.setMonth(Number(e.target.value));
+    carEditorStore.update(CarEditorFields.MATURITY_DATE, maturityDate);
+  };
+}
+
+function onChangeDate(maturityDate) {
+  return e => {
+    let day = Number(e.target.value);
+
+    if (day !== NaN || day !== 0) {
+      maturityDate.setDate(day);
+    }
+
+    carEditorStore.update(CarEditorFields.MATURITY_DATE, maturityDate);
+  };
+}
+
+function onChangeHour(maturityDate) {
+  return e => {
+    let hour = Number(e.target.value);
+
+    if (hour !== NaN || hour < 0 || hour > 23) {
+      maturityDate.setHours(hour);
+    }
+
+    carEditorStore.update(CarEditorFields.MATURITY_DATE, maturityDate);
+  };
+}
+
+function onChangeMinutes(maturityDate) {
+  return e => {
+    let hour = Number(e.target.value);
+
+    if (hour !== NaN || hour < 0 || hour >= 60) {
+      maturityDate.setMinutes(hour);
+    }
+
+    carEditorStore.update(CarEditorFields.MATURITY_DATE, maturityDate);
+  };
+}
+
 let CarEditor = class CarEditor extends react__WEBPACK_IMPORTED_MODULE_1__["Component"] {
   render() {
+    const mainEditor = this;
     let isCreateCarState = carEditorStore.values[CarEditorFields.IS_CREATION_STATE].value;
     let titleAction = isCreateCarState ? "creation" : "update";
     let maturityDate = carEditorStore.values[CarEditorFields.MATURITY_DATE].value;
@@ -47509,7 +47622,7 @@ let CarEditor = class CarEditor extends react__WEBPACK_IMPORTED_MODULE_1__["Comp
         marginBottom: "1rem",
         padding: "1.5rem"
       }
-    }, react__WEBPACK_IMPORTED_MODULE_1__["createElement"]("h4", null, "New"), react__WEBPACK_IMPORTED_MODULE_1__["createElement"]("div", {
+    }, react__WEBPACK_IMPORTED_MODULE_1__["createElement"]("div", {
       className: "row"
     }, react__WEBPACK_IMPORTED_MODULE_1__["createElement"]("div", {
       className: "form-group col-sm-10 col-md-8 col-lg-6 mb-3 mb-sm-3"
@@ -47523,22 +47636,11 @@ let CarEditor = class CarEditor extends react__WEBPACK_IMPORTED_MODULE_1__["Comp
       placeholder: "Year",
       className: "form-control",
       value: maturityDate.getFullYear(),
-      onChange: e => {
-        let year = Number(e.target.value);
-
-        if (year !== NaN || year !== 0) {
-          maturityDate.setFullYear(year);
-        }
-
-        carEditorStore.update(CarEditorFields.MATURITY_DATE, maturityDate);
-      }
+      onChange: onChangeYear(maturityDate).bind(this)
     }), react__WEBPACK_IMPORTED_MODULE_1__["createElement"]("select", {
       tabIndex: 2,
       className: "form-control",
-      onChange: e => {
-        maturityDate.setMonth(Number(e.target.value));
-        carEditorStore.update(CarEditorFields.MATURITY_DATE, maturityDate);
-      },
+      onChange: onChangeMonth(maturityDate).bind(this),
       value: maturityDate.getMonth()
     }, _Calendar__WEBPACK_IMPORTED_MODULE_8__["monthsStr"].map((m, i) => react__WEBPACK_IMPORTED_MODULE_1__["createElement"]("option", {
       key: "month-" + i,
@@ -47549,15 +47651,7 @@ let CarEditor = class CarEditor extends react__WEBPACK_IMPORTED_MODULE_1__["Comp
       placeholder: "Day",
       className: "form-control",
       value: maturityDate.getDate(),
-      onChange: e => {
-        let day = Number(e.target.value);
-
-        if (day !== NaN || day !== 0) {
-          maturityDate.setDate(day);
-        }
-
-        carEditorStore.update(CarEditorFields.MATURITY_DATE, maturityDate);
-      }
+      onChange: onChangeDate(maturityDate).bind(this)
     }), react__WEBPACK_IMPORTED_MODULE_1__["createElement"]("div", {
       className: "input-group-append",
       onClick: () => {
@@ -47578,30 +47672,14 @@ let CarEditor = class CarEditor extends react__WEBPACK_IMPORTED_MODULE_1__["Comp
       placeholder: "Hour",
       className: "form-control",
       value: maturityDate.getHours(),
-      onChange: e => {
-        let hour = Number(e.target.value);
-
-        if (hour !== NaN || hour < 0 || hour > 23) {
-          maturityDate.setHours(hour);
-        }
-
-        carEditorStore.update(CarEditorFields.MATURITY_DATE, maturityDate);
-      }
+      onChange: onChangeHour(maturityDate).bind(this)
     }), react__WEBPACK_IMPORTED_MODULE_1__["createElement"]("input", {
       tabIndex: 5,
       type: "number",
       placeholder: "Hour",
       className: "form-control",
       value: maturityDate.getMinutes(),
-      onChange: e => {
-        let hour = Number(e.target.value);
-
-        if (hour !== NaN || hour < 0 || hour >= 60) {
-          maturityDate.setMinutes(hour);
-        }
-
-        carEditorStore.update(CarEditorFields.MATURITY_DATE, maturityDate);
-      }
+      onChange: onChangeMinutes(maturityDate).bind(this)
     })), react__WEBPACK_IMPORTED_MODULE_1__["createElement"](StyledCalendar, {
       open: carEditorStore.values[CarEditorFields.SHOW_CALENDAR].value,
       month: maturityDate.getMonth() + 1,
@@ -47645,67 +47723,15 @@ let CarEditor = class CarEditor extends react__WEBPACK_IMPORTED_MODULE_1__["Comp
     }))), react__WEBPACK_IMPORTED_MODULE_1__["createElement"]("div", {
       className: "d-flex justify-content-end"
     }, react__WEBPACK_IMPORTED_MODULE_1__["createElement"]("button", {
+      tabIndex: 9,
       style: {
         marginRight: "0.5rem"
       },
       type: "button",
       className: "btn btn-primary",
-      onClick: () => {
-        carEditorStore.checkAllErrors();
-
-        if (carEditorStore.isAllValidated) {
-          let values = carEditorStore.values;
-          let car = {
-            make: values[CarEditorFields.MAKE].value,
-            maturityDate: values[CarEditorFields.MATURITY_DATE].value,
-            model: values[CarEditorFields.MODEL].value,
-            price: Number.parseInt(values[CarEditorFields.PRICE].value),
-            getPK: () => {
-              return {
-                make: car.make,
-                model: car.model
-              };
-            }
-          };
-          let saveAction;
-
-          if (isCreateCarState) {
-            saveAction = _services_CarService__WEBPACK_IMPORTED_MODULE_7__["carService"].createCar;
-          } else {
-            saveAction = _services_CarService__WEBPACK_IMPORTED_MODULE_7__["carService"].updateCar;
-          }
-
-          let createPromise = saveAction(car);
-          let notification = _UIStore__WEBPACK_IMPORTED_MODULE_9__["uiStore"].createNotification();
-          let promises = [];
-          promises.push(createPromise.then(() => {
-            notification.content = "Created car succesefully";
-            notification.type = _UIStore__WEBPACK_IMPORTED_MODULE_9__["NotificationType"].SUCCESS;
-            carEditorStore.reset();
-            this.props.saveCarEvent(car, isCreateCarState);
-          }));
-          promises.push(createPromise.catch(res => {
-            switch (res.response.status) {
-              case 400:
-                notification.content = "Not authorized";
-                break;
-
-              case 401:
-                notification.content = "Not authorized";
-                break;
-
-              default:
-                notification.content = "Error inserting car";
-            }
-
-            notification.type = _UIStore__WEBPACK_IMPORTED_MODULE_9__["NotificationType"].ERROR;
-          }));
-          Promise.all(promises).finally(() => {
-            _UIStore__WEBPACK_IMPORTED_MODULE_9__["uiStore"].addNotificationTemp(notification, 3000);
-          });
-        }
-      }
+      onClick: () => saveButtonClick.bind(mainEditor)(isCreateCarState)
     }, "save car"), !carEditorStore.values[CarEditorFields.IS_CREATION_STATE].value && react__WEBPACK_IMPORTED_MODULE_1__["createElement"]("button", {
+      tabIndex: 10,
       style: {
         marginRight: "0.5rem"
       },
@@ -48494,17 +48520,40 @@ var __decorate = undefined && undefined.__decorate || function (decorators, targ
 class Store {
   constructor() {
     this.isOpen = false;
+    this.selectedIndex = -1;
   }
 
   updateState(isOpen) {
     this.isOpen = isOpen;
   }
 
+  incremenSelectedIndex(max) {
+    this.isOpen = true;
+
+    if (this.selectedIndex < max) {
+      this.selectedIndex++;
+    }
+  }
+
+  decremenSelectedIndex() {
+    this.isOpen = true;
+
+    if (this.selectedIndex > 0) {
+      this.selectedIndex--;
+    }
+  }
+
 }
 
 __decorate([mobx__WEBPACK_IMPORTED_MODULE_3__["observable"]], Store.prototype, "isOpen", void 0);
 
+__decorate([mobx__WEBPACK_IMPORTED_MODULE_3__["observable"]], Store.prototype, "selectedIndex", void 0);
+
 __decorate([mobx__WEBPACK_IMPORTED_MODULE_3__["action"]], Store.prototype, "updateState", null);
+
+__decorate([mobx__WEBPACK_IMPORTED_MODULE_3__["action"]], Store.prototype, "incremenSelectedIndex", null);
+
+__decorate([mobx__WEBPACK_IMPORTED_MODULE_3__["action"]], Store.prototype, "decremenSelectedIndex", null);
 
 function createDefaultDropDownInputStore() {
   return new Store();
@@ -48523,6 +48572,36 @@ function toggle(store, disabled) {
 function selectItem(updater, element, store, item) {
   updater(element[item]);
   store.updateState(false);
+}
+
+function onDropDownButtonKeyDown(size) {
+  const store = this.props.store;
+  const updater = this.props.updateValue;
+  const element = this.props.element;
+  return event => {
+    switch (event.keyCode) {
+      case 38:
+        //up key
+        store.decremenSelectedIndex();
+        event.preventDefault();
+        break;
+
+      case 40:
+        //down key
+        store.incremenSelectedIndex(size - 1);
+        event.preventDefault();
+        break;
+
+      case 13:
+        selectItem(updater, element, store, element[store.selectedIndex]);
+        event.preventDefault();
+        break;
+    }
+  };
+}
+
+function onButtonBlur() {
+  this.props.store.updateState(false);
 }
 
 let DropDownInput = class DropDownInput extends react__WEBPACK_IMPORTED_MODULE_0__["Component"] {
@@ -48550,23 +48629,27 @@ let DropDownInput = class DropDownInput extends react__WEBPACK_IMPORTED_MODULE_0
     }, react__WEBPACK_IMPORTED_MODULE_0__["createElement"]("div", {
       className: "input-group-prepend"
     }, react__WEBPACK_IMPORTED_MODULE_0__["createElement"]("button", {
+      tabIndex: this.props.tabIndex,
       className: "btn btn-outline-secondary dropdown-toggle",
       type: "button",
       disabled: this.props.disabled,
+      onKeyDown: onDropDownButtonKeyDown.bind(currentComponent)(labelsCount),
       onClick: () => toggle(this.props.store, disabled),
-      onBlur: () => this.props.store.updateState(false)
+      onBlur: onButtonBlur.bind(this)
     }, "Choose maker..."), react__WEBPACK_IMPORTED_MODULE_0__["createElement"]("div", {
       className: classesIsOpen
-    }, labels.map(item => {
+    }, labels.map((item, idx) => {
       return react__WEBPACK_IMPORTED_MODULE_0__["createElement"]("a", {
         key: item,
         onMouseDown: event => event.preventDefault(),
         onClick: () => selectItem(this.props.updateValue, this.props.element, this.props.store, item),
-        className: "dropdown-item",
+        className: classnames_bind__WEBPACK_IMPORTED_MODULE_1___default()({
+          "dropdown-item": true,
+          "selected": this.props.store.selectedIndex === idx
+        }),
         href: "javascript:void(0)"
       }, item);
     }))), react__WEBPACK_IMPORTED_MODULE_0__["createElement"]("input", {
-      tabIndex: this.props.tabIndex,
       name: this.props.name,
       type: "text",
       className: classesIsValid,

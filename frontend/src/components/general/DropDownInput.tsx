@@ -18,9 +18,27 @@ export interface DropDownInputProps {
 class Store {
   @observable
   isOpen: boolean = false;
+  @observable
+  selectedIndex: number = -1;
+
   @action
   updateState(isOpen: boolean) {
     this.isOpen = isOpen;
+  }
+
+  @action
+  incremenSelectedIndex(max:number) {
+    this.isOpen = true;
+    if(this.selectedIndex<max){
+      this.selectedIndex++;
+    }
+  }
+  @action
+  decremenSelectedIndex() {
+    this.isOpen = true;
+    if(this.selectedIndex>0){
+      this.selectedIndex--;
+    }
   }
 }
 
@@ -44,6 +62,41 @@ function selectItem(updater, element, store: Store, item) {
   store.updateState(false);
 }
 
+function onDropDownButtonKeyDown(
+  this:DropDownInput,
+  size: number
+): (KeyboardEvent) => void {
+  const store:Store = this.props.store;
+  const updater:(value: number) => void = this.props.updateValue;
+  const element:{ [index: number]: string } = this.props.element;
+  return (event: KeyboardEvent) => {
+    switch (event.keyCode) {
+      case 38: //up key
+        store.decremenSelectedIndex()
+        event.preventDefault();
+        break;
+      case 40: //down key
+        store.incremenSelectedIndex(size-1)
+        event.preventDefault();
+        break;
+      case 13:
+          selectItem(
+            updater,
+            element,
+            store,
+            element[store.selectedIndex]
+          )
+          event.preventDefault();
+          break;
+
+    }
+  };
+}
+
+function onButtonBlur() {
+  this.props.store.updateState(false);
+}
+
 @observer
 export class DropDownInput extends React.Component<DropDownInputProps, any> {
   render() {
@@ -64,7 +117,7 @@ export class DropDownInput extends React.Component<DropDownInputProps, any> {
       key => this.props.element[key]
     );
 
-    let currentComponent = this;
+    let currentComponent:DropDownInput = this;
 
     return (
       <div className="form-group col-sm-10 col-md-8 col-lg-6 mb-3 mb-sm-3">
@@ -72,15 +125,17 @@ export class DropDownInput extends React.Component<DropDownInputProps, any> {
         <div className="input-group">
           <div className="input-group-prepend">
             <button
+              tabIndex={this.props.tabIndex}
               className="btn btn-outline-secondary dropdown-toggle"
               type="button"
               disabled={this.props.disabled}
+              onKeyDown={onDropDownButtonKeyDown.bind(currentComponent)(labelsCount)}
               onClick={() => toggle(this.props.store, disabled)}
-              onBlur={() => this.props.store.updateState(false)}>
+              onBlur={onButtonBlur.bind(this)}>
               Choose maker...
             </button>
             <div className={classesIsOpen}>
-              {labels.map(item => {
+              {labels.map((item,idx) => {
                 return (
                   <a
                     key={item}
@@ -93,7 +148,7 @@ export class DropDownInput extends React.Component<DropDownInputProps, any> {
                         item
                       )
                     }
-                    className="dropdown-item"
+                    className={classNames({"dropdown-item":true,"selected":this.props.store.selectedIndex===idx})}
                     href="javascript:void(0)">
                     {item}
                   </a>
@@ -102,7 +157,6 @@ export class DropDownInput extends React.Component<DropDownInputProps, any> {
             </div>
           </div>
           <input
-            tabIndex={this.props.tabIndex}
             name={this.props.name}
             type="text"
             className={classesIsValid}
