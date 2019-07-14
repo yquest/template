@@ -3,6 +3,8 @@ verticles:
   rest: pt.fabm.template.rest.RestVerticle
 confs:
   rest:
+    #user token timeout in milliseconds
+    user_timeout: 1000
     host: localhost
     pdir: @pdir@
 

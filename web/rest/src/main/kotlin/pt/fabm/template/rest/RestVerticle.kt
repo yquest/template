@@ -9,6 +9,7 @@ import io.vertx.reactivex.ext.web.handler.StaticHandler
 import pt.fabm.template.extensions.*
 import pt.fabm.template.rest.controllers.CarController
 import pt.fabm.template.rest.controllers.UserController
+import pt.fabm.template.validation.RequiredException
 
 class RestVerticle : AbstractVerticle() {
 
@@ -28,16 +29,18 @@ class RestVerticle : AbstractVerticle() {
 
     router.route().handler(webRoot)
 
-    val userService = UserController(vertx)
+    val userTimeout = config().getLong("user_timeout") ?: throw
+    RequiredException("user cache timeout")
+    val userController = UserController(vertx,userTimeout)
     val carController = CarController(vertx)
 
-    router.post("/api/user").withBody().handlerSRR(userService::createUser)
-    router.post("/api/user/login").withCookies().withBody().handlerSRR(userService::userLogin)
-    router.get("/api/user/logout").withCookies().handlerSRR(userService::userLogout)
+    router.post("/api/user").withBody().handlerSRR(userController::createUser)
+    router.post("/api/user/login").withCookies().withBody().handlerSRR(userController::userLogin)
+    router.get("/api/user/logout").withCookies().handlerSRR(userController::userLogout)
     router.get("/api/car").handlerSRR(carController::getCar)
     router.get("/api/car/list").handlerSRR { carController.carList() }
-    router.post("/api/car").withBody().authHandler { carController.createOrUpdateCar(true, it.rc) }
-    router.put("/api/car").withBody().authHandler { carController.createOrUpdateCar(false, it.rc) }
+    router.post("/api/car").withBody().authHandler(userTimeout) { carController.createOrUpdateCar(true, it.rc) }
+    router.put("/api/car").withBody().authHandler(userTimeout) { carController.createOrUpdateCar(false, it.rc) }
     router.delete("/api/car").handlerSRR(carController::deleteCar)
 
     router.route().handler {

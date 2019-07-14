@@ -1,16 +1,24 @@
 package pt.fabm.template.dao
 
+import Consts
+import io.jsonwebtoken.ExpiredJwtException
+import io.jsonwebtoken.Jwts
 import io.reactivex.Observable
 import io.vertx.core.Handler
 import io.vertx.junit5.Timeout
 import io.vertx.junit5.VertxExtension
 import io.vertx.junit5.VertxTestContext
 import io.vertx.reactivex.core.Vertx
+import org.junit.Assert
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.DisplayName
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.ExtendWith
-import pt.fabm.template.extensions.userTimers
+import java.time.Instant
+import java.time.LocalDateTime
+import java.time.ZoneId
+import java.time.temporal.ChronoUnit
+import java.util.*
 import java.util.concurrent.TimeUnit
 
 @ExtendWith(VertxExtension::class)
@@ -44,43 +52,57 @@ class LooseTests {
   }
 
   @Test
-  @DisplayName("test timer")
-  @Timeout(value = 10, timeUnit = TimeUnit.SECONDS)
-  @Throws(Throwable::class)
-  fun testTimer(vertx: Vertx, testContext: VertxTestContext) {
-    val username = "abcd"
-    var counter = 0
-    val timerCallback = Handler<Long> { idTimer ->
-      println("do timer:${idTimer}")
-      userTimers.remove(username)
-      assertEquals(7,counter)
-      testContext.completeNow()
+  fun checkTokenExpirationDate(vertx: Vertx, testContext: VertxTestContext) {
+
+    val user = "xico"
+
+    fun datePlus2Seconds() = LocalDateTime
+      .now()
+      .plus(2000,ChronoUnit.MILLIS)
+      .atZone(ZoneId.systemDefault())
+      .toInstant()
+      .let { Date.from(it) }
+
+    val initialDate = datePlus2Seconds()
+
+    fun createToken(date:Date, user:String):String = Jwts.builder()
+        .setSubject(user)
+        .setExpiration(date)
+        .signWith(Consts.SIGNING_KEY)
+        .compact()
+
+
+    val firstToken = createToken(initialDate, user)
+
+    val asyncCheck = testContext.checkpoint(3)
+    vertx.setTimer(500) {
+      println(firstToken)
+      val claims = Jwts.parser()
+        .setSigningKey(Consts.SIGNING_KEY)
+        .parseClaimsJws(firstToken)
+
+      Assert.assertEquals(user, claims.body.subject)
+      Assert.assertTrue(claims.body.expiration.toInstant().isAfter(Instant.now()))
+      asyncCheck.flag()
     }
 
-    fun doOnLogin(firstTime: Boolean = false) {
-      userTimers.computeIfPresent(username) { _, idTimer ->
-        if (firstTime) throw IllegalStateException("unexpected call!!")
-        println("cancel timer:${idTimer}")
-        vertx.cancelTimer(idTimer)
-        counter++
-        val timerId = vertx.setTimer(1000, timerCallback)
-        println("create timer:${timerId}")
-        timerId
+    vertx.setTimer(3000) {
+      try {
+        val claims = Jwts.parser()
+          .setSigningKey(Consts.SIGNING_KEY)
+          .parseClaimsJws(firstToken)
+        Assert.assertEquals(user, claims.body.subject)
+        Assert.assertTrue(claims.body.expiration.toInstant().isBefore(Instant.now()))
+        Assert.fail()
+      } catch (e: ExpiredJwtException) {
+        Assert.assertEquals(user, e.claims.subject)
+        asyncCheck.flag()
       }
-
-      userTimers.computeIfAbsent(username) {
-        counter++
-        val timerId = vertx.setTimer(2000, timerCallback)
-        println("create first timer:${timerId}")
-        timerId
-      }
+      val currentDate = datePlus2Seconds()
+      Assert.assertNotEquals(firstToken, createToken(currentDate, user))
+      asyncCheck.flag()
     }
 
-    doOnLogin(true)
-    (1..6).forEach {
-      vertx.setTimer((it*500).toLong()) {
-        doOnLogin()
-      }
-    }
   }
+
 }

@@ -1,6 +1,7 @@
 package pt.fabm.template.extensions
 
 import Consts
+import io.jsonwebtoken.ExpiredJwtException
 import io.jsonwebtoken.Jwts
 import io.netty.handler.codec.http.cookie.ServerCookieDecoder
 import io.reactivex.Single
@@ -16,13 +17,18 @@ import io.vertx.reactivex.ext.web.handler.BodyHandler
 import io.vertx.reactivex.ext.web.handler.CookieHandler
 import pt.fabm.template.ErrorResponse
 import pt.fabm.template.rest.RestResponse
+import pt.fabm.template.rest.RestVerticle
 import pt.fabm.template.validation.AuthContext
 import pt.fabm.template.validation.AuthException
+import java.time.Instant
+import java.time.LocalDateTime
+import java.time.ZoneId
+import java.time.temporal.ChronoUnit
+import java.util.*
 
 typealias ToSingleRestResponse = (RoutingContext) -> Single<RestResponse>
 
-val LOGGER = LoggerFactory.getLogger(Route::class.java)
-val userTimers: MutableMap<String, Long> = mutableMapOf()
+val LOGGER = LoggerFactory.getLogger(RestVerticle::class.java)!!
 
 fun errorResolver(error: Throwable, applyResponse: (RestResponse) -> Unit) {
   when (error) {
@@ -72,22 +78,49 @@ fun Route.handlerSRR(handler: ToSingleRestResponse): Route {
   return this.handler(mainHandler)
 }
 
-fun Route.authHandler(handler: (AuthContext) -> Single<RestResponse>): Route {
+fun Route.authHandler(userTimeout:Long,handler: (AuthContext) -> Single<RestResponse>): Route {
 
   val toAuthContext = { rc: RoutingContext ->
     val cookieHeader = rc.request().headers().get(HttpHeaders.COOKIE) ?: throw AuthException()
     val allCookies = ServerCookieDecoder.STRICT.decode(cookieHeader).map { Cookie.newInstance(CookieImpl(it)) }
-    val cookie = allCookies.find { cookie -> cookie.name == Consts.ACCESS_TOKEN_COOKIE } ?: throw AuthException()
     val claims = try {
+      val cookie = allCookies.find { cookie -> cookie.name == Consts.ACCESS_TOKEN_COOKIE } ?: throw AuthException()
+      LOGGER.trace("login in ${Instant.now()} with token ${cookie.value}")
+
       Jwts.parser()
         .setSigningKey(Consts.SIGNING_KEY)
-        .parseClaimsJws(cookie.value)
-    } catch (e: Exception) {
+        .parseClaimsJws(cookie.value).body
+    }
+    catch (e:ExpiredJwtException){
+      LOGGER.trace("token expired")
+      val datePlusTimeout = LocalDateTime
+        .now()
+        .plus(userTimeout, ChronoUnit.MILLIS)
+        .atZone(ZoneId.systemDefault())
+        .toInstant()
+        .let { Date.from(it) }
+
+      val jws = Jwts.builder()
+        .setSubject(e.claims.subject)
+        .signWith(Consts.SIGNING_KEY)
+        .setExpiration(datePlusTimeout)
+        .compact()
+
+      LOGGER.trace("new token $jws")
+
+      val cookie = Cookie.cookie(Consts.ACCESS_TOKEN_COOKIE, jws)
+      cookie.setHttpOnly(true)
+      cookie.path = "/api/"
+      rc.addCookie(cookie)
+      e.claims
+    }
+    catch (e: AuthException) {
+      throw e
+    }
+    catch (e: Exception) {
       throw AuthException()
     }
 
-    val subject = claims.body.subject ?: throw AuthException()
-    if (!userTimers.contains(subject)) throw AuthException()
     handler(AuthContext(claims, rc))
   }
 

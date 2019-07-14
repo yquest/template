@@ -45,6 +45,7 @@ dependencies {
   integrationTestImplementation "io.vertx:vertx-web-client:$vertxVersion"
   integrationTestRuntimeOnly "org.junit.jupiter:junit-jupiter-engine:$junitJupiterEngineVersion"
   integrationTestImplementation "org.junit.jupiter:junit-jupiter-api:$junitJupiterEngineVersion"
+  integrationTestImplementation group: 'org.apache.httpcomponents', name: 'httpclient', version: '4.5.9'
 }
 
 distributions {

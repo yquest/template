@@ -3,20 +3,24 @@ package pt.fabm.template.rest.controllers
 import Consts
 import io.jsonwebtoken.Jwts
 import io.reactivex.Single
-import io.vertx.core.Handler
 import io.vertx.reactivex.core.Vertx
 import io.vertx.reactivex.core.eventbus.Message
 import io.vertx.reactivex.ext.web.Cookie
 import io.vertx.reactivex.ext.web.RoutingContext
 import pt.fabm.template.EventBusAddresses
+import pt.fabm.template.extensions.LOGGER
 import pt.fabm.template.extensions.checkedString
 import pt.fabm.template.extensions.toHash
-import pt.fabm.template.extensions.userTimers
 import pt.fabm.template.models.Login
 import pt.fabm.template.models.UserRegisterIn
 import pt.fabm.template.rest.RestResponse
+import java.time.Instant
+import java.time.LocalDateTime
+import java.time.ZoneId
+import java.time.temporal.ChronoUnit
+import java.util.*
 
-class UserController(val vertx: Vertx) {
+class UserController(val vertx: Vertx, private val userTimeout: Long) {
   fun userLogout(rc: RoutingContext): Single<RestResponse> {
     rc.getCookie(Consts.ACCESS_TOKEN_COOKIE)?.setPath("/api/")?.setMaxAge(0L)
     return Single.just(RestResponse())
@@ -34,10 +38,22 @@ class UserController(val vertx: Vertx) {
         return RestResponse(statusCode = 403)
       }
       val username = login.username
+
+      val datePlusTimeout = LocalDateTime
+        .now()
+        .plus(userTimeout,ChronoUnit.MILLIS)
+        .atZone(ZoneId.systemDefault())
+        .toInstant()
+        .let { Date.from(it) }
+
       val jws = Jwts.builder()
         .setSubject(username)
+        .setExpiration(datePlusTimeout)
         .signWith(Consts.SIGNING_KEY)
         .compact()
+
+      LOGGER.trace("expiring in ${datePlusTimeout.toInstant()}:$jws")
+
       var cookie = Cookie.cookie(Consts.ACCESS_TOKEN_COOKIE, jws)
       cookie.setHttpOnly(true)
       cookie.path = "/api/"
@@ -46,19 +62,6 @@ class UserController(val vertx: Vertx) {
       cookie = Cookie.cookie(Consts.USER_NAME_COOKIE, username)
       cookie.path = "/api/*"
       rc.addCookie(cookie)
-
-      val timerTimeout = 30000L
-
-      val timerCallback = Handler<Long> { userTimers.remove(username)}
-
-      userTimers.computeIfPresent(username) { _, idTimer ->
-        vertx.cancelTimer(idTimer)
-        val timerId = vertx.setTimer(timerTimeout, timerCallback)
-        timerId
-      }
-
-      userTimers.computeIfAbsent(username) { vertx.setTimer(timerTimeout, timerCallback)}
-
       return RestResponse(statusCode = 200)
     }
 
