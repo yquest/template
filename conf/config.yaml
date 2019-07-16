@@ -6,4 +6,4 @@ confs:
     host: 0.0.0.0
     pdir: ./frontend/dist
     #user token timeout in milliseconds 30 minutes = 30*60*1000
-    user_timeout: 1_800_000
+    user_timeout: 1.800.000
