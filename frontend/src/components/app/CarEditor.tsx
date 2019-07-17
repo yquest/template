@@ -187,10 +187,7 @@ function onChangeHour(
     if (hour !== NaN || hour < 0 || hour > 23) {
       maturityDate.setHours(hour);
     }
-    carEditorStore.update(
-      CarEditorFields.MATURITY_DATE,
-      maturityDate
-    );
+    carEditorStore.update(CarEditorFields.MATURITY_DATE, maturityDate);
   };
 }
 function onChangeMinutes(
@@ -207,10 +204,7 @@ function onChangeMinutes(
     if (hour !== NaN || hour < 0 || hour >= 60) {
       maturityDate.setMinutes(hour);
     }
-    carEditorStore.update(
-      CarEditorFields.MATURITY_DATE,
-      maturityDate
-    );
+    carEditorStore.update(CarEditorFields.MATURITY_DATE, maturityDate);
   };
 }
 
@@ -224,7 +218,7 @@ export class CarEditor extends React.Component<CarEditorProps, {}> {
     let maturityDate: Date =
       carEditorStore.values[CarEditorFields.MATURITY_DATE].value;
     return (
-      <div>
+      <form>
         <h3>Car {titleAction}</h3>
         <div
           className="card"
@@ -386,7 +380,7 @@ export class CarEditor extends React.Component<CarEditorProps, {}> {
             </button>
           )}
         </div>
-      </div>
+      </form>
     );
   }
 }

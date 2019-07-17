@@ -47615,7 +47615,7 @@ let CarEditor = class CarEditor extends react__WEBPACK_IMPORTED_MODULE_1__["Comp
     let isCreateCarState = carEditorStore.values[CarEditorFields.IS_CREATION_STATE].value;
     let titleAction = isCreateCarState ? "creation" : "update";
     let maturityDate = carEditorStore.values[CarEditorFields.MATURITY_DATE].value;
-    return react__WEBPACK_IMPORTED_MODULE_1__["createElement"]("div", null, react__WEBPACK_IMPORTED_MODULE_1__["createElement"]("h3", null, "Car ", titleAction), react__WEBPACK_IMPORTED_MODULE_1__["createElement"]("div", {
+    return react__WEBPACK_IMPORTED_MODULE_1__["createElement"]("form", null, react__WEBPACK_IMPORTED_MODULE_1__["createElement"]("h3", null, "Car ", titleAction), react__WEBPACK_IMPORTED_MODULE_1__["createElement"]("div", {
       className: "card",
       style: {
         marginTop: "1rem",
