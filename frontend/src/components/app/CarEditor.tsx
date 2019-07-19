@@ -122,6 +122,7 @@ function saveButtonClick(isCreateCarState: boolean) {
       uiStore.addNotificationTemp(notification, 3000);
     });
   }
+  return false;
 }
 function onChangeYear(
   maturityDate
@@ -218,7 +219,7 @@ export class CarEditor extends React.Component<CarEditorProps, {}> {
     let maturityDate: Date =
       carEditorStore.values[CarEditorFields.MATURITY_DATE].value;
     return (
-      <form>
+      <form onSubmit={() => saveButtonClick.bind(mainEditor)(isCreateCarState)}>
         <h3>Car {titleAction}</h3>
         <div
           className="card"
@@ -364,9 +365,9 @@ export class CarEditor extends React.Component<CarEditorProps, {}> {
           <button
             tabIndex={9}
             style={{ marginRight: "0.5rem" }}
-            type="button"
+            type="submit"
             className="btn btn-primary"
-            onClick={() => saveButtonClick.bind(mainEditor)(isCreateCarState)}>
+            >
             save car
           </button>
           {!carEditorStore.values[CarEditorFields.IS_CREATION_STATE].value && (
