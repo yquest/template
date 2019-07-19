@@ -29,7 +29,7 @@ let loginStore = createGenericStore(2, () => "", validation);
 export class LoginEditor extends React.Component<LoginProps, {}> {
   render() {
     return (
-      <div>
+      <form>
         <h3>Sign in</h3>
         <div
           className="card"
@@ -63,7 +63,6 @@ export class LoginEditor extends React.Component<LoginProps, {}> {
             />
           </div>
         </div>
-
         <div className="d-flex justify-content-end">
           <button
             style={{ marginRight: "0.5rem" }}
@@ -103,7 +102,7 @@ export class LoginEditor extends React.Component<LoginProps, {}> {
             Sign up
           </button>
         </div>
-      </div>
+      </form>
     );
   }
 }
