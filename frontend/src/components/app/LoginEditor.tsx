@@ -25,11 +25,34 @@ const validation: (idx: LoginEditorFields, value: string) => string = (
 
 let loginStore = createGenericStore(2, () => "", validation);
 
+function onSubmit(): boolean {
+  loginStore.checkAllErrors();
+  if (!loginStore.isAllValidated) {
+    return false;
+  }
+  let user: User = {
+    username: loginStore.values[LoginEditorFields.LOGIN].value,
+    password: loginStore.values[LoginEditorFields.PASSWORD].value
+  };
+  userService.userLogin(user).then(res => {
+    if (res.status === 200) {
+      this.props.loginSuccessefull(user.username);
+    } else {
+      let notification = uiStore.createNotification();
+      notification.content = "Authentication fails";
+      notification.type = NotificationType.ERROR;
+      uiStore.addNotificationTemp(notification, 3000);
+    }
+    loginStore.reset();
+  });
+  return false;
+}
+
 @observer
 export class LoginEditor extends React.Component<LoginProps, {}> {
   render() {
     return (
-      <form>
+      <form onSubmit={onSubmit.bind(this)}>
         <h3>Sign in</h3>
         <div
           className="card"
@@ -66,29 +89,8 @@ export class LoginEditor extends React.Component<LoginProps, {}> {
         <div className="d-flex justify-content-end">
           <button
             style={{ marginRight: "0.5rem" }}
-            type="button"
-            className="btn btn-primary"
-            onClick={() => {
-              loginStore.checkAllErrors();
-              if (!loginStore.isAllValidated) {
-                return;
-              }
-              let user: User = {
-                username: loginStore.values[LoginEditorFields.LOGIN].value,
-                password: loginStore.values[LoginEditorFields.PASSWORD].value
-              };
-              userService.userLogin(user).then(res => {
-                if (res.status === 200) {
-                  this.props.loginSuccessefull(user.username);
-                } else {
-                  let notification = uiStore.createNotification();
-                  notification.content = "Authentication fails";
-                  notification.type = NotificationType.ERROR;
-                  uiStore.addNotificationTemp(notification, 3000);
-                }
-                loginStore.reset();
-              });
-            }}>
+            type="submit"
+            className="btn btn-primary">
             Sign in
           </button>
           <button

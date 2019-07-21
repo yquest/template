@@ -47552,6 +47552,8 @@ function saveButtonClick(isCreateCarState) {
       _UIStore__WEBPACK_IMPORTED_MODULE_9__["uiStore"].addNotificationTemp(notification, 3000);
     });
   }
+
+  return false;
 }
 
 function onChangeYear(maturityDate) {
@@ -47615,7 +47617,9 @@ let CarEditor = class CarEditor extends react__WEBPACK_IMPORTED_MODULE_1__["Comp
     let isCreateCarState = carEditorStore.values[CarEditorFields.IS_CREATION_STATE].value;
     let titleAction = isCreateCarState ? "creation" : "update";
     let maturityDate = carEditorStore.values[CarEditorFields.MATURITY_DATE].value;
-    return react__WEBPACK_IMPORTED_MODULE_1__["createElement"]("form", null, react__WEBPACK_IMPORTED_MODULE_1__["createElement"]("h3", null, "Car ", titleAction), react__WEBPACK_IMPORTED_MODULE_1__["createElement"]("div", {
+    return react__WEBPACK_IMPORTED_MODULE_1__["createElement"]("form", {
+      onSubmit: () => saveButtonClick.bind(mainEditor)(isCreateCarState)
+    }, react__WEBPACK_IMPORTED_MODULE_1__["createElement"]("h3", null, "Car ", titleAction), react__WEBPACK_IMPORTED_MODULE_1__["createElement"]("div", {
       className: "card",
       style: {
         marginTop: "1rem",
@@ -47727,9 +47731,8 @@ let CarEditor = class CarEditor extends react__WEBPACK_IMPORTED_MODULE_1__["Comp
       style: {
         marginRight: "0.5rem"
       },
-      type: "button",
-      className: "btn btn-primary",
-      onClick: () => saveButtonClick.bind(mainEditor)(isCreateCarState)
+      type: "submit",
+      className: "btn btn-primary"
     }, "save car"), !carEditorStore.values[CarEditorFields.IS_CREATION_STATE].value && react__WEBPACK_IMPORTED_MODULE_1__["createElement"]("button", {
       tabIndex: 10,
       style: {
@@ -48047,9 +48050,38 @@ const validation = (idx, value) => {
 };
 
 let loginStore = Object(_GenericStoreValidator__WEBPACK_IMPORTED_MODULE_4__["createGenericStore"])(2, () => "", validation);
+
+function onSubmit() {
+  loginStore.checkAllErrors();
+
+  if (!loginStore.isAllValidated) {
+    return false;
+  }
+
+  let user = {
+    username: loginStore.values[LoginEditorFields.LOGIN].value,
+    password: loginStore.values[LoginEditorFields.PASSWORD].value
+  };
+  _services_UserService__WEBPACK_IMPORTED_MODULE_2__["userService"].userLogin(user).then(res => {
+    if (res.status === 200) {
+      this.props.loginSuccessefull(user.username);
+    } else {
+      let notification = _UIStore__WEBPACK_IMPORTED_MODULE_5__["uiStore"].createNotification();
+      notification.content = "Authentication fails";
+      notification.type = _UIStore__WEBPACK_IMPORTED_MODULE_5__["NotificationType"].ERROR;
+      _UIStore__WEBPACK_IMPORTED_MODULE_5__["uiStore"].addNotificationTemp(notification, 3000);
+    }
+
+    loginStore.reset();
+  });
+  return false;
+}
+
 let LoginEditor = class LoginEditor extends react__WEBPACK_IMPORTED_MODULE_1__["Component"] {
   render() {
-    return react__WEBPACK_IMPORTED_MODULE_1__["createElement"]("div", null, react__WEBPACK_IMPORTED_MODULE_1__["createElement"]("h3", null, "Sign in"), react__WEBPACK_IMPORTED_MODULE_1__["createElement"]("div", {
+    return react__WEBPACK_IMPORTED_MODULE_1__["createElement"]("form", {
+      onSubmit: onSubmit.bind(this)
+    }, react__WEBPACK_IMPORTED_MODULE_1__["createElement"]("h3", null, "Sign in"), react__WEBPACK_IMPORTED_MODULE_1__["createElement"]("div", {
       className: "card",
       style: {
         marginTop: "1rem",
@@ -48080,32 +48112,8 @@ let LoginEditor = class LoginEditor extends react__WEBPACK_IMPORTED_MODULE_1__["
       style: {
         marginRight: "0.5rem"
       },
-      type: "button",
-      className: "btn btn-primary",
-      onClick: () => {
-        loginStore.checkAllErrors();
-
-        if (!loginStore.isAllValidated) {
-          return;
-        }
-
-        let user = {
-          username: loginStore.values[LoginEditorFields.LOGIN].value,
-          password: loginStore.values[LoginEditorFields.PASSWORD].value
-        };
-        _services_UserService__WEBPACK_IMPORTED_MODULE_2__["userService"].userLogin(user).then(res => {
-          if (res.status === 200) {
-            this.props.loginSuccessefull(user.username);
-          } else {
-            let notification = _UIStore__WEBPACK_IMPORTED_MODULE_5__["uiStore"].createNotification();
-            notification.content = "Authentication fails";
-            notification.type = _UIStore__WEBPACK_IMPORTED_MODULE_5__["NotificationType"].ERROR;
-            _UIStore__WEBPACK_IMPORTED_MODULE_5__["uiStore"].addNotificationTemp(notification, 3000);
-          }
-
-          loginStore.reset();
-        });
-      }
+      type: "submit",
+      className: "btn btn-primary"
     }, "Sign in"), react__WEBPACK_IMPORTED_MODULE_1__["createElement"]("button", {
       style: {
         marginRight: "0.5rem"
@@ -48314,9 +48322,45 @@ const validation = (idx, value) => {
 };
 
 let userRegisterStore = Object(_GenericStoreValidator__WEBPACK_IMPORTED_MODULE_4__["createGenericStore"])(3, idx => "", validation);
+
+function onSubmitUserRegister(successefullyRegistered) {
+  return () => {
+    let user = {
+      username: userRegisterStore.values[UserRegisterEditorFields.USERNAME].value,
+      password: userRegisterStore.values[UserRegisterEditorFields.PASSWORD].value,
+      email: userRegisterStore.values[UserRegisterEditorFields.EMAIL].value
+    };
+    userRegisterStore.checkAllErrors();
+    let isAllValidated = userRegisterStore.isAllValidated;
+    console.log("is all validated?", isAllValidated);
+
+    if (!userRegisterStore.isAllValidated) {
+      return false;
+    }
+
+    _services_UserService__WEBPACK_IMPORTED_MODULE_2__["userService"].registerUser(user).then(res => {
+      let notification = _UIStore__WEBPACK_IMPORTED_MODULE_5__["uiStore"].createNotification();
+
+      if (res.status === 204) {
+        notification.content = "Success creating user";
+        successefullyRegistered();
+        userRegisterStore.reset();
+      } else {
+        notification.content = "Error when try to create user";
+        notification.type = _UIStore__WEBPACK_IMPORTED_MODULE_5__["NotificationType"].ERROR;
+      }
+
+      _UIStore__WEBPACK_IMPORTED_MODULE_5__["uiStore"].addNotificationTemp(notification, 3000);
+    });
+    return false;
+  };
+}
+
 let UserRegisterEditor = class UserRegisterEditor extends react__WEBPACK_IMPORTED_MODULE_1__["Component"] {
   render() {
-    return react__WEBPACK_IMPORTED_MODULE_1__["createElement"]("div", null, react__WEBPACK_IMPORTED_MODULE_1__["createElement"]("h3", null, "User register"), react__WEBPACK_IMPORTED_MODULE_1__["createElement"]("div", {
+    return react__WEBPACK_IMPORTED_MODULE_1__["createElement"]("form", {
+      onSubmit: onSubmitUserRegister(this.props.successefullyRegistered)
+    }, react__WEBPACK_IMPORTED_MODULE_1__["createElement"]("h3", null, "User register"), react__WEBPACK_IMPORTED_MODULE_1__["createElement"]("div", {
       className: "card",
       style: {
         marginTop: "1rem",
@@ -48348,37 +48392,8 @@ let UserRegisterEditor = class UserRegisterEditor extends react__WEBPACK_IMPORTE
       style: {
         marginRight: "0.5rem"
       },
-      type: "button",
-      className: "btn btn-primary",
-      onClick: () => {
-        let user = {
-          username: userRegisterStore.values[UserRegisterEditorFields.USERNAME].value,
-          password: userRegisterStore.values[UserRegisterEditorFields.PASSWORD].value,
-          email: userRegisterStore.values[UserRegisterEditorFields.EMAIL].value
-        };
-        userRegisterStore.checkAllErrors();
-        let isAllValidated = userRegisterStore.isAllValidated;
-        console.log("is all validated?", isAllValidated);
-
-        if (!userRegisterStore.isAllValidated) {
-          return;
-        }
-
-        _services_UserService__WEBPACK_IMPORTED_MODULE_2__["userService"].registerUser(user).then(res => {
-          let notification = _UIStore__WEBPACK_IMPORTED_MODULE_5__["uiStore"].createNotification();
-
-          if (res.status === 204) {
-            notification.content = "Success creating user";
-            this.props.successefullyRegistered();
-            userRegisterStore.reset();
-          } else {
-            notification.content = "Error when try to create user";
-            notification.type = _UIStore__WEBPACK_IMPORTED_MODULE_5__["NotificationType"].ERROR;
-          }
-
-          _UIStore__WEBPACK_IMPORTED_MODULE_5__["uiStore"].addNotificationTemp(notification, 3000);
-        });
-      }
+      type: "submit",
+      className: "btn btn-primary"
     }, "save user"), react__WEBPACK_IMPORTED_MODULE_1__["createElement"]("button", {
       style: {
         marginRight: "0.5rem"

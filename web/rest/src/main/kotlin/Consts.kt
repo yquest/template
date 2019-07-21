@@ -7,6 +7,7 @@ object Consts {
   private val PROPS = loadProps()
   val PASS_PHRASE get() = PROPS[0]
   val PUBLIC_DIR get() = PROPS[1]
+  val VERSION get() = PROPS[2]
   val SIGNING_KEY = Keys.hmacShaKeyFor(PASS_PHRASE.toByteArray())!!
 
   private fun loadProps(): Array<String> {
@@ -14,7 +15,8 @@ object Consts {
     props.load(Consts::class.java.getResourceAsStream("/app.properties"))
     return arrayOf(
       props.getProperty("key"),
-      props.getProperty("pdir")
+      props.getProperty("pdir"),
+      props.getProperty("version")
     )
   }
 }
