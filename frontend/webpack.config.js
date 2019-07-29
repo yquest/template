@@ -76,7 +76,6 @@ module.exports = function(env, argv) {
 
   lenv.platform = lenv.platform || 'web';
 
-
   console.log(`env: ${JSON.stringify(env)}`);
 
   // server-specific configuration
@@ -88,9 +87,8 @@ module.exports = function(env, argv) {
     ]
     base.output.filename='server.js';
   }
-
   // client-specific configurations
-  if (lenv.platform === 'web') {
+  else if (lenv.platform === 'web') {
     base.entry = ['@babel/polyfill',
       './content/styles.scss',
       './main.tsx'
@@ -105,6 +103,13 @@ module.exports = function(env, argv) {
         hash: true,
       })
     );
+  }
+  else if(lenv.platform === 'web2'){
+    base.entry = ['@babel/polyfill',
+      './content/styles.scss',
+      './index2.tsx'
+    ]
+    base.output.filename='bundle.js';
   }
   return base;
 }

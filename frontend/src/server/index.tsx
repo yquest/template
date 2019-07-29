@@ -4,6 +4,7 @@ import * as React from "react";
 import { Car, MAKERS } from "../model/Car";
 import { App2 } from "../components/gen/App2Tpl";
 import { app2 } from "../components/app/props/App2Props";
+import { CarManager } from "../components/app/props/CarManager";
 const port = 3000;
 const server = express();
 
@@ -16,11 +17,21 @@ const html = ({ body }: { body: string }) => `
       <link rel="shortcut icon" href="favicon.ico"><link href="main.css?2085304dda2273394a86" rel="stylesheet"></head>
     </head>
     <body style="margin:0">
-      <div id="app">${body}</div>
+      <div id="root">${body}</div>
       <script type="text/javascript" src="bundle.js?eacfda388806c316a4fe"></script>
     </body>
   </html>
 `;
+
+const carManager: CarManager = {
+  edit: (car: Car) => () => {
+      console.log("update ignored");
+  },
+  remove: (car: Car) => () => {
+    console.log("remove ignored");
+  }
+};
+
 
 const App = () => {
   let car: Car = {
@@ -35,6 +46,7 @@ const App = () => {
 
   const cars = [car];
   return <App2
+    carManager={carManager}
     appState={app2.AppState.LIST_NO_AUTH}
     authenticated={true}
     cars={cars}

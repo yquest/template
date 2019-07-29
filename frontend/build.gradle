@@ -20,6 +20,10 @@ task nodeClientBuildProd(type: NpmTask) {
   args = ['run', 'buildProd']
 }
 
+task nodeClientBuildTestWeb2(type: NpmTask) {
+  args = ['run', 'web2']
+}
+
 task nodeSSRBuild(type: NpmTask) {
   args = ['run', 'ssr']
 }

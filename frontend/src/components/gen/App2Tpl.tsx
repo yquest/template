@@ -1,11 +1,8 @@
 import { observer } from "mobx-react";
-import { createModalContainer } from "../app/Modal";
 import { app2 } from "../app/props/App2Props";
 import * as React from "react";
 import { Notifications } from "../app/Notifications";
 import { CarList2 } from "./CarList2Tpl";
-
-const ModalContainer: any = () => ({});
 
 export const App2 = observer((props: app2.Props) => (
   <div className="container app">
@@ -25,7 +22,7 @@ export const App2 = observer((props: app2.Props) => (
     )}
     {(props.appState === app2.AppState.LIST_NO_AUTH ||
       props.appState === app2.AppState.CAR_EDIT_AUTH) && (
-      <CarList2 cars={props.cars} authenticated={props.authenticated} />
+      <CarList2 carManager={props.carManager} cars={props.cars} authenticated={props.authenticated}  />
     )}
   </div>
 ));

@@ -1,0 +1,21 @@
+<div class="container app" data-reactroot="">
+  <a class="float-right" href="#login">Sign in <i class="fas fa-sign-in-alt"></i></a>
+  <div class="fixed-top container">
+    <div class="float-right"></div>
+    </div>
+      <table>
+        <tbody>
+          <tr>
+            <th>Make</th>
+            <th>Model</th>
+            <th>Maturity date</th>
+            <th>Price</th>
+            <th colSpan="2">Actions</th>
+          </tr>
+          @foreach{car : cars}
+            @include{'test-carRow.mv', car}
+          @end{}
+        </tbody>
+      </table>
+    </div>
+</div>
