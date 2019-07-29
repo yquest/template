@@ -1,0 +1,18 @@
+plugins {
+  id 'groovy'
+}
+
+dependencies {
+  implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8:$kotlinVersion"
+  implementation group: 'org.codehaus.groovy', name: 'groovy-all', version: '2.5.6'
+
+  testRuntimeOnly "org.junit.jupiter:junit-jupiter-engine:$junitJupiterEngineVersion"
+  testImplementation "org.junit.jupiter:junit-jupiter-api:$junitJupiterEngineVersion"
+}
+
+task debugApp(type: JavaExec) {
+  main = 'pt.fabm.tpl.AppTemplate'
+  workingDir = '..' as File
+  classpath = sourceSets.main.runtimeClasspath
+  debug = false
+}

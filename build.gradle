@@ -19,7 +19,7 @@ ext {
 
 subprojects {
 
-  if ([':web:rest', ':web:shared', ':web:postgres-dao', ':web:main', ':it-mocks:dao'].contains(it.path)) {
+  if ([':html-tpl',':web:rest', ':web:shared', ':web:postgres-dao', ':web:main', ':it-mocks:dao'].contains(it.path)) {
     apply plugin: 'org.jetbrains.kotlin.jvm'
 
     repositories {
