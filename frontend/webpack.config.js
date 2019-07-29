@@ -11,15 +11,9 @@ module.exports = function(env, argv) {
     resolve: {
       extensions: ['.js', '.ts', '.tsx']
     },
-    entry: ['@babel/polyfill',
-      './content/styles.scss',
-      './main.tsx'
-    ],
     output: {
-      path: path.join(basePath, 'dist'),
-      filename: 'bundle.js'
+      path: path.join(basePath, 'dist')
     },
-    devtool: 'source-map',
     devServer: {
       contentBase: './dist', // Content base
       inline: true, // Enable watch and live reload
@@ -65,7 +59,7 @@ module.exports = function(env, argv) {
         { test: /\.woff2(\?v=\d+\.\d+\.\d+)?$/, loader: "file-loader?mimetype=application/font-woff" },
         { test: /\.ttf(\?v=\d+\.\d+\.\d+)?$/, loader: "file-loader?mimetype=application/octet-stream" },
         { test: /\.eot(\?v=\d+\.\d+\.\d+)?$/, loader: "file-loader" }
-  
+
       ],
     },
     plugins: [
@@ -82,7 +76,8 @@ module.exports = function(env, argv) {
 
   lenv.platform = lenv.platform || 'web';
 
-  console.log(`platform: ${env||'empty'}`);
+
+  console.log(`env: ${JSON.stringify(env)}`);
 
   // server-specific configuration
   if (lenv.platform === 'server') {
@@ -91,20 +86,18 @@ module.exports = function(env, argv) {
       './content/styles.scss',
       './server/index.tsx'
     ]
+    base.output.filename='server.js';
   }
-  
+
   // client-specific configurations
   if (lenv.platform === 'web') {
     base.entry = ['@babel/polyfill',
-    './content/styles.scss',
-    './main.tsx'
-  ]
+      './content/styles.scss',
+      './main.tsx'
+    ]
+    base.output.filename='bundle.js';
 
-    base.output = {
-      path: path.join(basePath, 'dist'),
-      filename: 'bundle.js'
-    }
-    base.plugins.push(      
+    base.plugins.push(
       new HtmlWebpackPlugin({
         filename: 'index.html', //Name of file in ./dist/
         template: 'index.html', //Name of template in ./src

@@ -12,13 +12,27 @@ node {
   workDir = file("${project.buildDir}/node")
   nodeModulesDir = file("${project.projectDir}")
 }
-task nodeBuild(type: NpmTask) {
+task nodeClientBuild(type: NpmTask) {
   args = ['run', 'build']
 }
 
-task distClean(type: Delete) {
-  delete fileTree(dir: "${project.projectDir}/dist", exclude: '.gitattributes')
+task nodeClientBuildProd(type: NpmTask) {
+  args = ['run', 'buildProd']
 }
 
-nodeBuild.dependsOn(npm_install)
-nodeBuild.enabled = true
+task nodeSSRBuild(type: NpmTask) {
+  args = ['run', 'ssr']
+}
+
+task expressRun(type: NodeTask){
+  script file('dist/server.js')
+}
+
+task distClean(type: Delete) {
+  delete fileTree(dir: "${project.projectDir}/dist")
+}
+
+nodeClientBuild.dependsOn(npm_install)
+nodeClientBuild.enabled = true
+nodeClientBuildProd.dependsOn(npm_install)
+nodeClientBuildProd.enabled = true

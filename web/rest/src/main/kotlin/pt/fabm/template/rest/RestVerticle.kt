@@ -1,13 +1,10 @@
 package pt.fabm.template.rest
 
-import Consts
 import io.reactivex.Completable
-import io.vertx.core.Handler
 import io.vertx.core.logging.Logger
 import io.vertx.core.logging.LoggerFactory
 import io.vertx.reactivex.core.AbstractVerticle
 import io.vertx.reactivex.ext.web.Router
-import io.vertx.reactivex.ext.web.RoutingContext
 import io.vertx.reactivex.ext.web.handler.StaticHandler
 import pt.fabm.template.extensions.*
 import pt.fabm.template.rest.controllers.CarController
@@ -34,15 +31,10 @@ class RestVerticle : AbstractVerticle() {
 
     val userTimeout = config().getLong("user_timeout") ?: throw
     RequiredException("user cache timeout")
-    val userController = UserController(vertx, userTimeout)
+    val userController = UserController(vertx,userTimeout)
     val carController = CarController(vertx)
 
-    val versionHandler = Handler<RoutingContext> {
-      it.response().end(Consts.VERSION)
-    }
-
     router.post("/api/user").withBody().handlerSRR(userController::createUser)
-    router.get("/api/version").handler(versionHandler)
     router.post("/api/user/login").withCookies().withBody().handlerSRR(userController::userLogin)
     router.get("/api/user/logout").withCookies().handlerSRR(userController::userLogout)
     router.get("/api/car").handlerSRR(carController::getCar)

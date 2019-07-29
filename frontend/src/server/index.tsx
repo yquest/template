@@ -17,6 +17,7 @@ const html = ({ body }: { body: string }) => `
     </head>
     <body style="margin:0">
       <div id="app">${body}</div>
+      <script type="text/javascript" src="bundle.js?eacfda388806c316a4fe"></script>
     </body>
   </html>
 `;
