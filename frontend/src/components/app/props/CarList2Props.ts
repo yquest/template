@@ -5,6 +5,6 @@ export namespace carList2 {
     export interface Props {
         authenticated:boolean;
         cars:Car[];
-        carManager:CarManager;
+        carManagerCreator:(car)=>CarManager;
     }
 }

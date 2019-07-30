@@ -22,7 +22,7 @@ export const App2 = observer((props: app2.Props) => (
     )}
     {(props.appState === app2.AppState.LIST_NO_AUTH ||
       props.appState === app2.AppState.CAR_EDIT_AUTH) && (
-      <CarList2 carManager={props.carManager} cars={props.cars} authenticated={props.authenticated}  />
+      <CarList2 carManagerCreator={props.carManagerCreator} cars={props.cars} authenticated={props.authenticated}  />
     )}
   </div>
 ));

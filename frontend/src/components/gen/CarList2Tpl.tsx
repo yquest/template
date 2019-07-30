@@ -25,7 +25,7 @@ export const CarList2 = observer((props: carList2.Props) => (
           maturityDate={dateToStringReadable(car.maturityDate)}
           model={car.model}
           price={car.price + "€"}
-          carManager={props.carManager}
+          carManager={props.carManagerCreator(car)}
           car={car}
         />
       ))}

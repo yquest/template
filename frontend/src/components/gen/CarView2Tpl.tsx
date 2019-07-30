@@ -9,14 +9,14 @@ export const CarView2 = (props: carView2.Props) => (
     <td>{props.price}</td>
     {props.authenticated && (
       <td>
-        <a href="javascript:void(0)" className="btn" onClick={props.carManager.edit(props.car)}>
+        <a href="javascript:void(0)" className="btn" onClick={props.carManager.edit}>
           <i className="fas fa-pen" />
         </a>
       </td>
     )}
     {props.authenticated && (
       <td>
-        <a href="javascript:void(0)" className="btn" onClick={props.carManager.remove(props.car)}>
+        <a href="javascript:void(0)" className="btn" onClick={props.carManager.remove}>
           <i className="fas fa-times" />
         </a>
       </td>

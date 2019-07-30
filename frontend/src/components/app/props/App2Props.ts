@@ -15,6 +15,6 @@ export namespace app2{
         username: string;
         loginOn:()=>void;
         loginOff:()=>void;
-        carManager:CarManager;
+        carManagerCreator:(car:Car)=>CarManager;
     }
 }

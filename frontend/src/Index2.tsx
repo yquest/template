@@ -13,15 +13,18 @@ const clickLogOff = () => {
   console.log("clicked logoff");
 };
 
-
-const carManager: CarManager = {
-  edit: (car: Car) => () => {
-      console.log(`update model:${car.model} -> maker:${MAKERS[car.make]}`);
-  },
-  remove: (car: Car) => () => {
-    console.log(`update model:${car.model} -> maker:${MAKERS[car.make]}`);
+const carManagerCreator = (car:Car)=>{
+  const cm:CarManager = {
+    car: car,
+    edit:()=>{
+      console.log("update car");
+    },
+    remove:()=>{
+      console.log("remove car");
+    }
   }
-};
+  return cm;
+}
 
 const App = () => {
   return (
@@ -32,7 +35,7 @@ const App = () => {
       loginOn={clickLogin}
       loginOff={clickLogOff}
       username={"xico"}
-      carManager={carManager}
+      carManagerCreator={carManagerCreator}
     />
   );
 };

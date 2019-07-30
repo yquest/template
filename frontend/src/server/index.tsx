@@ -15,29 +15,34 @@ const html = ({ body }: { body: string }) => `
   <!DOCTYPE html>
   <html>
     <head>
-      <link rel="shortcut icon" href="favicon.ico"><link href="main.css?2085304dda2273394a86" rel="stylesheet">
+      <link rel="shortcut icon" href="favicon.ico"/>
+      <link href="main.css" rel="stylesheet"/>
     </head>
-    <body style="margin:0">
-      <div id="root">${body}</div>
+    <bod = style="margin:0">      <div id="root">${body}</div>
+    car:car,
+    edit:{
+
+    },
+    remove:{}
       <script type="text/javascript" src="bundle.js"></script>
     </body>
   </html>
 `;
 
-const carManager: CarManager = {
-  edit: (car: Car) => () => {
-      console.log("update ignored");
-  },
-  remove: (car: Car) => () => {
-    console.log("remove ignored");
+const createCarManager = (car: Car) => {
+  const cm: CarManager = {
+    car: car,
+    edit: () => { },
+    remove: () => { }
   }
+  return cm;
 };
 
 
 const App = () => {
 
   return <App2
-    carManager={carManager}
+    carManagerCreator={createCarManager}
     appState={app2.AppState.LIST_NO_AUTH}
     authenticated={true}
     cars={cars}
