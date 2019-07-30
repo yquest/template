@@ -1,11 +1,11 @@
 import { observer } from "mobx-react";
 import * as React from "react";
-import { CarList2Props } from "../app/props/CarList2Props";
 import { CarView2 } from "./CarView2Tpl";
 import { MAKERS } from "../../model/Car";
 import { dateToStringReadable } from "../../util";
+import { carList2 } from "../app/props/CarList2Props";
 
-export const CarList2 = observer((props: CarList2Props) => (
+export const CarList2 = observer((props: carList2.Props) => (
   <table>
     <tbody>
       <tr>
@@ -18,15 +18,13 @@ export const CarList2 = observer((props: CarList2Props) => (
       {props.cars.map((car, idx) => (
         <CarView2
           authenticated={props.authenticated}
-          carEdit={() => {
-            console.log("hello world");
-          }}
           key={idx}
           maker={MAKERS[car.make]}
           maturityDate={dateToStringReadable(car.maturityDate)}
           model={car.model}
           price={car.price + "€"}
-          remove={() => {}}
+          carManager={props.carManager}
+          car={car}
         />
       ))}
     </tbody>

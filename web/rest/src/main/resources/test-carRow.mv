@@ -1,0 +1,8 @@
+<tr>
+  <td>@{maker}</td>
+  <td>@{model}</td>
+  <td>@{maturityDate}</td>
+  <td>@{price}</td>
+  <td><a href="javascript:void(0)" class="btn"><i class="fas fa-pen"></i></a></td>
+  <td><a href="javascript:void(0)" class="btn"><i class="fas fa-times"></i></a></td>
+</tr>

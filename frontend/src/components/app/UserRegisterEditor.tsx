@@ -138,6 +138,5 @@ export class UserRegisterEditor extends React.Component<UserRegisterProps, {}> {
         </button>
       </form>
     );
-
   }
 }

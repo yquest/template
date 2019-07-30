@@ -6,6 +6,9 @@
   "scripts": {
     "start": "webpack-dev-server  --mode development --inline --hot --open",
     "build": "webpack  --mode development",
+    "web2": "webpack  --mode development --env.platform=web2",
+    "ssr": "webpack  --mode development --env.platform=server",
+    "buildProd": "webpack  --mode production",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "",
