@@ -4,6 +4,7 @@ import { app2 } from "./components/app/props/App2Props";
 import { App2 } from "./components/gen/App2Tpl";
 import * as ReactDOM from "react-dom";
 import { CarManager } from "./components/app/props/CarManager";
+import { cars } from "./server/cars";
 
 const clickLogin = () => {
   console.log("clicked login");
@@ -23,17 +24,6 @@ const carManager: CarManager = {
 };
 
 const App = () => {
-  let car: Car = {
-    make: MAKERS.VOLKSWAGEN,
-    maturityDate: new Date(),
-    model: "golf v",
-    price: 3000,
-    getPK: () => {
-      return car;
-    }
-  };
-
-  const cars = [car];
   return (
     <App2
       appState={app2.AppState.LIST_NO_AUTH}
@@ -47,4 +37,5 @@ const App = () => {
   );
 };
 
+//ReactDOM.render(<App />,document.getElementById('root'));
 ReactDOM.hydrate(<App />, document.getElementById("root"));

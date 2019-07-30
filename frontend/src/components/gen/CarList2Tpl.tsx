@@ -7,7 +7,7 @@ import { carList2 } from "../app/props/CarList2Props";
 
 export const CarList2 = observer((props: carList2.Props) => (
   <table>
-    <tbody>
+    <thead>
       <tr>
         <th>Make</th>
         <th>Model</th>
@@ -15,6 +15,8 @@ export const CarList2 = observer((props: carList2.Props) => (
         <th>Price</th>
         {props.authenticated && <th colSpan={2}>Actions</th>}
       </tr>
+    </thead>
+    <tbody>
       {props.cars.map((car, idx) => (
         <CarView2
           authenticated={props.authenticated}
