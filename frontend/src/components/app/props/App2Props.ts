@@ -1,8 +1,5 @@
 import { Car } from "../../../model/Car";
-<<<<<<< HEAD
-=======
 import { CarManager } from "./CarManager";
->>>>>>> origin/master
 
 export namespace app2{
     export enum AppState {
@@ -16,7 +13,8 @@ export namespace app2{
         authenticated: boolean;
         appState: AppState;
         username: string;
-        loginOn:()=>void
-        loginOff:()=>void
+        loginOn:()=>void;
+        loginOff:()=>void;
+        carManager:CarManager;
     }
 }
