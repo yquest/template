@@ -1,0 +1,28 @@
+<template name="CarView2" props="../app/props/CarView2Props">
+  <tr>
+    <td>@maker</td>
+    <td>@model</td>
+    <td>@maturityDate</td>
+    <td>@price</td>
+    <showIf value="@autheticated">
+      <td>
+        <a
+          href="javascript:void(0)"
+          className="btn"
+          onClick="carEdit">
+          <i className="fas fa-pen"/>
+        </a>
+      </td>
+    </showIf>
+    <showIf value="@autheticated">
+      <td>
+        <a
+          href="javascript:void(0)"
+          className="btn"
+          onClick="remove">
+          <i className="fas fa-times"/>
+        </a>
+      </td>
+    </showIf>
+  </tr>
+</template>

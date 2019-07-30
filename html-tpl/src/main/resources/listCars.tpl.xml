@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<template name="ListCars2" props="../app/props/ListCars2Props">
+  <imports>
+    <import component="Carview2" file="/carview.tpl.xml"/>
+  </imports>
+  <table>
+    <tbody>
+      <tr>
+        <th>Make</th>
+        <th>Model</th>
+        <th>Maturity date</th>
+        <th>Price</th>
+        <shoIf value="@authenticated">
+          <th colSpan="2">Actions</th>
+        </shoIf>
+      </tr>
+      <each idx="idx" value="car">
+        <CarView2
+          key="idx"
+          car="car"
+          authenticated="authenticated"
+          edit="updateCar"
+          remove="removeCar"
+        />
+      </each>
+    </tbody>
+  </table>
+</template>

@@ -8016,13 +8016,14 @@ pre {
     margin-left: 91.66667%; } }
 
 /*!
- * Font Awesome Free 5.9.0 by @fontawesome - https://fontawesome.com
+ * Font Awesome Free 5.10.0 by @fontawesome - https://fontawesome.com
  * License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License)
  */
 .fa,
 .fas,
 .far,
 .fal,
+.fad,
 .fab {
   -moz-osx-font-smoothing: grayscale;
   -webkit-font-smoothing: antialiased;
@@ -9085,6 +9086,9 @@ readers do not read off random characters that represent icons */
 
 .fa-copyright:before {
   content: "\F1F9"; }
+
+.fa-cotton-bureau:before {
+  content: "\F89E"; }
 
 .fa-couch:before {
   content: "\F4B8"; }
@@ -12357,7 +12361,7 @@ readers do not read off random characters that represent icons */
   width: auto; }
 
 /*!
- * Font Awesome Free 5.9.0 by @fontawesome - https://fontawesome.com
+ * Font Awesome Free 5.10.0 by @fontawesome - https://fontawesome.com
  * License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License)
  */
 @font-face {
@@ -12365,8 +12369,8 @@ readers do not read off random characters that represent icons */
   font-style: normal;
   font-weight: 900;
   font-display: auto;
-  src: url(ef3df98419d143d9617fe163bf4edc0b.eot);
-  src: url(ef3df98419d143d9617fe163bf4edc0b.eot?#iefix) format("embedded-opentype"), url(b5cf8ae26748570d8fb95a47f46b69e1.woff2) format("woff2"), url(4bced7c4c0d61d4f988629bb8ae80b8b.woff) format("woff"), url(acf50f59802f20d8b45220eaae532a1c.ttf) format("truetype"), url(assets/img/fa-solid-900.svg?022e72805f364677131fab9feb69dfe6#fontawesome) format("svg"); }
+  src: url(f9b8a1aa417e318d5be775e14ee3c475.eot);
+  src: url(f9b8a1aa417e318d5be775e14ee3c475.eot?#iefix) format("embedded-opentype"), url(60ce8cf4dd9fe177abdfeda21e20798e.woff2) format("woff2"), url(55ce8d0ca92adb7c283d6043d0edf46f.woff) format("woff"), url(e9809ab6a5a34dc6b7966de82265d6bd.ttf) format("truetype"), url(assets/img/fa-solid-900.svg?b274de414712ba3a65a0f393d1207b36#fontawesome) format("svg"); }
 
 .fa,
 .fas {
@@ -12374,7 +12378,7 @@ readers do not read off random characters that represent icons */
   font-weight: 900; }
 
 /*!
- * Font Awesome Free 5.9.0 by @fontawesome - https://fontawesome.com
+ * Font Awesome Free 5.10.0 by @fontawesome - https://fontawesome.com
  * License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License)
  */
 @font-face {
@@ -12382,8 +12386,8 @@ readers do not read off random characters that represent icons */
   font-style: normal;
   font-weight: normal;
   font-display: auto;
-  src: url(03783c5172ee1ad128c576bf88fac168.eot);
-  src: url(03783c5172ee1ad128c576bf88fac168.eot?#iefix) format("embedded-opentype"), url(7559b3774a0625e8ca6c0160f8f6cfd8.woff2) format("woff2"), url(fe9d62e0d16a333a20e63c3e7595f82e.woff) format("woff"), url(ed2b8bf117160466ba6220a8f1da54a4.ttf) format("truetype"), url(assets/img/fa-brands-400.svg?23b671c11e52bf5b3c538c82cb996405#fontawesome) format("svg"); }
+  src: url(e33a1a54eb0a1e560362fcf5335ac26c.eot);
+  src: url(e33a1a54eb0a1e560362fcf5335ac26c.eot?#iefix) format("embedded-opentype"), url(4f786efdf6328877ec2448bf265bcc8f.woff2) format("woff2"), url(72f5c754189a296467db59e26e2b4671.woff) format("woff"), url(75dae2b62813bc641a9b6a2fc041e4de.ttf) format("truetype"), url(assets/img/fa-brands-400.svg?3ae207e50cb9aeadadc1cfa4637c8332#fontawesome) format("svg"); }
 
 .fab {
   font-family: 'Font Awesome 5 Brands'; }
@@ -12409,6 +12413,10 @@ table td {
   padding: .5em;
   border: 1px solid lightgrey; }
 
+.app {
+  margin-top: 2rem;
+  margin-bottom: 5rem; }
+
 table.calendar td {
   width: 2rem;
   height: 2rem;
@@ -12422,5 +12430,3 @@ table.calendar td {
   table.calendar td:hover div.valid-day, table.calendar tddiv.selected {
     border-radius: 0.2rem; }
 
-
-/*# sourceMappingURL=main.css.map*/
