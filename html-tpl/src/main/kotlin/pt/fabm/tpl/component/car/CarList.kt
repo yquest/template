@@ -3,7 +3,7 @@ package pt.fabm.tpl.component.car
 import pt.fabm.template.models.Car
 import pt.fabm.tpl.*
 
-class CarList(type: Type, var carEdit: Boolean, var list: List<Car>) : Component("CarList", type) {
+class CarList(type: Type, var carEdit: Boolean = false, var list: List<Car> = emptyList()) : Component("CarList", type) {
   override val attributes = {
     AttributeValue.render(
       type,

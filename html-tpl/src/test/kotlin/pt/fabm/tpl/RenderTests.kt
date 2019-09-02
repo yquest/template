@@ -272,35 +272,27 @@ class RenderTests {
       it.toString()
     }
     var expected = """
-    import { observer } from "mobx-react";
-    import { app } from "../app/props/AppProps";
-    import * as React from "react";
-    import { Notifications } from "../app/Notifications";
-    import { CarList } from "./CarListTpl";
-    
-    export const App = observer((props: app.Props) => ( 
-        <div className="container app">
-            {props.appState === app.AppState.LIST_NO_AUTH && (
-                <a href="javascript:void();" onClick={props.login}>
-                    Sign in
-                    <i className="fas fa-sign-in-alt"/>
+    <div className="container app">
+        {props.appState === app.AppState.LIST_NO_AUTH && (
+            <a href="javascript:void();" onClick={props.loginOn}>
+                Sign in
+                <i className="fas fa-sign-in-alt"/>
+            </a>
+        )}
+        <Notifications/>
+        {props.appState === app.AppState.CAR_EDIT_AUTH && (
+            <div key="helloUsername" className="float-right">
+                Hello {props.username + " "}
+                <a href="javascript:void(0)" onClick={props.loginOff}>
+                    logoff
+                    <i className="fas fa-sign-out-alt"/>
                 </a>
-            )}
-            <Notifications/>
-            {props.appState === app.AppState.CAR_EDIT_AUTH && (
-                <div key="helloUsername" className="float-right">
-                    Hello {props.username + " "}
-                    <a href="javascript:void(0)" onClick={props.loginOff}>
-                        logoff
-                        <i className="fas fa-sign-out-alt"/>
-                    </a>
-                </div>
-            )}
-            {(props.appState === app.AppState.LIST_NO_AUTH || props.appState === app.AppState.CAR_EDIT_AUTH) && (
-                <CarList cars={props.cars} authenticated={props.authenticated} carManagerCreator={props.carManagerCreator}/>
-            )}
-        </div>
-    ));
+            </div>
+        )}
+        {(props.appState === app.AppState.LIST_NO_AUTH || props.appState === app.AppState.CAR_EDIT_AUTH) && (
+            <CarList cars={props.cars} authenticated={props.authenticated} carManagerCreator={props.carManagerCreator}/>
+        )}
+    </div>
     
     """.trimIndent()
     Assertions.assertEquals(expected, current)
@@ -312,73 +304,63 @@ class RenderTests {
       it.toString()
     }
     expected = """
-        <html>
-            <head>
-                <link href="favicon" rel="shortcut icon"/>
-                <link href="main.css" rel="stylesheet"/>
-            </head>
-            <body>
-                <div id="root">
-                    <div class="container app">
-                            <div key="helloUsername" class="float-right">
-                                Hello rockMyWorld 
-                                <a href="javascript:void(0)">
-                                    logoff
-                                    <i class="fas fa-sign-out-alt"/>
-                                </a>
-                            </div>
-                            <table>
-                                <thead>
-                                    <tr>
-                                        <th>
-                                            Make
-                                        </th>
-                                        <th>
-                                            Model
-                                        </th>
-                                        <th>
-                                            Maturity date
-                                        </th>
-                                        <th>
-                                            Price
-                                        </th>
-                                            <th colspan="2">
-                                                Actions
-                                            </th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    <!--start each CarView-->
-                                    <tr>
-                                        <td>
-                                            VOLKSWAGEN
-                                        </td>
-                                        <td>
-                                            model
-                                        </td>
-                                        <td>
-                                            2019-01-01T01:01
-                                        </td>
-                                        <td>
-                                            200
-                                        </td>
-                                            <!--only authenticated-->
-                                            <td>
-                                                <a href="javascript:void(0)" class="btn"/>
-                                            </td>
-                                            <!--only authenticated-->
-                                            <td>
-                                                <a href="javascript:void(0)" class="btn"/>
-                                            </td>
-                                    </tr>
-                                    <!--end each CarView-->
-                                </tbody>
-                            </table>
-                    </div>
-                </div>
-            </body>
-        </html>
-        
+    <div class="container app">
+            <div key="helloUsername" class="float-right">
+                Hello rockMyWorld 
+                <a href="javascript:void(0)">
+                    logoff
+                    <i class="fas fa-sign-out-alt"/>
+                </a>
+            </div>
+            <table>
+                <thead>
+                    <tr>
+                        <th>
+                            Make
+                        </th>
+                        <th>
+                            Model
+                        </th>
+                        <th>
+                            Maturity date
+                        </th>
+                        <th>
+                            Price
+                        </th>
+                            <th colspan="2">
+                                Actions
+                            </th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <!--start each CarView-->
+                    <tr>
+                        <td>
+                            VOLKSWAGEN
+                        </td>
+                        <td>
+                            model
+                        </td>
+                        <td>
+                            2019-01-01T01:01
+                        </td>
+                        <td>
+                            200
+                        </td>
+                            <!--only authenticated-->
+                            <td>
+                                <a href="javascript:void(0)" class="btn"/>
+                            </td>
+                            <!--only authenticated-->
+                            <td>
+                                <a href="javascript:void(0)" class="btn"/>
+                            </td>
+                    </tr>
+                    <!--end each CarView-->
+                </tbody>
+            </table>
+    </div>
+    
     """.trimIndent()
     Assertions.assertEquals(expected, current)
 

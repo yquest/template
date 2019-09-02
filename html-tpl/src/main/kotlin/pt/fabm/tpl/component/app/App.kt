@@ -6,10 +6,10 @@ import pt.fabm.tpl.component.car.CarList
 
 class App(
   override val type: Type,
-  var auth: Boolean,
-  var carEdit: Boolean,
-  var carList: List<Car>,
-  var username: ()->String
+  var auth: Boolean = false,
+  var carEdit: Boolean = false,
+  var carList: List<Car> = emptyList(),
+  var username: ()->String = {error("unexpected username entry")}
 ) : ElementCreator {
 
   override fun create(): Element {
@@ -21,7 +21,7 @@ class App(
 
     fun createContainerApp(type: Type, init: DIV.() -> Unit): DIV {
       val div = DIV(type) {
-        AttributeValue.render(type,AttributeValue.create {
+        AttributeValue.render(type, AttributeValue.create {
           className("container app")
         })
       }
@@ -37,7 +37,7 @@ class App(
         return showIf
       }
       showIf(appStateNoAuth) {
-        a(href = "javascript:void();", onClick = "props.login") {
+        a(href = "javascript:void();", onClick = "props.loginOn") {
           +"Sign in"
           i(className = "fas fa-sign-in-alt")
         }
@@ -53,37 +53,9 @@ class App(
         }
       }
       showIf(listAuthAndCarEdit) {
-        component(CarList(type = type, carEdit = carEdit, list = carList))
+        component(CarList(type = type.toFirstLevel(), carEdit = carEdit, list = carList))
       }
     }
-
-    return if (type == Type.SERVER)
-      html(type) {
-        head {
-          link(href = "favicon", rel = "shortcut icon")
-          link(href = "main.css", rel = "stylesheet")
-        }
-        body {
-          div(id = "root") {
-            children.add(containerApp)
-          }
-        }
-      }.create()
-    else
-      ElementWrapper(
-        prefix = """
-        import { observer } from "mobx-react";
-        import { app } from "../app/props/AppProps";
-        import * as React from "react";
-        import { Notifications } from "../app/Notifications";
-        import { CarList } from "./CarListTpl";
-        
-        export const App = observer((props: app.Props) => ( 
-        """.trimIndent(),
-        children = listOf(containerApp.create()),
-        suffix = """
-        ));
-        """.trimIndent()
-      )
+    return containerApp.create()
   }
 }

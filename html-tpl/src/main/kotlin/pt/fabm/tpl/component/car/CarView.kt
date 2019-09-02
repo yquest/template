@@ -3,7 +3,7 @@ package pt.fabm.tpl.component.car
 import pt.fabm.template.models.Car
 import pt.fabm.tpl.*
 
-class CarView(car: () -> Car, edit: Boolean, type: Type) : Component("CarView", type) {
+class CarView(car: () -> Car={ error("no car")}, edit: Boolean= false, type: Type) : Component("CarView", type) {
   override val attributes = {
     AttributeValue.render(
       type,
@@ -58,13 +58,13 @@ class CarView(car: () -> Car, edit: Boolean, type: Type) : Component("CarView", 
         showIf({ edit } to "props.authenticated") {
           comment(this, "only authenticated")
           td {
-            a(href = "javascript:void(0)", className = "btn", onClick = "{props.carManager.edit}")
+            a(href = "javascript:void(0)", className = "btn", onClick = "props.carManager.edit")
           }
         }
         showIf({ edit } to "props.authenticated") {
           comment(this, "only authenticated")
           td {
-            a(href = "javascript:void(0)", className = "btn", onClick = "{props.carManager.remove}")
+            a(href = "javascript:void(0)", className = "btn", onClick = "props.carManager.remove")
           }
         }
       }
