@@ -2,6 +2,8 @@ import org.apache.tools.ant.filters.ReplaceTokens
 
 dependencies {
   implementation project(':web:shared')
+  implementation project(':html-tpl')
+
   api 'io.jsonwebtoken:jjwt-api:0.10.5'
   runtimeOnly 'io.jsonwebtoken:jjwt-impl:0.10.5'
   runtimeOnly('io.jsonwebtoken:jjwt-orgjson:0.10.5')

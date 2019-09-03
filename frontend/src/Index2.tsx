@@ -1,7 +1,7 @@
-import { Car, MAKERS } from "./model/Car";
+import { Car } from "./model/Car";
 import * as React from "react";
-import { app2 } from "./components/app/props/App2Props";
-import { App2 } from "./components/gen/App2Tpl";
+import { app } from "./components/app/props/AppProps";
+import { App } from "./components/gen/AppTpl";
 import * as ReactDOM from "react-dom";
 import { CarManager } from "./components/app/props/CarManager";
 import { cars } from "./server/cars";
@@ -26,10 +26,10 @@ const carManagerCreator = (car:Car)=>{
   return cm;
 }
 
-const App = () => {
+const Root = () => {
   return (
-    <App2
-      appState={app2.AppState.LIST_NO_AUTH}
+    <App
+      appState={app.AppState.LIST_NO_AUTH}
       authenticated={true}
       cars={cars}
       loginOn={clickLogin}
@@ -40,5 +40,4 @@ const App = () => {
   );
 };
 
-//ReactDOM.render(<App />,document.getElementById('root'));
-ReactDOM.hydrate(<App />, document.getElementById("root"));
+ReactDOM.hydrate(<Root />, document.getElementById("root"));

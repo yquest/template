@@ -95,6 +95,14 @@ interface ElementCreator {
   fun create(): Element
 }
 
+class LiteralClientImplementation(private val text: String, override val type: Type) : ElementCreator {
+  override fun create(): Element {
+    return if (type == Type.CLIENT_IMPLEMENTATION)
+      TextElement(text)
+    else
+      NoTagElement()
+  }
+}
 
 class TextElement(private val text: String) : NoTagElement() {
   override fun renderTag(builder: Appendable, ident: String) {
@@ -174,14 +182,19 @@ interface BodyTag : WithChildren, ElementCreator {
       A(type) {
         AttributeValue.render(
           type,
-          AttributeValue.create {basicEnsuredAttribute("href", href)},
-          AttributeValue.create {className(className)},
-          AttributeValue.create {clientAttribute("onClick", onClick)})
+          AttributeValue.create { basicEnsuredAttribute("href", href) },
+          AttributeValue.create { className(className) },
+          AttributeValue.create { clientAttribute("onClick", onClick) })
       },
       init
     )
   }
 
+  fun scriptJS(src: String): ScriptJS {
+    val scriptJS = ScriptJS(type, src)
+    children += scriptJS
+    return scriptJS
+  }
 }
 
 class A(
@@ -350,7 +363,6 @@ class Table(type: Type) : NameElementCreator("table", type), BodyTag {
 
 class Body(type: Type) : TagWithText("body", type), BodyTag {
   override val children: MutableList<ElementCreator> = mutableListOf()
-
   override fun create(): Element =
     TagElement(
       name,
@@ -420,6 +432,20 @@ class Link(type: Type, override val attributes: () -> String) : TagWithText("lin
       children.map { it.create() },
       attributes
     )
+}
+
+class ScriptJS(type: Type, private val src: String) : TagWithText(name = "script", type = type) {
+  override val children: MutableList<ElementCreator> get() = error("cannot have children")
+  override fun create(): Element {
+    if (type != Type.SERVER) error("a script element can be only a server type")
+    return TagElement(name, emptyList()) {
+      AttributeValue.render(
+        type,
+        AttributeValue.create { basicAttribute("type", "text/javascript") },
+        AttributeValue.create { basicAttribute("src", src) }
+      )
+    }
+  }
 }
 
 class HTML(type: Type) : TagWithText("html", type), BodyTag {

@@ -1,6 +1,8 @@
 package pt.fabm.template.rest
 
 import io.reactivex.Completable
+import io.vertx.core.buffer.Buffer
+import io.vertx.core.eventbus.DeliveryOptions
 import io.vertx.core.logging.Logger
 import io.vertx.core.logging.LoggerFactory
 import io.vertx.reactivex.core.AbstractVerticle
@@ -10,6 +12,10 @@ import pt.fabm.template.extensions.*
 import pt.fabm.template.rest.controllers.CarController
 import pt.fabm.template.rest.controllers.UserController
 import pt.fabm.template.validation.RequiredException
+import pt.fabm.tpl.Type
+import pt.fabm.tpl.component.car.CarList
+import pt.fabm.tpl.html
+import java.lang.StringBuilder
 
 class RestVerticle : AbstractVerticle() {
 
@@ -31,7 +37,7 @@ class RestVerticle : AbstractVerticle() {
 
     val userTimeout = config().getLong("user_timeout") ?: throw
     RequiredException("user cache timeout")
-    val userController = UserController(vertx,userTimeout)
+    val userController = UserController(vertx, userTimeout)
     val carController = CarController(vertx)
 
     router.post("/api/user").withBody().handlerSRR(userController::createUser)
@@ -42,6 +48,26 @@ class RestVerticle : AbstractVerticle() {
     router.post("/api/car").withBody().authHandler(userTimeout) { carController.createOrUpdateCar(true, it.rc) }
     router.put("/api/car").withBody().authHandler(userTimeout) { carController.createOrUpdateCar(false, it.rc) }
     router.delete("/api/car").handlerSRR(carController::deleteCar)
+
+    router.get("/test-index").handler {
+      val builder = StringBuilder()
+      html(Type.SERVER) {
+        head {
+          link(rel = "shortcut icon", href = "favicon.ico")
+          link(href = "main.css", rel = "stylesheet")
+        }
+
+        body {
+          div(id = "root") {
+            children += CarList(type,false, listOf(
+
+            ))
+          }
+          scriptJS("bundle.js")
+        }
+      }.create().renderTag(builder)
+      it.response().end(builder.toString())
+    }
 
     router.route().handler {
       if (!it.response().ended()) {

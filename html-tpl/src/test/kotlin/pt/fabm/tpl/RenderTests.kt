@@ -305,6 +305,10 @@ class RenderTests {
     }
     expected = """
     <div class="container app">
+        <div class="fixed-top container">
+            <div class="float-right">
+            </div>
+        </div>
             <div key="helloUsername" class="float-right">
                 Hello rockMyWorld 
                 <a href="javascript:void(0)">

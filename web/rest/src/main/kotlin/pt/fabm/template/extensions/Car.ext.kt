@@ -2,7 +2,6 @@ package pt.fabm.template.extensions
 
 import io.vertx.core.json.JsonObject
 import pt.fabm.template.models.Car
-import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 
 fun Car.toJson():JsonObject{

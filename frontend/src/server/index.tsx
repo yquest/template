@@ -1,9 +1,9 @@
 import express from "express";
 import { renderToString } from "react-dom/server";
 import * as React from "react";
-import { Car, MAKERS } from "../model/Car";
-import { App2 } from "../components/gen/App2Tpl";
-import { app2 } from "../components/app/props/App2Props";
+import { Car } from "../model/Car";
+import { App } from "../components/gen/AppTpl";
+import { app } from "../components/app/props/AppProps";
 import { CarManager } from "../components/app/props/CarManager";
 import { cars } from "./cars";
 const port = 3000;
@@ -12,21 +12,17 @@ const server = express();
 server.use(express.static("dist"));
 
 const html = ({ body }: { body: string }) => `
-  <!DOCTYPE html>
-  <html>
-    <head>
-      <link rel="shortcut icon" href="favicon.ico"/>
-      <link href="main.css" rel="stylesheet"/>
-    </head>
-    <bod = style="margin:0">      <div id="root">${body}</div>
-    car:car,
-    edit:{
-
-    },
-    remove:{}
-      <script type="text/javascript" src="bundle.js"></script>
-    </body>
-  </html>
+<!DOCTYPE html>
+<html>
+  <head>
+    <link rel="shortcut icon" href="favicon.ico"/>
+    <link href="bundle.js" rel="stylesheet"/>
+  </head>
+  <body style="margin:0">
+    <div id="root">${body}</div>
+    <script type="text/javascript" src="bundle.js"></script>
+  </body>
+</html>
 `;
 
 const createCarManager = (car: Car) => {
@@ -39,11 +35,10 @@ const createCarManager = (car: Car) => {
 };
 
 
-const App = () => {
-
-  return <App2
+const Root = () => {
+  return <App
     carManagerCreator={createCarManager}
-    appState={app2.AppState.LIST_NO_AUTH}
+    appState={app.AppState.LIST_NO_AUTH}
     authenticated={true}
     cars={cars}
     loginOn={null}
@@ -53,7 +48,7 @@ const App = () => {
 };
 
 server.get("/", (req, res) => {
-  const body = renderToString(React.createElement(App));
+  const body = renderToString(React.createElement(Root));
 
   res.send(
     html({
