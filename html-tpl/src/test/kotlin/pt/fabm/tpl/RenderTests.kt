@@ -71,34 +71,43 @@ class RenderTests {
 
     var current = StringBuilder().let { carListClientImplementation.create().renderTag(it);it.toString() }
     var expected = """
-    <table>
-        <thead>
-            <tr>
-                <th>
-                    Make
-                </th>
-                <th>
-                    Model
-                </th>
-                <th>
-                    Maturity date
-                </th>
-                <th>
-                    Price
-                </th>
-                {props.authenticated && (
-                    <th colSpan={2}>
-                        Actions
+    const noContent = () => (
+        <div>
+            no cars available
+        </div>
+    );
+    const content = (props: carList.Props) => (
+        <table>
+            <thead>
+                <tr>
+                    <th>
+                        Make
                     </th>
-                )}
-            </tr>
-        </thead>
-        <tbody>
-            {props.cars.map((car, idx) => (
-                <CarView authenticated={props.authenticated} key={idx} maker={MAKERS[car.make]} model={car.model} maturityDate={dateToStringReadable(car.maturityDate)} price={car.price + "€"} carManager={props.carManagerCreator(car)} car={car}/>
-            ))}
-        </tbody>
-    </table>
+                    <th>
+                        Model
+                    </th>
+                    <th>
+                        Maturity date
+                    </th>
+                    <th>
+                        Price
+                    </th>
+                    {props.authenticated && (
+                        <th colSpan={2}>
+                            Actions
+                        </th>
+                    )}
+                </tr>
+            </thead>
+            <tbody>
+                {props.cars.map((car, idx) => (
+                    <CarView authenticated={props.authenticated} key={idx} maker={MAKERS[car.make]} model={car.model} maturityDate={dateToStringReadable(car.maturityDate)} price={car.price + "€"} carManager={props.carManagerCreator(car)} car={car}/>
+                ))}
+            </tbody>
+        </table>
+    );
+    export const CarList = (props: carList.Props) => 
+      props.cars.length === 0 ? noContent() : content(props);
     
     """.trimIndent()
     Assertions.assertEquals(expected, current)
@@ -222,6 +231,17 @@ class RenderTests {
             <!--end each CarView-->
         </tbody>
     </table>
+    
+    """.trimIndent()
+    Assertions.assertEquals(expected, current)
+
+    carListServer.carEdit = false
+    carListServer.list = emptyList()
+    current = StringBuilder().let { carListServerRenderer.renderTag(it);it.toString() }
+    expected = """
+    <div>
+        no cars available
+    </div>
     
     """.trimIndent()
     Assertions.assertEquals(expected, current)

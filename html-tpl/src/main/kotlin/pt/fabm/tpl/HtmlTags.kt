@@ -35,9 +35,15 @@ enum class Type {
 
 interface Element {
   val children: Iterable<Element>
-  fun renderTag(builder: Appendable, ident: String = "")
-  val hasItem: Boolean
-    get() = false
+  fun renderTag(builder: Appendable, ident: String = ""){
+    for (child in children) {
+      child.renderTag(builder, ident)
+    }
+  }
+  fun toElementCreator(type: Type): ElementCreator = object : ElementCreator {
+    override val type: Type = type
+    override fun create(): Element = this@Element
+  }
 }
 
 class ElementWrapper(

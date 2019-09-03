@@ -16,12 +16,9 @@ class CarListGen : TsGen {
       import { CarView } from "./CarViewTpl";
       import { dateToStringReadable } from "../../util";
       
-      export const CarList = (props: carList.Props) => (
     """.trimIndent(),
     children = listOf(CarList(Type.CLIENT_IMPLEMENTATION).create()),
-    suffix = """
-      );    
-    """.trimIndent()
+    suffix = """""".trimIndent()
   )
 
   override fun close() {
