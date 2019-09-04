@@ -11,11 +11,14 @@ import org.junit.Assert
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.ExtendWith
+import java.text.SimpleDateFormat
 import java.time.Instant
 import java.time.LocalDateTime
 import java.time.ZoneId
+import java.time.format.DateTimeFormatter
 import java.time.temporal.ChronoUnit
 import java.util.*
+import java.util.logging.SimpleFormatter
 
 @ExtendWith(VertxExtension::class)
 class LooseTests {
@@ -204,4 +207,13 @@ class LooseTests {
 
   }
 
+  @Test
+  fun test(){
+    fun formattedDate(date:Instant):String{
+      val strFormat = "yyyy-MM-dd, HH:mm"
+      val formatter = SimpleDateFormat(strFormat)
+      return formatter.format(Date(date.toEpochMilli()))
+    }
+    println(formattedDate(Instant.now()))
+  }
 }

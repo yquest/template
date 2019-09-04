@@ -19,6 +19,7 @@ import pt.fabm.template.models.CarMake
 import pt.fabm.template.rest.RestResponse
 import pt.fabm.template.validation.InvalidEntryException
 import pt.fabm.template.validation.RequiredException
+import java.time.Instant
 
 class CarController(val vertx: Vertx) {
   companion object {
@@ -86,7 +87,7 @@ class CarController(val vertx: Vertx) {
       price = body.getInteger(Car.PRICE) ?: throw RequiredException(lbCar(Car.PRICE)),
       maturityDate = body.getString(Car.MATURITY_DATE).nullIfEmpty()
         .let { it ?: throw RequiredException(lbCar(Car.MATURITY_DATE)) }
-        .let { it.toLocalDateTime() }
+        .let { Instant.parse(it) }
     )
 
     val ebAddress = if (createAction) EventBusAddresses.Dao.Car.create

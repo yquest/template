@@ -8,14 +8,22 @@ import io.vertx.core.logging.LoggerFactory
 import io.vertx.reactivex.core.AbstractVerticle
 import io.vertx.reactivex.ext.web.Router
 import io.vertx.reactivex.ext.web.handler.StaticHandler
+import pt.fabm.template.EventBusAddresses
 import pt.fabm.template.extensions.*
+import pt.fabm.template.models.Car
+import pt.fabm.template.models.CarMake
 import pt.fabm.template.rest.controllers.CarController
 import pt.fabm.template.rest.controllers.UserController
 import pt.fabm.template.validation.RequiredException
 import pt.fabm.tpl.Type
 import pt.fabm.tpl.component.car.CarList
 import pt.fabm.tpl.html
+import java.io.File
 import java.lang.StringBuilder
+import java.time.Instant
+import java.time.LocalDate
+import java.time.LocalDateTime
+import java.time.ZoneId
 
 class RestVerticle : AbstractVerticle() {
 
@@ -27,11 +35,16 @@ class RestVerticle : AbstractVerticle() {
     val port = config().checkedInt("port")
     val host = config().checkedString("host")
 
+    val staticPath = config().checkedString("pdir")
+    if (!File(staticPath).exists()) error("static path doesn't exists, current path is " +
+      File(".").canonicalPath
+    )
+
     val router = Router.router(vertx)
     val webRoot = StaticHandler
       .create()
       .setAllowRootFileSystemAccess(true)
-      .setWebRoot(config().checkedString("pdir"))
+      .setWebRoot(staticPath)
 
     router.route().handler(webRoot)
 
@@ -49,26 +62,54 @@ class RestVerticle : AbstractVerticle() {
     router.put("/api/car").withBody().authHandler(userTimeout) { carController.createOrUpdateCar(false, it.rc) }
     router.delete("/api/car").handlerSRR(carController::deleteCar)
 
-    router.get("/test-index").handler {
-      val builder = StringBuilder()
-      html(Type.SERVER) {
-        head {
-          link(rel = "shortcut icon", href = "favicon.ico")
-          link(href = "main.css", rel = "stylesheet")
-        }
 
-        body {
-          div(id = "root") {
-            children += CarList(type,false, listOf(
 
-            ))
-          }
-          scriptJS("bundle.js")
-        }
-      }.create().renderTag(builder)
-      it.response().end(builder.toString())
+    router.get("/index-text").handler {
+
+      fun renderHtml(carList: List<Car>): String {
+
+        val cars = listOf(Car(
+          make = CarMake.VOLKSWAGEN,
+          maturityDate = Instant.ofEpochMilli(1567594959104L),
+          model = "golf v",
+          price = 3_000
+        ),Car(
+          make = CarMake.AUDI,
+          maturityDate = Instant.ofEpochMilli(1567594959104L),
+          model = "A6",
+          price = 30_000
+        ))
+        var content = StringBuilder().let { CarList(Type.SERVER,false,cars).create().renderTag(it);it.toString()}
+        val html = """
+        <html>
+          <head>
+            <link href="favicon.ico" rel="shortcut icon">
+            <link href="main.css" rel="stylesheet">
+          </head>
+          <body>
+            <div class="well">
+                <div id="root">${content}</div>
+            </div>
+            <script >
+              var initialRequest = [
+                {"make":"VOLKSWAGEN","maturityDate":1567594959104,"model":"golf v","price":3000},
+                {"make":"AUDI","maturityDate":1567594959104,"model":"A6","price":30000},
+              ];
+            </script>
+            <script type="text/javascript" src="bundle.js?a41"></script>
+          </body>
+        </html>
+        """.trimIndent()
+
+        return html
+      }
+      val response = it.response()
+      vertx.eventBus().rxSend<List<Car>>(
+        EventBusAddresses.Dao.Car.list, null, DeliveryOptions().setCodecName("List")
+      ).map { message ->
+        response.end(renderHtml(message.body()))
+      }.subscribe()
     }
-
     router.route().handler {
       if (!it.response().ended()) {
         it.response()

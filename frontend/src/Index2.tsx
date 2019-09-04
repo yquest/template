@@ -1,10 +1,11 @@
-import { Car } from "./model/Car";
+import { Car, carToJson } from "./model/Car";
 import * as React from "react";
 import { app } from "./components/app/props/AppProps";
 import { App } from "./components/gen/AppTpl";
 import * as ReactDOM from "react-dom";
 import { CarManager } from "./components/app/props/CarManager";
 import { cars } from "./server/cars";
+import { CarList } from "./components/gen/CarListTpl";
 
 const clickLogin = () => {
   console.log("clicked login");
@@ -27,17 +28,8 @@ const carManagerCreator = (car:Car)=>{
 }
 
 const Root = () => {
-  return (
-    <App
-      appState={app.AppState.LIST_NO_AUTH}
-      authenticated={true}
-      cars={cars}
-      loginOn={clickLogin}
-      loginOff={clickLogOff}
-      username={"xico"}
-      carManagerCreator={carManagerCreator}
-    />
-  );
+  return (<CarList authenticated={false} carManagerCreator={carManagerCreator} cars={cars}/>);
 };
-
+//ReactDOM.render(<Root />,document.getElementById('root'));
 ReactDOM.hydrate(<Root />, document.getElementById("root"));
+console.log(carToJson(cars[0]));

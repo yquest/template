@@ -46,9 +46,6 @@ class TestMainVerticle {
 
   private var port: Int? = null
   private lateinit var host: String
-  private val jws = Jwts.builder().setSubject("testUser")
-    .signWith(Consts.SIGNING_KEY)
-    .compact()
 
   @BeforeEach
   fun deployVerticle(vertx: Vertx, testContext: VertxTestContext) {

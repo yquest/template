@@ -53,7 +53,7 @@ class ElementWrapper(
 ) : Element {
   override fun renderTag(builder: Appendable, ident: String) {
     TextElement(prefix).renderTag(builder, ident)
-    for (element in children) element.renderTag(builder, "    $ident")
+    for (element in children) element.renderTag(builder, ident)
     TextElement(suffix).renderTag(builder, ident)
   }
 }
@@ -73,11 +73,11 @@ class TagElement(
     val iterator = children.iterator()
     val noChildren = !iterator.hasNext()
     builder.append("$ident<$name${attributes()}")
-    if (noChildren) builder.append("></$name>\n")
+    if (noChildren) builder.append("></$name>")
     else {
-      builder.append(">\n")
-      super.renderTag(builder, "    $ident")
-      builder.append("$ident</$name>\n")
+      builder.append(">")
+      super.renderTag(builder, ident)
+      builder.append("$ident</$name>")
     }
   }
 
@@ -105,7 +105,7 @@ class LiteralClientImplementation(private val text: String, override val type: T
 
 class TextElement(private val text: String) : NoTagElement() {
   override fun renderTag(builder: Appendable, ident: String) {
-    builder.append("$ident$text\n")
+    builder.append("$ident$text")
   }
 }
 
@@ -120,7 +120,6 @@ class TextVarCreator(
     if (type == Type.SERVER) TextElement(serverText())
     else TextElement(clientText)
 }
-
 
 abstract class TagWithText(override val name: String, override val type: Type) : NameElementCreator(name, type) {
 
@@ -222,7 +221,7 @@ class ShowIf(
         override val children: Iterable<Element> = this@ShowIf.children.map { it.create() }
         override fun renderTag(builder: Appendable, ident: String) {
           for (child in children) {
-            child.renderTag(builder, "    $ident")
+            child.renderTag(builder, ident)
           }
         }
       }
@@ -233,7 +232,7 @@ class ShowIf(
         override val children: Iterable<Element> get() = this@ShowIf.children.map { it.create() }
         override fun renderTag(builder: Appendable, ident: String) {
           if (this@ShowIf.clause.first()) {
-            NoTagElement(children).renderTag(builder, "    $ident")
+            NoTagElement(children).renderTag(builder, ident)
           }
         }
       }

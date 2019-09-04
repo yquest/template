@@ -73,7 +73,7 @@ class CarList(type: Type, var carEdit: Boolean = false, var list: List<Car> = em
             th { +"Model" }
             th { +"Maturity date" }
             th { +"Price" }
-            showIf({ true } to "props.authenticated") {
+            showIf({ carEdit } to "props.authenticated") {
               th(colSpan = 2) {
                 +"Actions"
               }

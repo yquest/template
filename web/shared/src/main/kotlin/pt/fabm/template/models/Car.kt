@@ -1,12 +1,12 @@
 package pt.fabm.template.models
 
-import java.time.LocalDateTime
+import java.time.Instant
 
 data class Car(
   val model: String,
   val make: CarMake,
   val price: Int,
-  val maturityDate: LocalDateTime
+  val maturityDate: Instant
 ) {
   companion object FIELDS{
     const val CAR = "car"
@@ -15,7 +15,7 @@ data class Car(
     const val PRICE = "price"
     const val MATURITY_DATE = "maturityDate"
   }
-  constructor(carId: CarId, price: Int, maturityDate: LocalDateTime) : this(
+  constructor(carId: CarId, price: Int, maturityDate: Instant) : this(
       model = carId.model,
       make = carId.maker,
       maturityDate = maturityDate,
