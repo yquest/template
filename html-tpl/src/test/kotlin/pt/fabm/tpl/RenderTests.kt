@@ -101,7 +101,7 @@ class RenderTests {
             </thead>
             <tbody>
                 {props.cars.map((car, idx) => (
-                    <CarView authenticated={props.authenticated} key={idx} maker={MAKERS[car.make]} model={car.model} maturityDate={dateToStringReadable(car.maturityDate)} price={car.price + "€"} carManager={props.carManagerCreator(car)} car={car}/>
+                    <CarView authenticated={props.authenticated} key={idx} maker={MAKERS[car.make]} model={car.model} maturityDate={dateToStringReadable(car.maturityDate)} price={car.price + "€"} carManager={props.carManagerCreator(car)} car={car}></CarView>
                 ))}
             </tbody>
         </table>
@@ -113,8 +113,8 @@ class RenderTests {
     Assertions.assertEquals(expected, current)
 
     current = StringBuilder().let { CarList(Type.CLIENT, true, defaultCarList).create().renderTag(it);it.toString() }
-    expected = """
-      <CarList cars={props.cars} authenticated={props.authenticated} carManagerCreator={props.carManagerCreator}/>
+    expected = """ 
+      <CarList cars={props.cars} authenticated={props.authenticated} carManagerCreator={props.carManagerCreator}></CarList>
       
     """.trimIndent()
     Assertions.assertEquals(expected, current)
@@ -158,11 +158,11 @@ class RenderTests {
                 </td>
                     <!--only authenticated-->
                     <td>
-                        <a href="javascript:void(0)" class="btn"/>
+                        <a href="javascript:void(0)" class="btn"></a>
                     </td>
                     <!--only authenticated-->
                     <td>
-                        <a href="javascript:void(0)" class="btn"/>
+                        <a href="javascript:void(0)" class="btn"></a>
                     </td>
             </tr>
             <!--end each CarView-->
@@ -250,7 +250,7 @@ class RenderTests {
   @Test
   fun renderNotifications() {
     var current = StringBuilder().let { createNotifications(Type.CLIENT).create().renderTag(it);it.toString() }
-    var expected = "<Notifications/>\n"
+    var expected = "<Notifications></Notifications>\n"
     Assertions.assertEquals(expected, current)
     current = StringBuilder()
       .let { createNotifications(Type.CLIENT_IMPLEMENTATION).create().renderTag(it);it.toString() }
@@ -296,21 +296,21 @@ class RenderTests {
         {props.appState === app.AppState.LIST_NO_AUTH && (
             <a href="javascript:void();" onClick={props.loginOn}>
                 Sign in
-                <i className="fas fa-sign-in-alt"/>
+                <i className="fas fa-sign-in-alt"></i>
             </a>
         )}
-        <Notifications/>
+        <Notifications></Notifications>
         {props.appState === app.AppState.CAR_EDIT_AUTH && (
             <div key="helloUsername" className="float-right">
                 Hello {props.username + " "}
                 <a href="javascript:void(0)" onClick={props.loginOff}>
                     logoff
-                    <i className="fas fa-sign-out-alt"/>
+                    <i className="fas fa-sign-out-alt"></i>
                 </a>
             </div>
         )}
         {(props.appState === app.AppState.LIST_NO_AUTH || props.appState === app.AppState.CAR_EDIT_AUTH) && (
-            <CarList cars={props.cars} authenticated={props.authenticated} carManagerCreator={props.carManagerCreator}/>
+            <CarList cars={props.cars} authenticated={props.authenticated} carManagerCreator={props.carManagerCreator}></CarList>
         )}
     </div>
     
@@ -333,7 +333,7 @@ class RenderTests {
                 Hello rockMyWorld 
                 <a href="javascript:void(0)">
                     logoff
-                    <i class="fas fa-sign-out-alt"/>
+                    <i class="fas fa-sign-out-alt"></i>
                 </a>
             </div>
             <table>
@@ -373,11 +373,11 @@ class RenderTests {
                         </td>
                             <!--only authenticated-->
                             <td>
-                                <a href="javascript:void(0)" class="btn"/>
+                                <a href="javascript:void(0)" class="btn"></a>
                             </td>
                             <!--only authenticated-->
                             <td>
-                                <a href="javascript:void(0)" class="btn"/>
+                                <a href="javascript:void(0)" class="btn"></a>
                             </td>
                     </tr>
                     <!--end each CarView-->

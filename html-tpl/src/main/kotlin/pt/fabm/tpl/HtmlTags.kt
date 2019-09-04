@@ -61,14 +61,7 @@ class ElementWrapper(
 @HtmlTagMarker
 open class NoTagElement(
   override val children: Iterable<Element> = emptyList()
-) : Element {
-
-  override fun renderTag(builder: Appendable, ident: String) {
-    for (child in children) {
-      child.renderTag(builder, ident)
-    }
-  }
-}
+) : Element
 
 class TagElement(
   private val name: String,
@@ -80,7 +73,7 @@ class TagElement(
     val iterator = children.iterator()
     val noChildren = !iterator.hasNext()
     builder.append("$ident<$name${attributes()}")
-    if (noChildren) builder.append("/>\n")
+    if (noChildren) builder.append("></$name>\n")
     else {
       builder.append(">\n")
       super.renderTag(builder, "    $ident")
@@ -196,11 +189,6 @@ interface BodyTag : WithChildren, ElementCreator {
     )
   }
 
-  fun scriptJS(src: String): ScriptJS {
-    val scriptJS = ScriptJS(type, src)
-    children += scriptJS
-    return scriptJS
-  }
 }
 
 class A(
@@ -438,20 +426,6 @@ class Link(type: Type, override val attributes: () -> String) : TagWithText("lin
       children.map { it.create() },
       attributes
     )
-}
-
-class ScriptJS(type: Type, private val src: String) : TagWithText(name = "script", type = type) {
-  override val children: MutableList<ElementCreator> get() = error("cannot have children")
-  override fun create(): Element {
-    if (type != Type.SERVER) error("a script element can be only a server type")
-    return TagElement(name, emptyList()) {
-      AttributeValue.render(
-        type,
-        AttributeValue.create { basicAttribute("type", "text/javascript") },
-        AttributeValue.create { basicAttribute("src", src) }
-      )
-    }
-  }
 }
 
 class HTML(type: Type) : TagWithText("html", type), BodyTag {
