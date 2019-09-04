@@ -6,8 +6,8 @@ import java.time.format.DateTimeFormatter
 
 fun Car.toJson():JsonObject{
   return JsonObject()
-    .put("make",this.make)
+    .put("make",this.make.name)
     .put("model",this.model)
-    .put("maturityDate",this.maturityDate.toString())
+    .put("maturityDate",this.maturityDate.toEpochMilli())
     .put("price",this.price)
 }
