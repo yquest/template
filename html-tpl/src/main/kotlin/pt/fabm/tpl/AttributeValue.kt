@@ -72,14 +72,12 @@ class AttributeValue(
     clientKey = key
     clientValue = "{$value}"
     isClientValid = value != null
-    isServerValid = false
   }
 
   fun serverAttribute(key: String, value: String?) {
-    clientKey = key
-    clientValue = "{$value}"
-    isClientValid = true
-    isServerValid = false
+    serverKey = key
+    serverValue = "\"$value\""
+    isServerValid = value != null
   }
 
   fun basicEnsuredAttribute(key: String, value: String) {

@@ -5,6 +5,7 @@ import io.vertx.core.buffer.Buffer
 import io.vertx.core.eventbus.DeliveryOptions
 import io.vertx.core.logging.Logger
 import io.vertx.core.logging.LoggerFactory
+import io.vertx.kotlin.core.json.jsonObjectOf
 import io.vertx.reactivex.core.AbstractVerticle
 import io.vertx.reactivex.ext.web.Router
 import io.vertx.reactivex.ext.web.handler.StaticHandler
@@ -16,6 +17,7 @@ import pt.fabm.template.rest.controllers.CarController
 import pt.fabm.template.rest.controllers.UserController
 import pt.fabm.template.validation.RequiredException
 import pt.fabm.tpl.Type
+import pt.fabm.tpl.component.app.App
 import pt.fabm.tpl.component.car.CarList
 import pt.fabm.tpl.html
 import java.io.File
@@ -64,7 +66,7 @@ class RestVerticle : AbstractVerticle() {
 
 
 
-    router.get("/index-text").handler {
+    router.get("/").handler {
 
       fun renderHtml(carList: List<Car>): String {
 
@@ -78,8 +80,32 @@ class RestVerticle : AbstractVerticle() {
           maturityDate = Instant.ofEpochMilli(1567594959104L),
           model = "A6",
           price = 30_000
+        ),Car(
+          make = CarMake.PEUGEOT,
+          maturityDate = Instant.ofEpochMilli(1567594959104L),
+          model = "308",
+          price = 30_000
         ))
-        var content = StringBuilder().let { CarList(Type.SERVER,false,cars).create().renderTag(it);it.toString()}
+
+        val username = "Xico"
+        val edit = true
+        val auth = true
+
+        var content = StringBuilder().let { App(
+          type = Type.SERVER,
+          carList = cars,
+          username = {username},
+          carEdit = edit,
+          auth = auth
+        ).create().renderTag(it);it.toString()}
+
+        val appInitData = jsonObjectOf(
+          "cars" to cars.map { car -> car.toJson() },
+          "username" to username,
+          "edit" to edit,
+          "auth" to auth
+        )
+
         val html = """
         <html>
           <head>
@@ -90,13 +116,8 @@ class RestVerticle : AbstractVerticle() {
             <div class="well">
                 <div id="root">${content}</div>
             </div>
-            <script >
-              var initialRequest = [
-                {"make":"VOLKSWAGEN","maturityDate":1567594959104,"model":"golf v","price":3000},
-                {"make":"AUDI","maturityDate":1567594959104,"model":"A6","price":30000},
-              ];
-            </script>
-            <script type="text/javascript" src="bundle.js?a41"></script>
+            <script type="text/javascript">var appInitialData = $appInitData;</script>
+            <script type="text/javascript" src="bundle.js?a50"></script>
           </body>
         </html>
         """.trimIndent()
@@ -112,9 +133,8 @@ class RestVerticle : AbstractVerticle() {
     }
     router.route().handler {
       if (!it.response().ended()) {
-        it.response()
-        LOGGER.error("Attention, not ended route for url: ${it.normalisedPath()}")
-        it.response().end()
+        it.response().statusCode = 404
+        it.response().end("ressource not found")
       }
     }
 

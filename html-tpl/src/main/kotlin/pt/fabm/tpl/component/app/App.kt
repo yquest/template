@@ -17,7 +17,7 @@ class App(
     val carEditAuth = { carEdit } to "props.appState === app.AppState.CAR_EDIT_AUTH"
     val listAuthAndCarEdit = { !auth || carEdit } to "(props.appState === app.AppState.LIST_NO_AUTH || " +
       "props.appState === app.AppState.CAR_EDIT_AUTH)"
-    val username: Pair<() -> String, String> = { "Hello ${username()} " } to "Hello {props.username + \" \"}"
+    val username: Pair<() -> String, String> = { "Hello ${username()} " } to """{"Hello "+ props.username + " "}"""
 
     fun createContainerApp(type: Type, init: DIV.() -> Unit): DIV {
       val div = DIV(type) {
@@ -37,16 +37,16 @@ class App(
         return showIf
       }
       showIf(appStateNoAuth) {
-        a(href = "javascript:void();", onClick = "props.loginOn") {
+        a(href = NO_ANCHOR_HREF, onClick = "props.loginOn") {
           +"Sign in"
           i(className = "fas fa-sign-in-alt")
         }
       }
       children += Notifications(type.toFirstLevel())
       showIf(carEditAuth) {
-        div(className = "float-right", key = "helloUsername") {
+        div(className = "float-right") {
           +username
-          a(href = "javascript:void(0)", onClick = "props.loginOff") {
+          a(href = NO_ANCHOR_HREF, onClick = "props.loginOff") {
             +"logoff"
             i(className = "fas fa-sign-out-alt")
           }

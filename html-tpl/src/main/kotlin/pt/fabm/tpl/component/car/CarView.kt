@@ -68,13 +68,13 @@ class CarView(car: () -> Car={ error("no car")}, edit: Boolean= false, type: Typ
         showIf({ edit } to "props.authenticated") {
           comment(this, "only authenticated")
           td {
-            a(href = "javascript:void(0)", className = "btn", onClick = "props.carManager.edit")
+            a(href = NO_ANCHOR_HREF, className = "btn", onClick = "props.carManager.edit")
           }
         }
         showIf({ edit } to "props.authenticated") {
           comment(this, "only authenticated")
           td {
-            a(href = "javascript:void(0)", className = "btn", onClick = "props.carManager.remove")
+            a(href = NO_ANCHOR_HREF, className = "btn", onClick = "props.carManager.remove")
           }
         }
       }

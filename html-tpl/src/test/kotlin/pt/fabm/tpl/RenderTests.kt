@@ -7,12 +7,21 @@ import pt.fabm.template.models.CarMake
 import pt.fabm.tpl.component.app.App
 import pt.fabm.tpl.component.car.CarList
 import java.time.LocalDateTime
+import java.time.ZoneOffset
 
 
 class RenderTests {
   companion object {
+
+
     private val defaultCarList = listOf(
-      Car(model = "model", maturityDate = LocalDateTime.of(2019, 1, 1, 1, 1), make = CarMake.VOLKSWAGEN, price = 200)
+      Car(
+        model = "model",
+        maturityDate = LocalDateTime
+        .of(2019, 1, 1, 1, 1)
+        .toInstant(ZoneOffset.UTC)!!,
+        make = CarMake.VOLKSWAGEN, price = 200
+      )
     )
   }
 
@@ -174,7 +183,14 @@ class RenderTests {
 
     carListServer.carEdit = false
     carListServer.list = defaultCarList + listOf(
-      Car(model = "Note", make = CarMake.NISSAN, price = 15000, maturityDate = LocalDateTime.of(2019, 2, 2, 2, 2))
+      Car(
+        model = "Note",
+        make = CarMake.NISSAN,
+        price = 15000,
+        maturityDate = LocalDateTime
+          .of(2019, 2, 2, 2, 2)
+          .toInstant(ZoneOffset.UTC)
+      )
     )
     current = StringBuilder().let { carListServerRenderer.renderTag(it);it.toString() }
     expected = """

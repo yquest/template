@@ -5,6 +5,8 @@ import pt.fabm.tpl.WithChildren.Companion.initTag
 @DslMarker
 annotation class HtmlTagMarker
 
+const val NO_ANCHOR_HREF = "javascript:void(0)"
+
 interface WithChildren {
   val children: MutableList<ElementCreator>
 
@@ -35,11 +37,12 @@ enum class Type {
 
 interface Element {
   val children: Iterable<Element>
-  fun renderTag(builder: Appendable, ident: String = ""){
+  fun renderTag(builder: Appendable, ident: String = "") {
     for (child in children) {
       child.renderTag(builder, ident)
     }
   }
+
   fun toElementCreator(type: Type): ElementCreator = object : ElementCreator {
     override val type: Type = type
     override fun create(): Element = this@Element
@@ -156,7 +159,7 @@ interface BodyTag : WithChildren, ElementCreator {
     val renderedAttributes = AttributeValue.render(
       type,
       AttributeValue.create { defaultAttribute("id", id) },
-      AttributeValue.create { basicAttribute("key", key) },
+      AttributeValue.create { clientAttribute("key", key) },
       AttributeValue.create { className(className) })
     val div = initTag(DIV(type) { renderedAttributes }, init)
     return div
@@ -180,7 +183,14 @@ interface BodyTag : WithChildren, ElementCreator {
       A(type) {
         AttributeValue.render(
           type,
-          AttributeValue.create { basicEnsuredAttribute("href", href) },
+          AttributeValue.create {
+            if (href == NO_ANCHOR_HREF){
+              clientAttribute("href", """"$NO_ANCHOR_HREF"""")
+              serverAttribute("href", NO_ANCHOR_HREF)
+            }
+            else
+              basicAttribute("href", href)
+          },
           AttributeValue.create { className(className) },
           AttributeValue.create { clientAttribute("onClick", onClick) })
       },
