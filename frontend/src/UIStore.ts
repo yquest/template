@@ -1,4 +1,4 @@
-import { observable, action, computed } from "mobx";
+import { observable, action } from "mobx";
 
 export enum NotificationType {
   SUCCESS,
@@ -16,74 +16,31 @@ export class Notification {
 }
 
 export class ModalContent {
+  actionEvent:(e)=>void;
   actionButton: string;
   title:string;
   content: React.ReactElement | string;
 }
 
-
-
-export class UiStore {
-  idxNotification: number = 0;
-  @observable
-  notifications: Notification[] = [];
-  @observable
-  modal: ModalState = ModalState.REMOVED;
-  @observable
-  modalAction:()=>any;
-  @observable
+export interface UiStore{
+  notifications: Notification[];
+  modal: ModalState;
   modalContent:ModalContent;
-
-  createNotification() {
-    let notification: Notification = new Notification();
-    notification.id = `notif-${this.idxNotification++}`;
-    return notification;
-  }
-
-  @action
-  removeNotification(idx: string) {
-    console.log(`removing ${idx}`);
-    this.notifications = this.notifications.filter(el => {
-      return el.id !== idx;
-    });
-  }
-
-  private addNotification(notification: Notification): number {
-    this.notifications.push(notification);
-    return this.notifications.length - 1;
-  }
-
-  @action
-  addNotificationTemp(notification: Notification, temp: number) {
-    this.addNotification(notification);
-    setTimeout(() => {
-      this.removeNotification(notification.id);
-    }, temp);
-  }
-
-  @action
-  addNotificationPerm(notification: Notification) {
-    this.addNotification(notification);
-  }
-  @action
-  updateModal(modal: ModalState) {
-    this.modal = modal;
-  }
-  @action
-  updateModalContent(modalContent: ModalContent) {
-    this.modalContent = modalContent;
-  }
-  @action
-  updateModalAction(modalAction: ()=>any) {
-    this.modalAction = modalAction;
-  }
-  @computed
-  get modelInDOM(): boolean {
-    return this.modal === ModalState.CREATED ||
-    this.modal === ModalState.CANCELED ||
-    this.modal === ModalState.SAVED ||
-    this.modal === ModalState.SHOW;
-  }
+  modelInDOM:boolean;
+  updateModal:(modal:ModalState)=>void;
 }
 
-export const uiStore: UiStore = new UiStore();
+export const uiStore: UiStore = observable({
+  notifications:[] as Notification[],
+  modal:ModalState.REMOVED,
+  modalContent:undefined,
+  get modelInDOM() {
+    return uiStore.modal === ModalState.CREATED ||
+    uiStore.modal === ModalState.CANCELED ||
+    uiStore.modal === ModalState.SAVED ||
+    uiStore.modal === ModalState.SHOW;
+  },
+  updateModal:(modal:ModalState)=>{
+    uiStore.modal = modal;
+  }
+},{updateModal:action});

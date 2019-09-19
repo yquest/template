@@ -7,7 +7,7 @@ import java.time.Instant
 import java.util.*
 
 
-class CarView(car: () -> Car={ error("no car")}, edit: Boolean= false, type: Type) : Component("CarView", type) {
+class CarView(car: () -> Car = { error("only for Server use") }, edit: Boolean = false, type: Type) : Component("CarView", type) {
   override val attributes = {
     AttributeValue.render(
       type,
@@ -24,7 +24,7 @@ class CarView(car: () -> Car={ error("no car")}, edit: Boolean= false, type: Typ
 
   init {
 
-    fun formattedDate(date:Instant):String{
+    fun formattedDate(date: Instant): String {
       val strFormat = "yyyy-MM-dd, HH:mm"
       val formatter = SimpleDateFormat(strFormat)
       return formatter.format(Date(date.toEpochMilli()))
@@ -63,18 +63,22 @@ class CarView(car: () -> Car={ error("no car")}, edit: Boolean= false, type: Typ
           +({ formattedDate(car().maturityDate) } to "{props.maturityDate}")
         }
         td {
-          +({ car().price.toString()+"€" } to "{props.price}")
+          +({ car().price.toString() + "€" } to "{props.price}")
         }
         showIf({ edit } to "props.authenticated") {
           comment(this, "only authenticated")
           td {
-            a(href = NO_ANCHOR_HREF, className = "btn", onClick = "props.carManager.edit")
+            a(className = "btn", onClick = "props.carManager.edit") {
+              i(className = "fas fa-edit")
+            }
           }
         }
         showIf({ edit } to "props.authenticated") {
           comment(this, "only authenticated")
           td {
-            a(href = NO_ANCHOR_HREF, className = "btn", onClick = "props.carManager.remove")
+            a(className = "btn", onClick = "props.carManager.remove"){
+              i(className = "fas fa-times")
+            }
           }
         }
       }

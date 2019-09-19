@@ -15,6 +15,8 @@ class AppGen : TsGen {
         import * as React from "react";
         import { Notifications } from "../app/Notifications";
         import { CarList } from "./CarListTpl";
+        import { uiStore } from "../../UIStore";
+        import { Modal } from "../tpl/ModalTpl"; 
         
         export const App = observer((props: app.Props) => ( 
         """.trimIndent(),
@@ -23,9 +25,6 @@ class AppGen : TsGen {
         ));
         """.trimIndent()
   )
-
-
-  //App(Type.CLIENT_IMPLEMENTATION).create()
 
   override fun close() {
     appendable.close()

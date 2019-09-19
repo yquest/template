@@ -89,6 +89,15 @@ class AttributeValue(
     isServerValid = true
   }
 
+  fun literalAttribute(key: String, value: String?){
+    clientKey = key
+    serverKey = key
+    isClientValid = value != null
+    isServerValid = value != null
+    clientValue = value!!
+    serverValue = clientValue
+  }
+
   fun basicAttribute(key: String, value: String?) {
     clientKey = key
     serverKey = key

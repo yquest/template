@@ -15,18 +15,11 @@ function getInputTypeRef(inputType: app.InputType, value: any) {
   }
 }
 
-function resolveName() {
-  if (this.props.currentValue === null) {
-    return "";
-  }
-  return this.props.currentValue;
-}
-
 function getErrorClass(error: String) {
   return classNames({
     "form-control": true,
     "is-valid": error === "",
-    "is-invalid": error !== ""
+    "is-invalid": (error || "").length > 0
   });
 }
 
@@ -53,22 +46,14 @@ function onBlur(
   };
 }
 
-export const AppInput = (props: app.TextInputProps) => (
-  <div className="form-group col-sm-10 col-md-8 col-lg-6 mb-3 mb-sm-3">
-    <label>{props.label}</label>
-    <input
-      tabIndex={props.tabIndex}
-      disabled={props.disabled || false}
+export const AppInput = (props: app.TextInputProps) => (<div className="form-group col-sm-10 col-md-8 col-lg-6 mb-3 mb-sm-3" ><label>{props.label}</label><input tabIndex={props.tabIndex} 
+      disabled={props.disabled || false} 
       className={getErrorClass(props.error)}
       type={getInputTypeRef(props.inputType, props.currentValue)}
       onChange={event => props.onChange(event.target.value)}
-      placeholder={props.label}
+      placeholder={props.placeholder}
       onFocus={onFocus(props.inputType)}
       onBlur={onBlur(props.inputType)}
-      value={resolveName.bind(this)()}
-    />
-    {props.error !== null && props.error.length > 0 && (
-      <div className="invalid-feedback">{props.error}</div>
-    )}
-  </div>
-);
+      value={props.currentValue === null ? "": props.currentValue}></input>{props.error !== null && props.error.length > 0 && (
+  <div className="invalid-feedback">{props.error}</div>
+)}</div>);

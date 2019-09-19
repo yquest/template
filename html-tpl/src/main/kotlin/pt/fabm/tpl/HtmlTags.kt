@@ -5,8 +5,6 @@ import pt.fabm.tpl.WithChildren.Companion.initTag
 @DslMarker
 annotation class HtmlTagMarker
 
-const val NO_ANCHOR_HREF = "javascript:void(0)"
-
 interface WithChildren {
   val children: MutableList<ElementCreator>
 
@@ -142,25 +140,40 @@ abstract class TagWithText(override val name: String, override val type: Type) :
 }
 
 interface BodyTag : WithChildren, ElementCreator {
-  fun <T : ElementCreator> initTag(tag: T, init: T.() -> Unit): T {
-    tag.init()
-    children.add(tag)
-    return tag
-  }
+  fun <T : ElementCreator> initTag(tag: T, init: T.() -> Unit): T = initTag(children, tag, init)
 
   fun table(init: Table.() -> Unit): Table = initTag(Table(type), init)
 
-  fun <T : Component> component(component: T): T {
+  fun <T : ElementCreator> component(component: T): T {
     children += component
     return component
   }
 
-  fun div(id: String? = null, key: String? = null, className: String? = null, init: DIV.() -> Unit): DIV {
+  fun form(onSubmitEvent: String, init: TagWithText.() -> Unit): TagWithText {
+    val form = object : TagWithText("form", type) {
+      override val children: MutableList<ElementCreator> = mutableListOf()
+      override fun create(): Element {
+        return if (type == Type.SERVER) TagElement(name, children.map { it.create() }) { "" }
+        else TagElement(name, children.map { it.create() }) { " onSubmit={$onSubmitEvent}" }
+      }
+    }
+    form.init()
+    children += form
+    return form
+  }
+
+  fun div(
+    id: String? = null,
+    key: String? = null,
+    className: String? = null,
+    init: DIV.() -> Unit = {}
+  ): DIV {
     val renderedAttributes = AttributeValue.render(
       type,
       AttributeValue.create { defaultAttribute("id", id) },
       AttributeValue.create { clientAttribute("key", key) },
-      AttributeValue.create { className(className) })
+      AttributeValue.create { className(className) }
+    )
     val div = initTag(DIV(type) { renderedAttributes }, init)
     return div
   }
@@ -178,19 +191,12 @@ interface BodyTag : WithChildren, ElementCreator {
     )
   }
 
-  fun a(href: String, onClick: String? = null, className: String? = null, init: A.() -> Unit = {}): A {
+  fun a(href: String? = null, onClick: String? = null, className: String? = null, init: A.() -> Unit = {}): A {
     return initTag(
       A(type) {
         AttributeValue.render(
           type,
-          AttributeValue.create {
-            if (href == NO_ANCHOR_HREF){
-              clientAttribute("href", """"$NO_ANCHOR_HREF"""")
-              serverAttribute("href", NO_ANCHOR_HREF)
-            }
-            else
-              basicAttribute("href", href)
-          },
+          AttributeValue.create { basicAttribute("href", "") },
           AttributeValue.create { className(className) },
           AttributeValue.create { clientAttribute("onClick", onClick) })
       },

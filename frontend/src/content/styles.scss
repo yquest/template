@@ -21,6 +21,10 @@ $rct-label-active: rgba($rct-icon-color, .15) !default;
 $rct-clickable-hover: rgba($rct-icon-color, .1) !default;
 $rct-clickable-focus: rgba($rct-icon-color, .2) !default;
 
+.display-block{
+  display: block;
+}
+
 .dropdown-item.selected{
   @extend .dropdown-item:hover
 }
