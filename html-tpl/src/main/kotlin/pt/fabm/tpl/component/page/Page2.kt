@@ -1,6 +1,7 @@
-package pt.fabm.tpl.component.app
+package pt.fabm.tpl.component.page
 
 import pt.fabm.tpl.*
+import pt.fabm.tpl.component.app.AppInput
 
 class Page2(
   override val type: Type,

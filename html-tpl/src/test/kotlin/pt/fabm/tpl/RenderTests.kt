@@ -4,7 +4,7 @@ import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.api.Test
 import pt.fabm.template.models.Car
 import pt.fabm.template.models.CarMake
-import pt.fabm.tpl.component.app.App
+import pt.fabm.tpl.component.page.App
 import pt.fabm.tpl.component.car.CarList
 import java.time.LocalDateTime
 import java.time.ZoneOffset
@@ -302,7 +302,12 @@ class RenderTests {
   @Test
   fun renderApp() {
     var current = StringBuilder().let {
-      App(type = Type.CLIENT, carEdit = true, auth = true, carList = defaultCarList, username = { "rockMyWorld" })
+      App(
+        type = Type.CLIENT,
+        carEdit = true,
+        auth = true,
+        carList = defaultCarList,
+        username = { "rockMyWorld" })
         .create()
         .renderTag(it)
       it.toString()
@@ -334,7 +339,12 @@ class RenderTests {
     Assertions.assertEquals(expected, current)
 
     current = StringBuilder().let {
-      App(type = Type.SERVER, carEdit = true, auth = true, carList = defaultCarList, username = { "rockMyWorld" })
+      App(
+        type = Type.SERVER,
+        carEdit = true,
+        auth = true,
+        carList = defaultCarList,
+        username = { "rockMyWorld" })
         .create()
         .renderTag(it)
       it.toString()

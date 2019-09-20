@@ -1,4 +1,4 @@
-package pt.fabm.tpl.component.app
+package pt.fabm.tpl.component.page
 
 import pt.fabm.template.models.Car
 import pt.fabm.tpl.Component

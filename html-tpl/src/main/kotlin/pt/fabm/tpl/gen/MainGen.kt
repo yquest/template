@@ -8,7 +8,6 @@ fun main() {
       CarListGen(),
       CarViewGen(),
       Page2Gen(),
-      ModalGen(),
       AppInputGen()
     )
   )

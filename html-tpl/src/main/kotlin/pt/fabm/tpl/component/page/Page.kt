@@ -1,6 +1,7 @@
-package pt.fabm.tpl.component.app
+package pt.fabm.tpl.component.page
 
 import pt.fabm.tpl.*
+import pt.fabm.tpl.component.app.Notifications
 
 abstract class Page(
   override val type: Type,
@@ -33,7 +34,7 @@ abstract class Page(
         this.children += showIf
         return showIf
       }
-      component(Modal(type.toFirstLevel()))
+      component(Component("Modal",type.toFirstLevel()))
       showIf(appStateNoAuth) {
         a(href = "", onClick = "props.loginOn") {
           +"Sign in"
@@ -62,5 +63,4 @@ abstract class Page(
   }
 
   abstract fun createComponent(): ElementCreator
-
 }

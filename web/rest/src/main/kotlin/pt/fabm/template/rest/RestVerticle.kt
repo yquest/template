@@ -17,8 +17,8 @@ import pt.fabm.template.rest.controllers.CarController
 import pt.fabm.template.rest.controllers.UserController
 import pt.fabm.template.validation.RequiredException
 import pt.fabm.tpl.Type
-import pt.fabm.tpl.component.app.App
-import pt.fabm.tpl.component.app.Page2
+import pt.fabm.tpl.component.page.App
+import pt.fabm.tpl.component.page.Page2
 import java.io.File
 import java.time.Instant
 
@@ -75,7 +75,7 @@ class RestVerticle : AbstractVerticle() {
                 <div id="root">${content}</div>
             </div>
             <script type="text/javascript">var __state = $appInitData;</script>
-            <script type="text/javascript" src="bundle.js"></script>
+            <script type="text/javascript" src="bundle.js?2"></script>
           </body>
         </html>
         """.trimIndent()

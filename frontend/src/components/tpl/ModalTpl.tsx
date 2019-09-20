@@ -31,7 +31,7 @@ export const Modal = observer(() => {
   let modalClasses = classNames({
     modal: true,
     fade: true,
-    "display-block": true,
+    "d-block": true,
     show: uiStore.modal === ModalState.SHOW
   });
   return (
