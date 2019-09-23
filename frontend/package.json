@@ -4,7 +4,7 @@
   "description": "In this sample we setup the basic plumbing to \"build\" our project and launch it in a dev server.",
   "main": "index.js",
   "scripts": {
-    "start": "webpack-dev-server  --mode development --inline --hot --open",
+    "start": "webpack-dev-server  --mode development --inline --hot --open --env.platform=web3",
     "build": "webpack  --mode development",
     "web2": "webpack  --mode development --env.platform=web2",
     "ssr": "webpack  --mode development --env.platform=server",

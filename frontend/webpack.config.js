@@ -111,5 +111,13 @@ module.exports = function(env, argv) {
     ]
     base.output.filename='bundle.js';
   }
+  else if(lenv.platform === 'web3'){
+    base.entry = ['@babel/polyfill',
+      './content/styles.scss',
+      './initData.ts',
+      './index3.tsx'
+    ]
+    base.output.filename='bundle.js';
+  }
   return base;
 }

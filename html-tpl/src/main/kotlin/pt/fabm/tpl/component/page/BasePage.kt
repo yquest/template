@@ -15,25 +15,13 @@ class BasePage(
       )
     }
     val root = DIV(type, rootAttributes)
-    root.children += pageBlocks.logoutArea
-    root.children += pageBlocks.loginArea
+    root.children += pageBlocks.loginButtonArea
+    //to be rendered only on client
+    root.children += Component("Notifications", type)
+    root.children += pageBlocks.logoffArea
     root.children += pageBlocks.carListArea
     root.children += pageBlocks.registerArea
     return root.create()
   }
 
-  protected fun addLoginButton() {
-    fun A.initComponent(init:A.()->Unit):A{
-      this.init()
-      return this
-    }
-    val button = A(type,).initComponent {
-
-    }
-    area.a(className = "float-right", onClick = "props.loginOn") {
-      +"Sign in"
-      i(className = "fas fa-sign-in-alt")
-    }
-    return area
-  }
 }

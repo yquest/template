@@ -223,6 +223,10 @@ class ShowIf(
   private val clause: Pair<() -> Boolean, String>,
   override val type: Type
 ) : BodyTag {
+
+  //client only
+  constructor(clause:String, type:Type) : this({false} to clause, type)
+
   override val children: MutableList<ElementCreator> = mutableListOf()
 
   fun td(init: TD.() -> Unit): TD = initTag(children, TD(type), init)
@@ -390,7 +394,7 @@ class CommentServerTag(private val text: String, override val type: Type) : Elem
   }
 }
 
-open class Component(name: String, type: Type) : TagWithText(name, type), BodyTag {
+open class Component(name: String, type: Type, attributes: () -> String = { "" }) : TagWithText(name, type), BodyTag {
   override val children: MutableList<ElementCreator> = mutableListOf()
 
   override fun create(): Element {
