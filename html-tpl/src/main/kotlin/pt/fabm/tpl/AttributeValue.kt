@@ -117,4 +117,14 @@ class AttributeValue(
       isServerValid = true
     }
   }
+  fun tabIndex(value: String?) {
+    if (value != null) {
+      clientKey = "tabIndex"
+      serverKey = "tabindex"
+      clientValue = "{$value}"
+      serverValue = "\"$value\""
+      isClientValid = true
+      isServerValid = true
+    }
+  }
 }

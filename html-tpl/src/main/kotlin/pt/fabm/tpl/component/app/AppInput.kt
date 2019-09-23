@@ -11,15 +11,14 @@ class AppInput(
   value: Pair<() -> String, String> = { "" } to "",
   onChange: String = "",
   error: String = "",
-  override val attributes: () -> String = {
-    """ error={$error}""" +
-      """ tabIndex={$tabIndex} currentValue={${value.second}}""" +
-      """ disabled={$disabled} inputType={a.InputType.TEXT}""" +
-      """ label="$label" labelId="$label"""" +
-      """ placeholder="$placeholder" onChange={$onChange}"""
-  },
   type: Type
-) : Component("AppInput", type) {
+) : Component(name = "AppInput", type = type, attributes = {
+  """ error={$error}""" +
+    """ tabIndex={$tabIndex} currentValue={${value.second}}""" +
+    """ disabled={$disabled} inputType={a.InputType.TEXT}""" +
+    """ label="$label" labelId="$label"""" +
+    """ placeholder="$placeholder" onChange={$onChange}"""
+}) {
   init {
     val clientImplementationPrefix = """
     import * as React from "react";

@@ -88,7 +88,6 @@ const carManagerCreator = (car: Car) => {
 };
 
 export const Root = observer(() => {
-  console.log("rerender root");
   const initialData = window["__state"] as AppInitialData;
   if (router.page === "page2") {
     console.log(`render page2 ${router.page}`);
@@ -102,7 +101,6 @@ export const Root = observer(() => {
       />
     );
   } else {
-    console.log(`render root ${router.page}`);
     return (
       <App
         carManagerCreator={carManagerCreator}
