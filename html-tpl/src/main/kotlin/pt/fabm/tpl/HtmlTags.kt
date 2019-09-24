@@ -149,6 +149,36 @@ interface BodyTag : WithChildren, ElementCreator {
     return component
   }
 
+  fun nav(className: String? = null, init: TagWithText.() -> Unit): TagWithText {
+    return object : TagWithText("nav", type) {
+      override val children: MutableList<ElementCreator> = mutableListOf()
+      override fun create(): Element {
+        return TagElement(name, children.map { it.create() }) {
+          AttributeValue.render(type,
+            AttributeValue.create { className(className) }
+          )
+        }
+      }
+    }
+  }
+
+  fun header(headerType: Int, className: String?, init: TagWithText.() -> Unit): TagWithText {
+    val headerName = "h$headerType"
+    val h = object : TagWithText(headerName, type) {
+      override val children: MutableList<ElementCreator> = mutableListOf()
+      override fun create(): Element {
+        return TagElement(name, children.map { it.create() }) {
+          AttributeValue.render(type,
+            AttributeValue.create { className(className) }
+          )
+        }
+      }
+    }
+    h.init()
+    children+=h
+    return h
+  }
+
   fun form(onSubmitEvent: String, init: TagWithText.() -> Unit): TagWithText {
     val form = object : TagWithText("form", type) {
       override val children: MutableList<ElementCreator> = mutableListOf()
@@ -225,7 +255,7 @@ class ShowIf(
 ) : BodyTag {
 
   //client only
-  constructor(clause:String, type:Type) : this({false} to clause, type)
+  constructor(clause: String, type: Type) : this({ false } to clause, type)
 
   override val children: MutableList<ElementCreator> = mutableListOf()
 
