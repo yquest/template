@@ -21,7 +21,7 @@ class CarDaoPostgres(private val connection: Connection) : Closeable, CarDao {
     private const val FIND_ALL_QUERY = "select maker, maturity_date, model, price from car"
     private fun toCar(row: ResultSet) = Car(
       make = CarMake.values()[row.getInt(1)],
-      maturityDate = row.getTimestamp(2).toLocalDateTime(),
+      maturityDate = row.getTimestamp(2).toInstant(),
       model = row.getString(3),
       price = row.getInt(4)
     )
@@ -53,7 +53,7 @@ class CarDaoPostgres(private val connection: Connection) : Closeable, CarDao {
 
     val ps = createPS()
     ps.setInt(1, car.make.ordinal)
-    ps.setTimestamp(2, Timestamp.valueOf(car.maturityDate))
+    ps.setTimestamp(2, Timestamp.from(car.maturityDate))
     ps.setString(3, car.model)
     ps.setInt(4, car.price)
     ps.execute()
@@ -69,7 +69,7 @@ class CarDaoPostgres(private val connection: Connection) : Closeable, CarDao {
     }
 
     val ps = updatePS()
-    ps.setTimestamp(1, Timestamp.valueOf(car.maturityDate))
+    ps.setTimestamp(1, Timestamp.from(car.maturityDate))
     ps.setInt(2, car.price)
     ps.setInt(3, car.make.ordinal)
     ps.setString(4, car.model)

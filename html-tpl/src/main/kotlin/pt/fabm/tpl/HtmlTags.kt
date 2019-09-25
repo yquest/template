@@ -424,7 +424,7 @@ class CommentServerTag(private val text: String, override val type: Type) : Elem
   }
 }
 
-open class Component(name: String, type: Type, attributes: () -> String = { "" }) : TagWithText(name, type), BodyTag {
+open class Component(name: String, type: Type, override val attributes: () -> String = { "" }) : TagWithText(name, type), BodyTag {
   override val children: MutableList<ElementCreator> = mutableListOf()
 
   override fun create(): Element {

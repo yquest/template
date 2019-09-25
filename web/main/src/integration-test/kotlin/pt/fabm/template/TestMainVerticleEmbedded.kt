@@ -2,8 +2,6 @@ package pt.fabm.template
 
 import Consts
 import io.jsonwebtoken.Jwts
-import io.netty.handler.codec.http.cookie.ClientCookieDecoder
-import io.netty.handler.codec.http.cookie.ServerCookieDecoder
 import io.vertx.core.http.HttpHeaders
 import io.vertx.core.json.JsonArray
 import io.vertx.core.json.JsonObject
@@ -15,11 +13,9 @@ import io.vertx.kotlin.core.json.jsonObjectOf
 import io.vertx.kotlin.core.json.obj
 import io.vertx.reactivex.core.Vertx
 import io.vertx.reactivex.core.buffer.Buffer
-import io.vertx.reactivex.ext.web.Cookie
 import io.vertx.reactivex.ext.web.client.HttpRequest
 import io.vertx.reactivex.ext.web.client.HttpResponse
 import io.vertx.reactivex.ext.web.client.WebClient
-import org.apache.http.impl.cookie.BasicClientCookie
 import org.junit.Assert
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.BeforeEach
@@ -38,6 +34,7 @@ import java.io.FileReader
 import java.nio.file.Paths
 import java.security.MessageDigest
 import java.time.LocalDateTime
+import java.time.ZoneOffset
 import java.util.concurrent.TimeUnit
 
 
@@ -189,7 +186,7 @@ class TestMainVerticle {
     val client = WebClient.create(vertx)
     val date = LocalDateTime.of(2019, 5, 1, 3, 6)
 
-    val car = Car("Golf V", CarMake.VOLKSWAGEN, 25000, date)
+    val car = Car("Golf V", CarMake.VOLKSWAGEN, 25000, date.toInstant(ZoneOffset.UTC))
     DaoMemoryShared.cars.add(car)
 
     client.get(port!!, host, "/api/car")
@@ -224,12 +221,12 @@ class TestMainVerticle {
     val date1 = LocalDateTime.of(2019, 5, 1, 8, 9)
     val date2 = LocalDateTime.of(2019, 5, 1, 8, 10)
 
-    val car1 = Car("Golf V", CarMake.VOLKSWAGEN, 25000, date1)
-    val car2 = Car("Golf V", CarMake.VOLKSWAGEN, 2000, date2)
+    val car1 = Car("Golf V", CarMake.VOLKSWAGEN, 25000, date1.toInstant(ZoneOffset.UTC))
+    val car2 = Car("Golf V", CarMake.VOLKSWAGEN, 2000, date2.toInstant(ZoneOffset.UTC))
 
     DaoMemoryShared.cars.add(car1)
 
-    login(client) {clientResp->
+    login(client) { clientResp ->
       client.put(port!!, host, "/api/car")
         .auth(clientResp)
         .rxSendJsonObject(car2.toJson())
@@ -252,7 +249,7 @@ class TestMainVerticle {
     val client = WebClient.create(vertx)
     val date = LocalDateTime.of(2019, 5, 1, 8, 9)
 
-    val car = Car("Golf V", CarMake.VOLKSWAGEN, 25000, date)
+    val car = Car("Golf V", CarMake.VOLKSWAGEN, 25000, date.toInstant(ZoneOffset.UTC))
 
     client.get(port!!, host, "/api/car")
       .addQueryParam(Car.MAKE, car.make.name)
@@ -274,10 +271,10 @@ class TestMainVerticle {
     val client = WebClient.create(vertx)
     val before1Month = LocalDateTime.now().minusMonths(1)
 
-    val car = Car("Golf V", CarMake.VOLKSWAGEN, 25000, before1Month)
+    val car = Car("Golf V", CarMake.VOLKSWAGEN, 25000, before1Month.toInstant(ZoneOffset.UTC))
 
 
-    login(client) {clientResp->
+    login(client) { clientResp ->
 
       client.post(port!!, host, "/api/car")
         .auth(clientResp)
@@ -300,7 +297,7 @@ class TestMainVerticle {
     val client = WebClient.create(vertx)
     val before1Month = LocalDateTime.now().minusMonths(1)
 
-    val car = Car("Golf V", CarMake.VOLKSWAGEN, 25000, before1Month)
+    val car = Car("Golf V", CarMake.VOLKSWAGEN, 25000, before1Month.toInstant(ZoneOffset.UTC))
 
     fun createCar(clientResponse: HttpResponse<*>) {
       client.post(port!!, host, "/api/car")
@@ -331,7 +328,7 @@ class TestMainVerticle {
         "Golf V",
         CarMake.VOLKSWAGEN,
         2000,
-        LocalDateTime.of(2019, 1, 1, 7, 8)
+        LocalDateTime.of(2019, 1, 1, 7, 8).toInstant(ZoneOffset.UTC)
       )
     )
 

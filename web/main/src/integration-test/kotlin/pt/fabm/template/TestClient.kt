@@ -37,7 +37,15 @@ import pt.fabm.template.validation.AuthException
 import java.io.FileReader
 import java.nio.file.Paths
 import java.security.MessageDigest
+import java.time.Instant
 import java.time.LocalDateTime
+import java.time.Month
+import java.time.ZoneOffset
+import java.time.chrono.ChronoLocalDate
+import java.time.chrono.Chronology
+import java.time.temporal.ChronoUnit
+import java.time.temporal.TemporalAccessor
+import java.time.temporal.TemporalUnit
 import java.util.concurrent.TimeUnit
 
 
@@ -112,7 +120,7 @@ class TestClient {
   @Throws(Throwable::class)
   fun createCar(vertx: Vertx, testContext: VertxTestContext) {
     val client = WebClient.create(vertx)
-    val before1Month = LocalDateTime.now().minusMonths(1)
+    val before1Month = Instant.now().minus(1,ChronoUnit.MONTHS)
 
     val car = Car("Golf VI", CarMake.VOLKSWAGEN, 25000, before1Month)
 
@@ -135,7 +143,7 @@ class TestClient {
   @Throws(Throwable::class)
   fun createCarReplaceToken(vertx: Vertx, testContext: VertxTestContext) {
     val client = WebClient.create(vertx)
-    val before1Month = LocalDateTime.now().minusMonths(1)
+    val before1Month = Instant.now().minus(1,ChronoUnit.MONTHS)
 
     val car = Car("Golf V", CarMake.VOLKSWAGEN, 25000, before1Month)
 
@@ -168,7 +176,7 @@ class TestClient {
         "Golf V",
         CarMake.VOLKSWAGEN,
         2000,
-        LocalDateTime.of(2019, 1, 1, 7, 8)
+        LocalDateTime.of(2019, 1, 1, 7, 8).toInstant(ZoneOffset.UTC)
       )
     )
 

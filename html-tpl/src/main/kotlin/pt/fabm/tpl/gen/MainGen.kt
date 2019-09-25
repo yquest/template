@@ -1,6 +1,7 @@
 package pt.fabm.tpl.gen
 
 import pt.fabm.tpl.Type
+import pt.fabm.tpl.component.app.AppInput
 import pt.fabm.tpl.component.app.NavBar
 
 fun main() {

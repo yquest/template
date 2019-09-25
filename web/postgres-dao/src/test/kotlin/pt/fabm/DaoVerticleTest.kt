@@ -10,6 +10,7 @@ import pt.fabm.template.EventBusAddresses
 import pt.fabm.template.LocalCodec
 import pt.fabm.template.dao.DaoVerticle
 import pt.fabm.template.models.*
+import java.time.Instant
 import java.time.LocalDateTime
 
 @ExtendWith(VertxExtension::class)
@@ -51,7 +52,7 @@ class DaoVerticleTest {
         EventBusAddresses.Dao.Car.create, Car(
           model = "model",
           make = CarMake.VOLKSWAGEN,
-          maturityDate = LocalDateTime.now(),
+          maturityDate = Instant.now(),
           price = 200
         )
       )
@@ -65,13 +66,13 @@ class DaoVerticleTest {
     val car1 = Car(
       model = "model",
       make = CarMake.VOLKSWAGEN,
-      maturityDate = LocalDateTime.now(),
+      maturityDate = Instant.now(),
       price = 200
     )
     val car2 = Car(
       model = "model",
       make = CarMake.VOLKSWAGEN,
-      maturityDate = LocalDateTime.now(),
+      maturityDate = Instant.now(),
       price = 201
     )
     vertx.eventBus().rxSend<Unit>(
