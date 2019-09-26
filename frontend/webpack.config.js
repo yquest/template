@@ -1,11 +1,10 @@
 var HtmlWebpackPlugin = require('html-webpack-plugin');
 var MiniCssExtractPlugin = require('mini-css-extract-plugin');
-var webpack = require('webpack');
 var path = require('path');
 
 var basePath = __dirname;
 
-module.exports = function(env, argv) {
+module.exports = [function (env, argv) {
   const base = {
     context: path.join(basePath, "src"),
     resolve: {
@@ -16,12 +15,12 @@ module.exports = function(env, argv) {
     },
     devServer: {
       contentBase: './dist', // Content base
-      inline: true, // Enable watch and live reload
+      //inline: true, // Enable watch and live reload
       host: 'localhost',
       port: 8080,
       stats: 'errors-only',
-      before: function(app, server) {
-        app.get('/some/path', function(req, res) {
+      before: function (app, server) {
+        app.get('/some/path', function (req, res) {
           res.json({ custom: 'res' });
         });
       },
@@ -70,7 +69,7 @@ module.exports = function(env, argv) {
     ],
   };
 
-  var lenv = env||{
+  var lenv = env || {
     platform: 'web'
   };
 
@@ -85,7 +84,7 @@ module.exports = function(env, argv) {
       './content/styles.scss',
       './server/index.tsx'
     ]
-    base.output.filename='server.js';
+    base.output.filename = 'server.js';
   }
   // client-specific configurations
   else if (lenv.platform === 'web') {
@@ -93,7 +92,7 @@ module.exports = function(env, argv) {
       './content/styles.scss',
       './main.tsx'
     ]
-    base.output.filename='bundle.js';
+    base.output.filename = 'bundle.js';
 
     base.plugins.push(
       new HtmlWebpackPlugin({
@@ -104,20 +103,50 @@ module.exports = function(env, argv) {
       })
     );
   }
-  else if(lenv.platform === 'web2'){
+  else if (lenv.platform === 'web2') {
     base.entry = ['@babel/polyfill',
       './content/styles.scss',
       './index2.tsx'
     ]
-    base.output.filename='bundle.js';
+    base.output.filename = 'bundle.js';
   }
-  else if(lenv.platform === 'web3'){
+  else if (lenv.platform === 'web3') {
     base.entry = ['@babel/polyfill',
       './content/styles.scss',
       './initData.ts',
       './index3.tsx'
     ]
-    base.output.filename='bundle.js';
+    base.output.filename = 'bundle.js';
   }
   return base;
+},
+function (env, argv) {
+  const base = {
+    context: path.join(basePath, "src"),
+    resolve: {
+      extensions: ['.js', '.ts', '.tsx']
+    },
+    output: {
+      path: path.join(basePath, 'dist')
+    },
+    module: {
+      rules: [
+        {
+          test: /\.(ts|tsx)$/,
+          exclude: /node_modules/,
+          loader: 'awesome-typescript-loader',
+          options: {
+            useBabel: true,
+            "babelCore": "@babel/core", // needed for Babel v7
+          },
+        }
+      ],
+    }
+  };
+
+  // client-specific configurations
+  base.entry = ['./sw.ts'];
+  base.output.filename = 'sw.js';
+  return base;
 }
+];

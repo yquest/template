@@ -44,6 +44,7 @@ const Root = () => {
     loginOn={null}
     loginOff={null}
     username={"xico"}
+    pageActions={null}
   />;
 };
 

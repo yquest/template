@@ -12,9 +12,16 @@ import {
   updateValue,
   Control
 } from "../events/Page2Events";
+import { Navbar } from "./NavbarTpl";
 
 export const Page2 = observer((props: app.Props) => (
   <div className="container app">
+    <Navbar
+      loginOff={props.loginOff}
+      loginOn={props.loginOn}
+      pageActions={props.pageActions}
+      appState={app.AppState.CAR_EDIT_AUTH}
+    />
     <Modal></Modal>
     {props.appState === app.AppState.LIST_NO_AUTH && (
       <a href="" onClick={props.loginOn}>
@@ -44,7 +51,8 @@ export const Page2 = observer((props: app.Props) => (
             label="my label"
             labelId="my label"
             placeholder="put something here"
-            onChange={updateValue(Control.INPUT1)}></AppInput>
+            onChange={updateValue(Control.INPUT1)}
+          ></AppInput>
           <AppInput
             error={form1.error[Control.INPUT2]}
             tabIndex={2}
@@ -54,7 +62,8 @@ export const Page2 = observer((props: app.Props) => (
             label="my label 2"
             labelId="my label 2"
             placeholder="put something also here"
-            onChange={updateValue(Control.INPUT2)}></AppInput>
+            onChange={updateValue(Control.INPUT2)}
+          ></AppInput>
           <button className="btn btn-primary" tabIndex={3}>
             submit
           </button>

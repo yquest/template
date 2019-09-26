@@ -11,5 +11,6 @@ export namespace page{
         username: string;
         loginOn:(e)=>void;
         loginOff:(e)=>void;
+        pageActions:PageActions;
     }
 }

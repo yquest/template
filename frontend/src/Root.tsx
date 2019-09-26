@@ -11,6 +11,19 @@ import { uiStore, showModal } from "./components/tpl/ModalTpl";
 import { form1, Control } from "./components/events/Page2Events";
 
 configure({ enforceActions: "observed" });
+const initialData = window["__state"] as AppInitialData;
+app.carStore.init(initialData.cars.map(carFromJson));
+
+if ("serviceWorker" in navigator) {
+  navigator.serviceWorker
+    .register("/sw.js", { scope: "/" })
+    .then(function(registration) {
+      console.log("Service Worker Registered");
+    });
+  navigator.serviceWorker.ready.then(function(registration) {
+    console.log("Service Worker Ready");
+  });
+}
 
 let router: Router = observable(
   {
@@ -23,6 +36,7 @@ let router: Router = observable(
     updatePage: action
   }
 );
+
 
 const stateHandler = state => {
   const current: Router = state === null ? window["__state"] : state;
@@ -50,13 +64,26 @@ interface Router {
 const clickLogin = e => {
   e.preventDefault();
 };
-const clickLogOff = e => {
-  form1.updateValue(Control.INPUT1,"bla1")
-  form1.updateValue(Control.INPUT2,"bla2")
 
-  const state = { page: "page2" };
-  stateHandler(state);
-  history.pushState(state, "page 2", "page2");
+const pageActions: PageActions = {
+  gotoPage2(e) {
+    form1.updateValue(Control.INPUT1, "bla1");
+    form1.updateValue(Control.INPUT2, "bla2");
+    const state = { page: "page2" };
+    stateHandler(state);
+    history.pushState(state, "page 2", "/page2");
+    e.preventDefault();
+  },
+  gotoRoot(e) {
+    const state = { page: "" };
+    stateHandler(state);
+    history.pushState(state, "", "/");
+    e.preventDefault();
+  }
+};
+
+const clickLogOff = e => {
+  console.log("loggoff");
   e.preventDefault();
 };
 
@@ -79,7 +106,7 @@ const carManagerCreator = (car: Car) => {
       );
       uiStore.modalContent.actionButton = "Remove";
       uiStore.modalContent.actionEvent = e => {
-        console.log(`car removed ${MAKERS[car.make]}-${car.model}`);
+        app.carStore.remove(car);
       };
       showModal();
     }
@@ -88,7 +115,6 @@ const carManagerCreator = (car: Car) => {
 };
 
 export const Root = observer(() => {
-  const initialData = window["__state"] as AppInitialData;
   if (router.page === "page2") {
     console.log(`render page2 ${router.page}`);
     return (
@@ -98,6 +124,7 @@ export const Root = observer(() => {
         loginOn={clickLogin}
         loginOff={clickLogOff}
         authenticated={initialData.auth}
+        pageActions={pageActions}
       />
     );
   } else {
@@ -105,11 +132,12 @@ export const Root = observer(() => {
       <App
         carManagerCreator={carManagerCreator}
         authenticated={initialData.auth}
-        cars={initialData.cars.map(carFromJson)}
+        cars={app.carStore.cars}
         username={initialData.username}
         loginOn={clickLogin}
         loginOff={clickLogOff}
         appState={app.AppState.CAR_EDIT_AUTH}
+        pageActions={pageActions}
       />
     );
   }
