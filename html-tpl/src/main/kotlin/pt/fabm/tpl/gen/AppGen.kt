@@ -16,7 +16,8 @@ class AppGen : TsGen {
         import { Notifications } from "../app/Notifications";
         import { CarList } from "./CarListTpl";
         import { uiStore } from "../../UIStore";
-        import { Modal } from "../tpl/ModalTpl"; 
+        import { Modal } from "../tpl/ModalTpl";
+        import { Navbar } from "../gen/NavbarTpl";
         
         export const App = observer((props: app.Props) => ( 
         """.trimIndent(),

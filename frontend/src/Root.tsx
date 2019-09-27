@@ -8,6 +8,7 @@ import { Page2 } from "./components/gen/Page2Tpl";
 import { observable, configure, action } from "mobx";
 import { ModalContent } from "./UIStore";
 import { uiStore, showModal } from "./components/tpl/ModalTpl";
+import { PageActions } from "./components/app/props/PageActions";
 import { form1, Control } from "./components/events/Page2Events";
 
 configure({ enforceActions: "observed" });
@@ -36,7 +37,6 @@ let router: Router = observable(
     updatePage: action
   }
 );
-
 
 const stateHandler = state => {
   const current: Router = state === null ? window["__state"] : state;
@@ -130,6 +130,7 @@ export const Root = observer(() => {
   } else {
     return (
       <App
+        carEditProps={null}
         carManagerCreator={carManagerCreator}
         authenticated={initialData.auth}
         cars={app.carStore.cars}

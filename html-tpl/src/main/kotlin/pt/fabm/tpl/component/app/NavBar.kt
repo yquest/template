@@ -7,38 +7,43 @@ class NavBar(
   val showCarEditArea: () -> Boolean,
   val showLoginButtonArea: () -> Boolean
 ) : Component("Navbar", type, {
-  AttributeValue.render(type,
+  AttributeValue.render(
+    type,
     AttributeValue.create { clientAttribute("appState", "props.appState") },
     AttributeValue.create { clientAttribute("loginOff", "props.loginOff") },
-    AttributeValue.create { clientAttribute("loginOn", "props.loginOn") }
+    AttributeValue.create { clientAttribute("loginOn", "props.loginOn") },
+    AttributeValue.create { clientAttribute("pageActions", "props.pageActions") }
   )
 }) {
   override fun create(): Element {
-    val root = DIV(type) {
-      AttributeValue.render(type,
-        AttributeValue.create { className("container app") }
+    if (type == Type.CLIENT) {
+      return TagElement(
+        name,
+        listOf(),
+        attributes
       )
     }
+    val root = DIV(type) {""}
     root.apply {
       div(className = "d-flex flex-column flex-md-row align-items-center p-3 px-md-4 mb-3 bg-white border-bottom") {
-        header(headerType = 5, className = "my-0 mr-md-auto font-weight-normal") {
+        header(
+          headerType = 5,
+          className = "my-0 mr-md-auto font-weight-normal pointer-cursor",
+          onClick = "props.pageActions.gotoRoot"
+        ) {
           +"Company name"
-          nav("my-2 my-md-0 mr-md-3") {
-            a(className = "p-2 text-dark") { +"Features" }
-            a(className = "p-2 text-dark") { +"Enteprise" }
-            a(className = "p-2 text-dark") { +"Suport" }
+        }
+        a(className = "p-2 text-dark", onClick = "props.pageActions.gotoPage2") { +"Page 2" }
+        children += ShowIf(showCarEditArea to "props.appState === app.AppState.CAR_EDIT_AUTH", type).apply {
+          a(className = "btn btn-outline-primary", onClick = "props.loginOff") {
+            +"Sign off "
+            i(className = "fas fa-sign-out-alt")
           }
-          children += ShowIf(showCarEditArea to "props.appState === app.AppState.CAR_EDIT_AUTH", type).apply {
-            a(className = "btn btn-outline-primary", onClick = "props.loginOff") {
-              +"Sign off "
-              i(className = "fas fa-sign-out-alt")
-            }
-          }
-          children += ShowIf(showLoginButtonArea to "props.appState === app.AppState.LIST_NO_AUTH", type).apply {
-            a(href = "", onClick = "props.loginOn") {
-              +"Sign in "
-              i(className = "fas fa-sign-in-alt")
-            }
+        }
+        children += ShowIf(showLoginButtonArea to "props.appState === app.AppState.LIST_NO_AUTH", type).apply {
+          a(href = "", onClick = "props.loginOn") {
+            +"Sign in "
+            i(className = "fas fa-sign-in-alt")
           }
         }
       }
@@ -62,6 +67,5 @@ class NavBar(
     } else {
       rootElement
     }
-
   }
 }

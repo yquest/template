@@ -162,14 +162,15 @@ interface BodyTag : WithChildren, ElementCreator {
     }
   }
 
-  fun header(headerType: Int, className: String?, init: TagWithText.() -> Unit): TagWithText {
+  fun header(headerType: Int, className: String?, onClick:String? = null, init: TagWithText.() -> Unit): TagWithText {
     val headerName = "h$headerType"
     val h = object : TagWithText(headerName, type) {
       override val children: MutableList<ElementCreator> = mutableListOf()
       override fun create(): Element {
         return TagElement(name, children.map { it.create() }) {
           AttributeValue.render(type,
-            AttributeValue.create { className(className) }
+            AttributeValue.create { className(className) },
+            AttributeValue.create { clientAttribute("onClick", onClick) }
           )
         }
       }

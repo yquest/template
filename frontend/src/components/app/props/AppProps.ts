@@ -1,7 +1,9 @@
 import { Car } from "../../../model/Car";
 import { CarManager } from "./CarManager";
 import { page } from "./PageProps";
+import { PageActions } from "./PageActions";
 import { observable, action, IObservableArray } from "mobx";
+import { carEdit } from "./CarEditorProps"
 
 export namespace app{
     export enum AppState {
@@ -14,6 +16,7 @@ export namespace app{
         pageActions:PageActions;
         cars:Car[];
         carManagerCreator:(car:Car)=>CarManager;
+        carEditProps:carEdit.Props|null;    
     }
     export enum InputType {
         TEXT,

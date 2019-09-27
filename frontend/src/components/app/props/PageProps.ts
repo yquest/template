@@ -1,3 +1,4 @@
+import {PageActions} from "./PageActions"
 export namespace page{
     export enum AppState {
         LIST_NO_AUTH,

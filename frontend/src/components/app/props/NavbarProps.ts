@@ -1,4 +1,5 @@
 import { app } from "./AppProps";
+import { PageActions } from "./PageActions";
 
 export namespace navbar {
   export interface Props {

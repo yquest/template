@@ -35,8 +35,11 @@ const createCarManager = (car: Car) => {
 };
 
 
+
+
 const Root = () => {
   return <App
+    carEditProps={null}
     carManagerCreator={createCarManager}
     appState={app.AppState.LIST_NO_AUTH}
     authenticated={true}

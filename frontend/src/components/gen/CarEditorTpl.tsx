@@ -3,6 +3,7 @@ import { carEdit } from "../app/props/CarEditorProps";
 import * as React from "react";
 import { monthsListCondensed } from "../../util";
 import {StyledCalendar} from "../tpl/StyledCalendar"
+import {SelectInput} from "../tpl/SelectInput"
 
 export const CarEditor = observer((props: carEdit.Props) => (
   <form onSubmit={props.onSubmit}>

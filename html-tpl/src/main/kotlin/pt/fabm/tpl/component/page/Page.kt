@@ -1,6 +1,7 @@
 package pt.fabm.tpl.component.page
 
 import pt.fabm.tpl.*
+import pt.fabm.tpl.component.app.NavBar
 import pt.fabm.tpl.component.app.Notifications
 
 abstract class Page(
@@ -15,47 +16,32 @@ abstract class Page(
     val carEditAuth = { carEdit } to "props.appState === app.AppState.CAR_EDIT_AUTH"
     val listAuthAndCarEdit = { !auth || carEdit } to "(props.appState === app.AppState.LIST_NO_AUTH || " +
       "props.appState === app.AppState.CAR_EDIT_AUTH)"
-    val username: Pair<() -> String, String> = { "Hello ${username()} " } to """{"Hello "+ props.username + " "}"""
 
-    fun createContainerApp(type: Type, init: DIV.() -> Unit): DIV {
-      val div = DIV(type) {
-        AttributeValue.render(type, AttributeValue.create {
+    val containerApp = DIV(type) {
+      AttributeValue.render(type,
+        AttributeValue.create {
           className("container app")
         })
-      }
-      div.init()
-      return div
     }
 
-    val containerApp = createContainerApp(type) {
-      fun showIf(clause: Pair<() -> Boolean, String>, init: ShowIf.() -> Unit): ShowIf {
-        val showIf = ShowIf(clause, type)
-        showIf.init()
-        this.children += showIf
-        return showIf
-      }
-      component(Component("Modal",type.toFirstLevel()))
-      showIf(appStateNoAuth) {
+    containerApp.apply {
+      component(Component("Modal", type.toFirstLevel()))
+      children += NavBar(type.toFirstLevel(),carEditAuth.first,listAuthAndCarEdit.first)
+      children += ShowIf(appStateNoAuth, type).apply {
         a(href = "", onClick = "props.loginOn") {
           +"Sign in"
           i(className = "fas fa-sign-in-alt")
         }
       }
       children += Notifications(type.toFirstLevel())
-      showIf(carEditAuth) {
-        div(className = "float-right") {
-          +username
-          a(href = "", onClick = "props.loginOff") {
-            +"logoff"
-            i(className = "fas fa-sign-out-alt")
-          }
-        }
+      children += ShowIf(carEditAuth, type).apply {
+        div(className = "float-right")
       }
-      showIf(listAuthAndCarEdit) {
+      children += ShowIf(listAuthAndCarEdit, type).apply {
         children += createComponent()
       }
       //modal overlay, show only on client
-      showIf({ false } to "uiStore.modelInDOM") {
+      children += ShowIf({ false } to "uiStore.modelInDOM", type).apply {
         div(className = "modal-backdrop fade show")
       }
     }

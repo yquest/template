@@ -19,6 +19,7 @@ class Page2Gen : TsGen {
         import { Modal } from "../tpl/ModalTpl"; 
         import { AppInput } from "./AppInputTpl";
         import { form1, submitFormEvent, updateValue, Control } from "../events/Page2Events";
+        import { Navbar } from "../gen/NavbarTpl";
         
         export const Page2 = observer((props: app.Props) => ( 
         """.trimIndent(),
