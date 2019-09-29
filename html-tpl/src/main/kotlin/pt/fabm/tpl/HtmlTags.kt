@@ -84,11 +84,19 @@ class TagElement(
 
 }
 
-abstract class NameElementCreator(
+class NoNameElementCreator(override val type: Type):WithChildren,ElementCreator{
+  override fun create(): Element = NoTagElement(children.map { it.create() })
+  override val children: MutableList<ElementCreator> = mutableListOf()
+}
+
+open class NameElementCreator(
   protected open val name: String,
   override val type: Type,
   protected open val attributes: () -> String = { "" }
-) : ElementCreator, WithChildren
+) : ElementCreator, WithChildren{
+  override val children: MutableList<ElementCreator> = mutableListOf()
+  override fun create(): Element = TagElement(name,children.map { it.create() },attributes)
+}
 
 interface ElementCreator {
   val type: Type
@@ -122,7 +130,7 @@ class TextVarCreator(
     else TextElement(clientText)
 }
 
-abstract class TagWithText(override val name: String, override val type: Type) : NameElementCreator(name, type) {
+open class TagWithText(override val name: String, override val type: Type) : NameElementCreator(name, type) {
 
   operator fun String.unaryPlus() {
     val noNamedElementCreator = object : ElementCreator, WithChildren {
@@ -162,7 +170,7 @@ interface BodyTag : WithChildren, ElementCreator {
     }
   }
 
-  fun header(headerType: Int, className: String?, onClick:String? = null, init: TagWithText.() -> Unit): TagWithText {
+  fun header(headerType: Int, className: String?, onClick: String? = null, init: TagWithText.() -> Unit): TagWithText {
     val headerName = "h$headerType"
     val h = object : TagWithText(headerName, type) {
       override val children: MutableList<ElementCreator> = mutableListOf()
@@ -176,7 +184,7 @@ interface BodyTag : WithChildren, ElementCreator {
       }
     }
     h.init()
-    children+=h
+    children += h
     return h
   }
 
@@ -425,14 +433,13 @@ class CommentServerTag(private val text: String, override val type: Type) : Elem
   }
 }
 
-open class Component(name: String, type: Type, override val attributes: () -> String = { "" }) : TagWithText(name, type), BodyTag {
+open class Component(name: String, type: Type, override val attributes: () -> String = { "" }) :
+  TagWithText(name, type), BodyTag {
   override val children: MutableList<ElementCreator> = mutableListOf()
 
   override fun create(): Element {
     return when (type) {
-      Type.SERVER -> NoTagElement(
-        children.map { it.create() }
-      )
+      Type.SERVER,
       Type.CLIENT_IMPLEMENTATION -> NoTagElement(
         children.map { it.create() }
       )

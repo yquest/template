@@ -10,6 +10,7 @@ import { ModalContent } from "./UIStore";
 import { uiStore, showModal } from "./components/tpl/ModalTpl";
 import { PageActions } from "./components/app/props/PageActions";
 import { form1, Control } from "./components/events/Page2Events";
+import { carEdit } from "./components/app/props/CarEditorProps";
 
 configure({ enforceActions: "observed" });
 const initialData = window["__state"] as AppInitialData;
@@ -87,12 +88,61 @@ const clickLogOff = e => {
   e.preventDefault();
 };
 
+const carEditProps: carEdit.Props = {
+  maturityDate: {
+    calendarIconClasses: "fa fa-calendar-day",
+    onCalendarChange(e) {
+      console.log(`change calendar`)
+    },
+    onChangeYear(e) {
+      const nDate = new Date(carEdit.carStore.maturityDate);
+      nDate.setFullYear(e.target.value);
+      carEdit.carStore.updateMaturityDate(nDate)
+    },
+    onChangeMonth(e) {
+      const nDate = new Date(carEdit.carStore.maturityDate);
+      nDate.setMonth(e.target.value);
+      carEdit.carStore.updateMaturityDate(nDate)
+    },
+    onChangeHour(e) {
+      const nDate = new Date(carEdit.carStore.maturityDate);
+      nDate.setHours(e.target.value);
+      carEdit.carStore.updateMaturityDate(nDate)
+    },
+    onChangeDay(e) {
+      const nDate = new Date(carEdit.carStore.maturityDate);
+      nDate.setDate(e.target.value);
+      carEdit.carStore.updateMaturityDate(nDate)
+    },
+    onChangeMinutes(e) {
+      const nDate = new Date(carEdit.carStore.maturityDate);
+      nDate.setMinutes(e.target.value);
+      carEdit.carStore.updateMaturityDate(nDate)
+    },
+    onClickShowCalendar(e) {
+      console.log(`change calendar`)
+      uiStore.toggleCarEditCalendar();
+    },
+    get openedCalendar() {
+      return uiStore.carEditCalendarShow;
+    },
+    get value() {
+      return app.carStore.selectedCar === null
+        ? null
+        : carEdit.carStore.maturityDate;
+    }
+  },
+  onSubmit(e) {},
+  title: "edit"
+};
+
 const carManagerCreator = (car: Car) => {
   const cm: CarManager = {
     car: car,
     edit: e => {
       e.preventDefault();
-      console.log(`update car ${MAKERS[car.make]}-${car.model}`);
+      app.carStore.updateSelected(car);
+      carEdit.carStore.updateMaturityDate(car.maturityDate);
     },
     remove: e => {
       e.preventDefault();
@@ -105,7 +155,7 @@ const carManagerCreator = (car: Car) => {
         </div>
       );
       uiStore.modalContent.actionButton = "Remove";
-      uiStore.modalContent.actionEvent = e => {
+      uiStore.modalContent.actionEvent = _ => {
         app.carStore.remove(car);
       };
       showModal();
@@ -130,7 +180,7 @@ export const Root = observer(() => {
   } else {
     return (
       <App
-        carEditProps={null}
+        carEditProps={carEditProps}
         carManagerCreator={carManagerCreator}
         authenticated={initialData.auth}
         cars={app.carStore.cars}

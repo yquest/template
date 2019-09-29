@@ -6,6 +6,7 @@ import pt.fabm.template.models.Car
 import pt.fabm.template.models.CarMake
 import pt.fabm.tpl.component.page.App
 import pt.fabm.tpl.component.car.CarList
+import pt.fabm.tpl.gen.AppGen
 import java.time.LocalDateTime
 import java.time.ZoneOffset
 
@@ -414,5 +415,10 @@ class RenderTests {
     """.trimIndent()
     Assertions.assertEquals(expected, current)
 
+  }
+
+  @Test
+  fun mytest(){
+    App(Type.CLIENT_IMPLEMENTATION).create().renderTag(System.out)
   }
 }

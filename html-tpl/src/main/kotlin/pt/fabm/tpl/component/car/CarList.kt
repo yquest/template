@@ -112,6 +112,7 @@ class CarList(type: Type, var carEdit: Boolean = false, var list: List<Car> = em
           props.cars.length === 0 ? noContent() : content(props);
         """.trimIndent()
       ).toElementCreator(type)
+
     } else if (type == Type.SERVER) {
       children += object : Element {
         override val children: Iterable<Element>

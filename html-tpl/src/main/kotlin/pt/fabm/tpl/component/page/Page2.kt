@@ -8,18 +8,12 @@ class Page2(
   auth: Boolean = true,
   edit: Boolean = true,
   username: () -> String = { "" },
-  input1: () -> String = { "" },
-  input2: () -> String = { "" }
+  private val input1: () -> String = { "" },
+  private val input2: () -> String = { "" }
 ) :
   Page(type, auth, edit, username) {
-  private val component: DIV = DIV(type) { "" }
-  override fun createComponent(): DIV = component
 
-  init {
-    fun initPage2(init: DIV.() -> Unit) {
-      component.init()
-    }
-
+  override fun createComponent1(): ElementCreator {
     fun TagWithText.input(
       placeHolder: String,
       tabIndex: Int,
@@ -58,7 +52,9 @@ class Page2(
         }
     }
 
-    initPage2 {
+    val component = DIV(type) { "" }
+
+    component.apply {
       div { +"2nd page" }
       form(onSubmitEvent = "submitFormEvent") {
         input(
@@ -80,5 +76,10 @@ class Page2(
         submitButton()
       }
     }
+
+    return component
   }
+
+  //empty component
+  override fun createComponent2(): ElementCreator = NoNameElementCreator(type)
 }

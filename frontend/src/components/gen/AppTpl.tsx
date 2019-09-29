@@ -6,8 +6,7 @@ import { CarList } from "./CarListTpl";
 import { uiStore } from "../../UIStore";
 import { Modal } from "../tpl/ModalTpl";
 import { Navbar } from "../gen/NavbarTpl";
-import { CarEditor } from "../gen/CarEditorTpl";
-
+import { CarEditor } from "../tpl/CarEditorTpl";
 
 export const App = observer((props: app.Props) => (
   <div className="container app">
@@ -16,8 +15,7 @@ export const App = observer((props: app.Props) => (
       appState={props.appState}
       loginOff={props.loginOff}
       loginOn={props.loginOn}
-      pageActions={props.pageActions}
-    ></Navbar>
+      pageActions={props.pageActions}></Navbar>
     {props.appState === app.AppState.LIST_NO_AUTH && (
       <a href="" onClick={props.loginOn}>
         Sign in<i className="fas fa-sign-in-alt"></i>
@@ -32,10 +30,14 @@ export const App = observer((props: app.Props) => (
       <CarList
         cars={props.cars}
         authenticated={props.authenticated}
-        carManagerCreator={props.carManagerCreator}
-      ></CarList>
+        carManagerCreator={props.carManagerCreator}></CarList>
+    )}
+    {app.carStore.selectedCar !== null && (
+      <CarEditor
+        title={props.carEditProps.title}
+        maturityDate={props.carEditProps.maturityDate}
+        onSubmit={props.carEditProps.onSubmit}></CarEditor>
     )}
     {uiStore.modelInDOM && <div className="modal-backdrop fade show"></div>}
-    {(props.carEditProps !== null &&(<CarEditor title="duno" maturityDate={props.carEditProps.maturityDate} onSubmit={props.carEditProps.onSubmit}/>))}
   </div>
 ));

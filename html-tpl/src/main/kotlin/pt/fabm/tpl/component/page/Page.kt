@@ -26,7 +26,7 @@ abstract class Page(
 
     containerApp.apply {
       component(Component("Modal", type.toFirstLevel()))
-      children += NavBar(type.toFirstLevel(),carEditAuth.first,listAuthAndCarEdit.first)
+      children += NavBar(type.toFirstLevel(), carEditAuth.first, listAuthAndCarEdit.first)
       children += ShowIf(appStateNoAuth, type).apply {
         a(href = "", onClick = "props.loginOn") {
           +"Sign in"
@@ -37,9 +37,8 @@ abstract class Page(
       children += ShowIf(carEditAuth, type).apply {
         div(className = "float-right")
       }
-      children += ShowIf(listAuthAndCarEdit, type).apply {
-        children += createComponent()
-      }
+      children += createComponent1()
+      children += createComponent2()
       //modal overlay, show only on client
       children += ShowIf({ false } to "uiStore.modelInDOM", type).apply {
         div(className = "modal-backdrop fade show")
@@ -48,5 +47,6 @@ abstract class Page(
     return containerApp.create()
   }
 
-  abstract fun createComponent(): ElementCreator
+  abstract fun createComponent1(): ElementCreator
+  abstract fun createComponent2(): ElementCreator
 }

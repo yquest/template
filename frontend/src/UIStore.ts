@@ -28,11 +28,14 @@ export interface UiStore{
   modalContent:ModalContent;
   modelInDOM:boolean;
   updateModal:(modal:ModalState)=>void;
+  carEditCalendarShow:boolean;
+  toggleCarEditCalendar:()=>void;
 }
 
 export const uiStore: UiStore = observable({
   notifications:[] as Notification[],
   modal:ModalState.REMOVED,
+  carEditCalendarShow:false,
   modalContent:undefined,
   get modelInDOM() {
     return uiStore.modal === ModalState.CREATED ||
@@ -42,5 +45,8 @@ export const uiStore: UiStore = observable({
   },
   updateModal:(modal:ModalState)=>{
     uiStore.modal = modal;
+  },
+  toggleCarEditCalendar(){
+    uiStore.carEditCalendarShow = !uiStore.carEditCalendarShow;
   }
-},{updateModal:action});
+},{updateModal:action, toggleCarEditCalendar:action});

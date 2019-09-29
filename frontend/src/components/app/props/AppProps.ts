@@ -38,6 +38,7 @@ export namespace app{
     }
 
     export const carStore = observable({
+        selectedCar: null as Car,
         cars:[] as IObservableArray<Car>,
         init(cars:Car[]) {
             carStore.cars.clear();
@@ -51,8 +52,14 @@ export namespace app{
         update(car:Car){
             carStore.cars.filter((current)=>current.make === car.make && current.model === car.model);
             carStore.cars.push(car);
+        },
+        updateSelected(car:Car){
+            carStore.selectedCar = car;
         }
     },{
-        init:action, remove:action, update:action
+        init:action, 
+        remove:action, 
+        update:action,
+        updateSelected:action
     });
 }
