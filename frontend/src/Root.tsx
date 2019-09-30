@@ -90,37 +90,40 @@ const clickLogOff = e => {
 
 const carEditProps: carEdit.Props = {
   maturityDate: {
-    calendarIconClasses: "fa fa-calendar-day",
+    get calendarIconClasses(){
+      return "fa fa-calendar" + (carEditProps.maturityDate.openedCalendar ? "-day" : "");
+    },
     onCalendarChange(e) {
-      console.log(`change calendar`)
+      const nDate = new Date(carEdit.carStore.maturityDate);
+      nDate.setDate(e);
+      carEdit.carStore.updateMaturityDate(nDate);
     },
     onChangeYear(e) {
       const nDate = new Date(carEdit.carStore.maturityDate);
       nDate.setFullYear(e.target.value);
-      carEdit.carStore.updateMaturityDate(nDate)
+      carEdit.carStore.updateMaturityDate(nDate);
     },
     onChangeMonth(e) {
       const nDate = new Date(carEdit.carStore.maturityDate);
       nDate.setMonth(e.target.value);
-      carEdit.carStore.updateMaturityDate(nDate)
+      carEdit.carStore.updateMaturityDate(nDate);
     },
     onChangeHour(e) {
       const nDate = new Date(carEdit.carStore.maturityDate);
       nDate.setHours(e.target.value);
-      carEdit.carStore.updateMaturityDate(nDate)
+      carEdit.carStore.updateMaturityDate(nDate);
     },
     onChangeDay(e) {
       const nDate = new Date(carEdit.carStore.maturityDate);
       nDate.setDate(e.target.value);
-      carEdit.carStore.updateMaturityDate(nDate)
+      carEdit.carStore.updateMaturityDate(nDate);
     },
     onChangeMinutes(e) {
       const nDate = new Date(carEdit.carStore.maturityDate);
       nDate.setMinutes(e.target.value);
-      carEdit.carStore.updateMaturityDate(nDate)
+      carEdit.carStore.updateMaturityDate(nDate);
     },
-    onClickShowCalendar(e) {
-      console.log(`change calendar`)
+    onClickShowCalendar() {
       uiStore.toggleCarEditCalendar();
     },
     get openedCalendar() {

@@ -70,7 +70,7 @@ export const CarEditor = observer((props: carEdit.Props) => (
             month={props.maturityDate.value.getMonth() + 1}
             year={props.maturityDate.value.getFullYear()}
             selectChange={props.maturityDate.onCalendarChange}
-            selected={props.maturityDate.value.getDay()}
+            selected={props.maturityDate.value.getDate()}
           />
         </div>
       </div>
