@@ -8,8 +8,8 @@ export namespace dropDown {
         blur:(e)=>void;
         classesIsOpen:string;
         labels:string[];
-        onSelectItem:(e)=>void;
-        itemClasses:string;
+        onSelectItem:(idx:number)=>(e)=>void;
+        itemClasses:(idx:number)=>string;
         classesIsValid:string;
         inputValue:string;
         inputName:string;
