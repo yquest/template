@@ -20,9 +20,9 @@ export namespace carEdit {
             const nDate = new Date(stores.carEdition.car.maturityDate);
             nDate.setDate(e.target.value);
             stores.carEdition.updateMaturityDate(nDate);
-        }, onChangeMonth(e: React.ChangeEvent<any>): void {
+        }, onChangeMonth(e: React.ChangeEvent<HTMLSelectElement>): void {
             const nDate = new Date(stores.carEdition.car.maturityDate);
-            nDate.setMonth(e.target.value);
+            nDate.setMonth(e.target.selectedIndex);
             stores.carEdition.updateMaturityDate(nDate);
         }, onChangeYear(e: React.ChangeEvent<any>): void {
             const nDate = new Date(stores.carEdition.car.maturityDate);

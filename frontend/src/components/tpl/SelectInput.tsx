@@ -1,6 +1,7 @@
 import * as React from "react";
 
 interface SelectInputProps {
+  selected:number;
   className?: string;
   tabIndex?:number;
   list: string[];
@@ -11,7 +12,7 @@ interface SelectInputProps {
 export const SelectInput = (props: SelectInputProps) => (
   <select className={props.className} onChange={props.onChange}>
     {props.list.map((value, index) => (
-      <option key={props.toKey(index, value)} value={index}>
+      <option key={props.toKey(index, value)} value={index} selected={props.selected === index}>
         {value}
       </option>
     ))}

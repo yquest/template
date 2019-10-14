@@ -23,11 +23,13 @@ export const CarEditor = observer(() => (
               onChange={carEdit.props.onChangeYear}
             />
             <SelectInput
+              selected={stores.carEdition.car.maturityDate.getMonth()}
               tabIndex={2}
               className="form-control"
               list={monthsListCondensed}
               toKey={(idx, _) => "month" + idx}
               onChange={carEdit.props.onChangeMonth}
+              
             />
             <input
               tabIndex={3}
