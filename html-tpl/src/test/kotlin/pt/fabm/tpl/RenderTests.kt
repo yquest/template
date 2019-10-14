@@ -1,5 +1,8 @@
 package pt.fabm.tpl
 
+import com.datastax.dse.driver.api.core.DseSession
+import com.datastax.oss.driver.api.core.CqlSession
+import com.datastax.oss.driver.internal.core.auth.PlainTextAuthProvider
 import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.api.Test
 import pt.fabm.template.models.Car
@@ -9,6 +12,11 @@ import pt.fabm.tpl.component.car.CarList
 import pt.fabm.tpl.gen.AppGen
 import java.time.LocalDateTime
 import java.time.ZoneOffset
+import com.sun.rowset.internal.Row
+
+
+
+
 
 
 class RenderTests {
@@ -417,8 +425,4 @@ class RenderTests {
 
   }
 
-  @Test
-  fun mytest(){
-    App(Type.CLIENT_IMPLEMENTATION).create().renderTag(System.out)
-  }
 }

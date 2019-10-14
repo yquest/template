@@ -1,6 +1,6 @@
 import * as React from "react";
 import { observer } from "mobx-react";
-import { uiStore,Notification, NotificationType } from "../../UIStore";
+import { uiStore,Notification, NotificationType } from "../../stores/UIStore";
 
 function getClassNotificationType(type: NotificationType) {
   switch (type) {

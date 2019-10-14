@@ -1,7 +1,7 @@
 import * as React from "react";
-import { app } from "../app/props/AppProps";
 import classNames from "classnames/bind";
 
+/*
 function getInputTypeRef(inputType: app.InputType, value: any) {
   switch (inputType) {
     case app.InputType.PASSWORD:
@@ -72,3 +72,4 @@ export const AppInput = (props: app.TextInputProps) => (
     )}
   </div>
 );
+*/

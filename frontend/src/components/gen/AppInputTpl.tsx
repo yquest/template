@@ -1,15 +1,14 @@
 import * as React from "react";
-import { app } from "../app/props/AppProps";
-import { getErrorClass, getInputTypeRef, onFocus, onBlur } from "../events/AppInputEvents"
+import { appInput } from "../app/props/AppInputProps";
 
-export const AppInput = (props: app.TextInputProps) => (<div className="form-group col-sm-10 col-md-8 col-lg-6 mb-3 mb-sm-3" ><label>{props.label}</label><input tabIndex={props.tabIndex} 
+export const AppInput = (props: appInput.Props) => (<div className="form-group col-sm-10 col-md-8 col-lg-6 mb-3 mb-sm-3" ><label>{props.label}</label><input tabIndex={props.tabIndex} 
       disabled={props.disabled || false} 
-      className={getErrorClass(props.error)}
-      type={getInputTypeRef(props.inputType, props.currentValue)}
-      onChange={event => props.onChange(event.target.value)}
+      className={props.errorClasses}
+      type={appInput.Type[props.inputType]}
+      onChange={props.onChange}
       placeholder={props.placeholder}
-      onFocus={onFocus(props.inputType)}
-      onBlur={onBlur(props.inputType)}
-      value={props.currentValue === null ? "": props.currentValue}></input>{props.error !== null && props.error.length > 0 && (
+      onFocus={props.onFocus}
+      onBlur={props.onBlur}
+      value={props.value === null ? "": props.value}></input>{props.error !== null && props.error.length > 0 && (
   <div className="invalid-feedback">{props.error}</div>
 )}</div>);

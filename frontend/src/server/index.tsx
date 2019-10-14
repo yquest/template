@@ -3,8 +3,7 @@ import { renderToString } from "react-dom/server";
 import * as React from "react";
 import { Car } from "../model/Car";
 import { App } from "../components/gen/AppTpl";
-import { app } from "../components/app/props/AppProps";
-import { CarManager } from "../components/app/props/CarManager";
+import { CarService } from "../components/app/props/CarService";
 import { cars } from "./cars";
 const port = 3000;
 const server = express();
@@ -26,7 +25,7 @@ const html = ({ body }: { body: string }) => `
 `;
 
 const createCarManager = (car: Car) => {
-  const cm: CarManager = {
+  const cm: CarService = {
     car: car,
     edit: () => { },
     remove: () => { }
@@ -34,21 +33,8 @@ const createCarManager = (car: Car) => {
   return cm;
 };
 
-
-
-
 const Root = () => {
-  return <App
-    carEditProps={null}
-    carManagerCreator={createCarManager}
-    appState={app.AppState.LIST_NO_AUTH}
-    authenticated={true}
-    cars={cars}
-    loginOn={null}
-    loginOff={null}
-    username={"xico"}
-    pageActions={null}
-  />;
+  return <App/>;
 };
 
 server.get("/", (req, res) => {

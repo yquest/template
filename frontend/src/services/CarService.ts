@@ -1,5 +1,5 @@
 import Axios, { AxiosResponse } from "axios";
-import { Car, MAKERS, CarPK } from "../model/Car";
+import { Car, MAKERS, CarPK, carFromJson } from "../model/Car";
 import { dateToString } from "../util";
 
 interface RestResult{
@@ -69,7 +69,11 @@ export class CarService {
             }
         })
     };    
-
+    get initialList():Car[]{
+        const initialData = window["__state"];
+        const cars = initialData.cars.map(carFromJson);
+        return cars
+    }
 }
 
 export const carService = new CarService()

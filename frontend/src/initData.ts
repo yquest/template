@@ -1,4 +1,3 @@
-import { Control } from "./components/events/Page2Events";
 import { Car, MAKERS } from "./model/Car"
 
 

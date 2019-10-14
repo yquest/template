@@ -1,5 +1,5 @@
 import * as React from "react";
-import { uiStore as rUiStore, ModalState, UiStore } from "../../UIStore";
+import { uiStore as rUiStore, ModalState, UiStore } from "../../stores/UIStore";
 import classNames from "classnames/bind";
 import { observer } from "mobx-react";
 
