@@ -8,6 +8,10 @@ export interface RestResult {
 }
 
 export class UserService {
+    get initialIsAuthenticated():boolean{
+        const initialData: AppInitialData = window["__state"];
+        return initialData.auth;
+    }
     registerUser(user: User): Promise<RestResult> {
         let body = {
             name: user.username,
@@ -24,23 +28,27 @@ export class UserService {
 
         let call = Axios.post("api/user/login", body)
 
-        let error = call.catch(res=>{
+        let error = call.catch(res => {
             console.log(res);
             return res.response;
         });
 
-        let success = call.then(res=>{
+        let success = call.then(res => {
             console.log(res);
             return res;
         });
 
-        return Promise.race([error,success]);
+        return Promise.race([error, success]);
     };
 
     userLogout(): Promise<any> {
         return axios.get("/api/user/logout");
     };
 
+    get initialName(): string {
+        const initialData: AppInitialData = window["__state"];
+        return initialData.username;
+    }
 }
 
 export const userService = new UserService();
