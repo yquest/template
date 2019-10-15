@@ -1,5 +1,5 @@
 import { observable, IObservableArray, action, configure } from "mobx";
-import { Car } from "../model/Car";
+import { Car, MAKERS } from "../model/Car";
 import { carService } from "../services/CarService";
 import { userService } from "../services/UserService";
 
@@ -12,21 +12,21 @@ export namespace stores {
         update(page: string): void {
             router.page = page;
         }, get isRootPage(): Boolean {
-            return (router.page||"/") == "/";
+            return (router.page || "/") == "/";
         }
     }, routerActions);
 
-    const carListActions = { remove: action, update: action, updateCars:action };
+    const carListActions = { remove: action, update: action, updateCars: action };
     export const carList = observable({
         cars: carService.initialList as IObservableArray<Car>,
         remove(car: Car) {
             carList.cars.remove(car)
         },
-        updateCars(cars:Car[]){
+        updateCars(cars: Car[]) {
             carList.cars.replace(cars);
         },
         update(idx: number, car: Car): void {
-            carList.cars[idx]={...car};
+            carList.cars[idx] = { ...car };
         },
     }, carListActions);
 
@@ -42,21 +42,33 @@ export namespace stores {
         }
     }, userActions);
 
-    const carEditionActions = { updateCar: action, updateCreationType: action , updateMaturityDate:action}
+    const carEditionActions = { updateCar: action, updateCreationType: action, updateMaturityDate: action, 
+        updateModel:action, unselectCar:action , updateMaker:action}
     export const carEdition = observable({
         creationType: false,
         car: null as Car,
         index: null as number,
+        updateMaker(make: MAKERS) {
+            carEdition.car.make = make;
+        },
+        updateModel(model: string) {
+            carEdition.car.model = model;
+        },
         updateMaturityDate(maturityDate: Date): void {
             carEdition.car.maturityDate = maturityDate;
         },
-        updateCar(idx:number,car: Car): void {
+        updateCar(idx: number, car: Car): void {
             carEdition.index = idx;
-            carEdition.car = {...car};
+            carEdition.car = { ...car };
+        },
+        unselectCar(): void {
+            carEdition.index = null;
+            carEdition.car = null;
         },
         updateCreationType(creationType: boolean) {
             carEdition.creationType = creationType;
         },
+
         get isReadyToEdition(): Boolean {
             return carEdition.car !== null;
         },

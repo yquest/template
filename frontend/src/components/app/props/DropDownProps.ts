@@ -11,14 +11,14 @@ export namespace dropDown {
         blur: (e: React.FocusEvent) => void;
         classesIsOpen: string;
         labels: string[];
-        onSelectItem: (idx:number) => (e)=>void;
-        itemClasses: string;
+        onSelectItem: (idx: number) => (e) => void;
+        itemClasses: (idx: number) => string;
         classesIsValid: string;
         inputValue: string;
         inputName: string;
         error: string;
         index: number;
-        updateError(error:string);
+        updateError(error: string);
     }
 
     export interface Entry {
@@ -26,17 +26,24 @@ export namespace dropDown {
         inputName: string;
         label: string;
         tabIndex: number;
-        selectIndex: number;
+        store: Store;
     }
-    export function createProps(entry: Entry): Props {
+
+    export interface Store {
+        updateAndClose(idx: number): void;
+        open: boolean;
+        selectedIndex: number;
+        error: string;
+        updateOpen(open: boolean): void;
+        updateSelectIndex(idx: number): void;
+        updateError(error: string): void;
+    }
+    export function createStore(selectedIndex:number):Store{
         const store = observable(
             {
                 open: false,
-                selectedIndex: entry.selectIndex,
+                selectedIndex: selectedIndex,
                 error:null as string,
-                toggle() {
-                    store.open = !store.open;
-                },
                 updateOpen(open: boolean) {
                     store.open = open;
                 },
@@ -52,72 +59,74 @@ export namespace dropDown {
                 }
             },
             {
-                toggle: action,
                 updateOpen: action,
                 updateAndClose: action,
                 updateSelectIndex: action,
                 updateError:action
             }
         );
-        const props:Props = {
-            get index(){
-                return store.selectedIndex;
+        return store;
+    }
+    export function createProps(entry: Entry): Props {
+        const props: Props = {
+            get index() {
+                return entry.store.selectedIndex;
             },
             blur() {
-                store.updateOpen(false);
+                entry.store.updateOpen(false);
             },
             label: entry.label,
             tabIndex: entry.tabIndex,
             get classesIsOpen() {
                 return classNames(
                     { "dropdown-menu": true },
-                    { show: store.open }
+                    { show: entry.store.open }
                 );
             },
             get classesIsValid() {
                 return classNames(
                     { "form-control": true },
-                    { "is-invalid": store.error != null && store.error.length > 0 },
-                    { "is-valid": store.error != null && store.error.length === 0 }
+                    { "is-invalid": entry.store.error != null && entry.store.error.length > 0 },
+                    { "is-valid": entry.store.error != null && entry.store.error.length === 0 }
                 );
             },
             disabled: false,
-            get error(){ return store.error},
+            get error() { return entry.store.error },
             inputName: entry.inputName,
             get inputValue() {
-                return props.labels[store.selectedIndex];
+                return props.labels[entry.store.selectedIndex];
             },
-            get itemClasses() {
+            itemClasses(idx: number) {
                 return classNames({
                     "dropdown-item": true,
-                    selected: entry.selectIndex === store.selectedIndex
+                    selected: entry.store.selectedIndex === idx
                 });
             },
             keyDown(e) {
                 switch (e.keyCode) {
                     case 38: //up key
-                        if (entry.selectIndex > 0) {
-                            store.updateSelectIndex(store.selectedIndex - 1);
+                        if (entry.store.selectedIndex > 0) {
+                            entry.store.updateSelectIndex(entry.store.selectedIndex - 1);
                         }
                         e.preventDefault();
                         break;
                     case 40: //down key
-                        if (entry.selectIndex < entry.items.length - 1) {
-                            store.updateSelectIndex(store.selectedIndex + 1);
+                        if (entry.store.selectedIndex < entry.items.length - 1) {
+                            entry.store.updateSelectIndex(entry.store.selectedIndex + 1);
                         }
                         e.preventDefault();
                         break;
                 }
             },
             labels: entry.items,
-            togle: store.toggle,
+            togle() { entry.store.updateOpen(!entry.store.open) },
             onSelectItem(idx) {
-                return (e)=>{
-                    store.updateAndClose(idx);
+                return (e) => {
+                    entry.store.updateAndClose(idx);
                     e.preventDefault();
                 }
             },
-            updateError:store.updateError
+            updateError: entry.store.updateError
         }
         return props;
     }

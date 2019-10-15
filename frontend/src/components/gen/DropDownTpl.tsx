@@ -24,7 +24,7 @@ export const DropDownInput = observer((props: dropDown.Props) => {
                 key={item}
                 onMouseDown={event => event.preventDefault()}
                 onClick={props.onSelectItem(idx)}
-                className={props.itemClasses}
+                className={props.itemClasses(idx)}
                 href="">
                 {item}
               </a>

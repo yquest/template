@@ -28,7 +28,7 @@ export interface CalendarProps{
   className?:string;
   year: number;
   month: number;
-  selectChange: (number) => void;
+  selectChange: (day:number) => void;
   selected?: number;
   open?:boolean;
 }

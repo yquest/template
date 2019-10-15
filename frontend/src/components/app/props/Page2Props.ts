@@ -5,6 +5,9 @@ import * as React from "react";
 
 
 export namespace page2 {
+    const input1Store = appInput.createStore(null);
+    const input2Store = appInput.createStore(null);
+    const dd1Store = dropDown.createStore(0);
 
     export interface Props {
         input1: appInput.Props;
@@ -26,7 +29,7 @@ export namespace page2 {
             items: ["(none)", "item 1", "item 2"],
             label: "dd exapmle",
             tabIndex: 2,
-            selectIndex: 0,
+            store: dd1Store,
         });
         function mandatoryAppInput(this: appInput.Props): void {
             if ((this.value || "").length === 0) {
@@ -38,7 +41,7 @@ export namespace page2 {
             labelId: "labelId1",
             inputType: appInput.Type.TEXT,
             label: "input1",
-            value: "",
+            store: input1Store,
             tabIndex: 1,
             placeholder: null,
         });
@@ -46,7 +49,7 @@ export namespace page2 {
             labelId: "labelId2",
             inputType: appInput.Type.TEXT,
             label: "input2",
-            value: "",
+            store: input2Store,
             tabIndex: 2,
             placeholder: null
         });

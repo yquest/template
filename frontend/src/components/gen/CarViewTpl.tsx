@@ -2,7 +2,7 @@ import * as React from "react";
 import { carView } from "../app/props/CarViewProps";
 
 export const CarView = (props: carView.Props) => (
-  <tr>
+  <tr className={props.classes}>
     <td>{props.maker}</td>
     <td>{props.model}</td>
     <td>{props.maturityDate}</td>

@@ -11,6 +11,7 @@ export namespace carView {
         remove: (car: Car) => void;
     }
     export interface Props {
+        classes: string;
         maker: string;
         model: string;
         maturityDate: string;
@@ -19,10 +20,6 @@ export namespace carView {
         onEdit: (e: React.MouseEvent<HTMLAnchorElement>) => void;
         onRemove: (e: React.MouseEvent<HTMLAnchorElement>) => void;
     }
-    export interface Controller {
-        car: Car;
-        props: Props;
-    }
     export interface Entry {
         key: string;
         authenticated: boolean;
@@ -30,8 +27,11 @@ export namespace carView {
         edit(): void;
         remove(): void;
     }
-    export function createController(entry: Entry): Controller {
+    export function createProps(idx: number, entry: Entry): Props {
         const props: Props = {
+            get classes(): string {
+                return idx === stores.carEdition.index ? "selected" : null;
+            },
             authenticated: entry.authenticated,
             maker: MAKERS[entry.car.make],
             maturityDate: dateToStringReadable(entry.car.maturityDate),
@@ -46,11 +46,7 @@ export namespace carView {
                 e.preventDefault();
             }
         };
-
-        return {
-            props,
-            car: entry.car
-        };
+        return props;
     }
     export function createComponent(key: string, props: Props): React.FunctionComponentElement<Props> {
         return React.createElement(CarView, { ...props, ...{ key } });
@@ -62,14 +58,14 @@ export namespace carView {
                 car: car,
                 authenticated: stores.user.authenticated,
                 edit() {
-                    stores.carEdition.updateCar(idx,carViewEntry.car)
+                    stores.carEdition.updateCar(idx, carViewEntry.car)
                 },
                 remove() {
                     stores.carList.remove(carViewEntry.car);
                 }
             };
-            const carViewController = carView.createController(carViewEntry);
-            return createComponent(idx.toString(),carViewController.props);
+            const props = carView.createProps(idx, carViewEntry);
+            return createComponent(idx.toString(), props);
         });
     }
 }

@@ -5,6 +5,7 @@ import { monthsListCondensed } from "../../util";
 import { StyledCalendar } from "./StyledCalendar";
 import { SelectInput } from "./SelectInput";
 import { stores } from "../../stores/Stores";
+import { AppInput } from "../gen/AppInputTpl";
 
 export const CarEditor = observer(() => (
   <form onSubmit={carEdit.props.updateCar}>
@@ -29,7 +30,6 @@ export const CarEditor = observer(() => (
               list={monthsListCondensed}
               toKey={(idx, _) => "month" + idx}
               onChange={carEdit.props.onChangeMonth}
-              
             />
             <input
               tabIndex={3}
@@ -49,8 +49,8 @@ export const CarEditor = observer(() => (
           </div>
         </div>
         <div>
-        <small>hour</small>
-        <div className="input-group">
+          <small>hour</small>
+          <div className="input-group">
             <input
               tabIndex={4}
               type="number"
@@ -76,9 +76,11 @@ export const CarEditor = observer(() => (
             selected={stores.carEdition.car.maturityDate.getDate()}
           />
         </div>
+        <div>{carEdit.createModelInput()}</div>
+        <div>{carEdit.createMakeInput()}</div>
         <button className="btn btn-primary" tabIndex={3}>
-        submit
-      </button>
+          submit
+        </button>
       </div>
     </div>
   </form>

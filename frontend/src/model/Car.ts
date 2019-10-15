@@ -2,6 +2,13 @@ export enum MAKERS {
   AUDI, VOLKSWAGEN, NISSAN, PEUGEOT, CITROEN
 }
 
+export const makerToString: Map<MAKERS, string> = new Map<MAKERS, string>([
+  [MAKERS.AUDI, "Audi"],
+  [MAKERS.VOLKSWAGEN, "Volkswagen"],
+  [MAKERS.NISSAN, "Nissan"],
+  [MAKERS.PEUGEOT, "Peugeot"],
+]);
+
 export interface CarPK {
   make: MAKERS;
   model: string;

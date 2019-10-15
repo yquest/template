@@ -23,11 +23,11 @@ export namespace appInput {
         onBlur: (e) => void;
         errorClasses: string;
         onFocus: (e) => void;
-        updateError(e:string);
+        updateError(e: string);
     }
 
     export interface Entry {
-        value: string;
+        store: Store;
         disabled?: boolean;
         inputType: Type;
         label: string;
@@ -37,13 +37,16 @@ export namespace appInput {
     }
 
     export interface Store {
-        value: String;
+        value: string;
+        error: string;
+        updateValue(value: string): void;
+        updateError(error: string): void;
     }
 
-    export function createAppInputProps(entry: Entry): Props {
+    export function createStore(value:string):Store{
         const store = observable(
             {
-                value: entry.value,
+                value: value,
                 error: null,
                 updateValue(value: string) {
                     store.value = value;
@@ -57,9 +60,13 @@ export namespace appInput {
                 updateError: action
             }
         );
+        return store;
+    }
+
+    export function createAppInputProps(entry: Entry): Props {
         const props: Props = {
-            updateError:store.updateError,
-            get error() { return store.error; },
+            updateError: entry.store.updateError,
+            get error() { return entry.store.error; },
             get errorClasses() {
                 return classNames({
                     "form-control": true,
@@ -86,11 +93,11 @@ export namespace appInput {
             labelId: entry.labelId,
             placeholder: entry.placeholder,
             onChange(e) {
-                store.updateValue(e.target.value);
+                entry.store.updateValue(e.target.value);
             },
             tabIndex: entry.tabIndex,
             get value() {
-                return store.value;
+                return entry.store.value;
             }
         };
         return props;
