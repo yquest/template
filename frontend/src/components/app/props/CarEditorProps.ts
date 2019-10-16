@@ -4,13 +4,14 @@ import { stores } from "../../../stores/Stores";
 import { appInput } from "./AppInputProps";
 import { AppInput } from "../../gen/AppInputTpl";
 import * as React from "react";
-import { SelectInputProps, SelectInput } from "../../tpl/SelectInput";
-import { MAKERS, makerToString } from "../../../model/Car";
+import { makerToString } from "../../../model/Car";
+import { dropDown } from "./DropDownProps";
+import { DropDownInput } from "../../gen/DropDownTpl";
 
 
 export namespace carEdit {
     const errorActions = { updateMake: action, updateModel: action, updatePrice: action, updateMaturityDate: action };
-    export const errors = observable({
+    const errors = observable({
         make: null as string,
         model: null as string,
         price: null as string,
@@ -29,30 +30,42 @@ export namespace carEdit {
         }
     }, errorActions);
 
-    export function createMakeInput():React.FunctionComponentElement<SelectInputProps>{
+    const dd1StoreActions = {updateOpen:action};
+    const dd1Store = observable({
+        open: false,
+        updateOpen(open: boolean): void {
+            dd1Store.open = open;
+        }
+    }, dd1StoreActions);
 
-        const makeStore: SelectInputProps = {
-            list: ['(none)',...makerToString.values()],
-            toKey(key){
-                return `maker-${key}`;
-            },
-            onChange(e){
-                if(e.target.selectedIndex === 0){
-                    stores.carEdition.updateMaker(null);
-                }else{
-                    stores.carEdition.updateMaker(e.target.selectedIndex-1);
-                }                
-            },
-            get selected():number{
-                console.log(`make:${stores.carEdition.car.make}`);
-                if(stores.carEdition.car.make === null)return 0;
+    export function createMakeInput(): React.FunctionComponentElement<dropDown.Props> {
+
+        const store: dropDown.Store = {
+            error: errors.make,
+            open: dd1Store.open,
+            get selectedIndex(){
+                if (stores.carEdition.car.make === null) return 0;
                 else return stores.carEdition.car.make +1;
+            },
+            updateAndClose(selectedIndex){
+                store.updateSelectIndex(selectedIndex);
+                dd1Store.updateOpen(false);
+            },
+            updateError: errors.updateMake,
+            updateOpen: dd1Store.updateOpen,
+            updateSelectIndex(selectedIndex){
+                if(selectedIndex === 0) stores.carEdition.updateMaker(null);
+                else stores.carEdition.updateMaker(selectedIndex-1);
             }
         };
 
-        console.log(makeStore.list);
-
-        return React.createElement(SelectInput, makeStore);
+        return React.createElement(DropDownInput, dropDown.createProps({
+            inputName: "make",
+            items: ['(none)',...Array.from(makerToString.values())],
+            label: "Maker",
+            store: store,
+            tabIndex: 3
+        }));
     }
 
     export function createModelInput(): React.FunctionComponentElement<appInput.Props> {
@@ -91,9 +104,16 @@ export namespace carEdit {
             } else {
                 errors.updateModel("")
             }
-            if(!hasErrors){
+            if(stores.carEdition.car.make === null){
+                errors.updateMake("should be filled");
+                hasErrors = true;
+            }else {
+                errors.updateMake("")
+            }
+            if (!hasErrors) {
                 stores.carList.update(stores.carEdition.index, stores.carEdition.car);
                 errors.updateModel(null);
+                errors.updateMake(null);
                 stores.carEdition.unselectCar();
             }
             e.preventDefault();

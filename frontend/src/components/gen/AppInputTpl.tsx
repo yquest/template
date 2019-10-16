@@ -2,7 +2,7 @@ import * as React from "react";
 import { appInput } from "../app/props/AppInputProps";
 
 export const AppInput = (props: appInput.Props) => (
-  <div className="form-group col-sm-10 col-md-8 col-lg-6 mb-3 mb-sm-3">
+  <div className="form-group">
     <label>{props.label}</label>
     <input
       tabIndex={props.tabIndex}

@@ -4,7 +4,7 @@ import * as React from "react";
 
 export const DropDownInput = observer((props: dropDown.Props) => {
   return (
-  <div className="form-group col-sm-10 col-md-8 col-lg-6 mb-3 mb-sm-3" onKeyDown={props.keyDown}>
+  <div className="form-group" onKeyDown={props.keyDown}>
     <label>{props.label}</label>
     <div className="input-group">
       <div className="input-group-prepend">
