@@ -60,6 +60,7 @@ export namespace carEdit {
         };
 
         return React.createElement(DropDownInput, dropDown.createProps({
+            disabled:true,
             inputName: "make",
             items: ['(none)',...Array.from(makerToString.values())],
             label: "Maker",
@@ -85,7 +86,7 @@ export namespace carEdit {
 
         modelStore.updateValue(stores.carEdition.car.model);
         const props = appInput.createAppInputProps({
-            disabled: false,
+            disabled: true,
             inputType: appInput.Type.TEXT,
             label: "Model",
             labelId: "model",
@@ -96,6 +97,10 @@ export namespace carEdit {
         return React.createElement(AppInput, props);
     }
     export const props = {
+        onCancel(e:React.MouseEvent<HTMLButtonElement>){
+            stores.carEdition.unselectCar();
+            e.preventDefault();
+        },
         updateCar(e: React.FormEvent<any>): void {
             let hasErrors = false;
             if ((stores.carEdition.car.model || "").length === 0) {

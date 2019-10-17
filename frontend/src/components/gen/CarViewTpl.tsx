@@ -16,9 +16,12 @@ export const CarView = (props: carView.Props) => (
     )}
     {props.authenticated && (
       <td>
-        <a href="" className="btn" onClick={props.onRemove}>
-          <i className="fas fa-times"></i>
-        </a>
+        {props.blockedRemove && <i className="btn fas fa-times text-muted"></i>}
+        {!props.blockedRemove && (
+          <a href="" className="btn" onClick={props.onRemove}>
+            <i className="fas fa-times"></i>
+          </a>
+        )}
       </td>
     )}
   </tr>

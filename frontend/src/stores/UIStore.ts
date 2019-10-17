@@ -27,6 +27,7 @@ export interface UiStore{
   modal: ModalState;
   modalContent:ModalContent;
   modelInDOM:boolean;
+  updateModalContent:(modalContent:ModalContent)=>void;
   updateModal:(modal:ModalState)=>void;
   carEditCalendarShow:boolean;
   toggleCarEditCalendar:()=>void;
@@ -48,5 +49,8 @@ export const uiStore: UiStore = observable({
   },
   toggleCarEditCalendar(){
     uiStore.carEditCalendarShow = !uiStore.carEditCalendarShow;
+  },
+  updateModalContent(modalContent:ModalContent){
+    uiStore.modalContent = modalContent;
   }
-},{updateModal:action, toggleCarEditCalendar:action});
+},{updateModal:action, toggleCarEditCalendar:action, updateModalContent:action});

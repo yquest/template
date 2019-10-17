@@ -27,6 +27,7 @@ export namespace dropDown {
         label: string;
         tabIndex: number;
         store: Store;
+        disabled:boolean;
     }
 
     export interface Store {
@@ -90,7 +91,7 @@ export namespace dropDown {
                     { "is-valid": entry.store.error != null && entry.store.error.length === 0 }
                 );
             },
-            disabled: false,
+            disabled: entry.disabled,
             get error() { return entry.store.error },
             inputName: entry.inputName,
             get inputValue() {

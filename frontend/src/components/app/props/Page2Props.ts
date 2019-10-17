@@ -25,6 +25,7 @@ export namespace page2 {
             }
         }
         const dd1: dropDown.Props = dropDown.createProps({
+            disabled:false,
             inputName: "dd1",
             items: ["(none)", "item 1", "item 2"],
             label: "dd exapmle",

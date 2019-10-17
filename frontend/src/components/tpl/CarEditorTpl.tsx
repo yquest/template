@@ -46,6 +46,13 @@ export const CarEditor = observer(() => (
               </span>
             </div>
           </div>
+          <StyledCalendar
+            open={carEdit.props.openCalendar}
+            month={stores.carEdition.car.maturityDate.getMonth() + 1}
+            year={stores.carEdition.car.maturityDate.getFullYear()}
+            selectChange={carEdit.props.onCalendarChange}
+            selected={stores.carEdition.car.maturityDate.getDate()}
+          />
         </div>
         <div className="form-group col-md-6">
           <small>hour</small>
@@ -67,22 +74,25 @@ export const CarEditor = observer(() => (
               onChange={carEdit.props.onChangeMinutes}
             />
           </div>
-          <StyledCalendar
-            open={carEdit.props.openCalendar}
-            month={stores.carEdition.car.maturityDate.getMonth() + 1}
-            year={stores.carEdition.car.maturityDate.getFullYear()}
-            selectChange={carEdit.props.onCalendarChange}
-            selected={stores.carEdition.car.maturityDate.getDate()}
-          />
         </div>
       </div>
       <div className="row">
         <div className="col-md-6">{carEdit.createModelInput()}</div>
         <div className="col-md-6">{carEdit.createMakeInput()}</div>
       </div>
-      <button className="btn btn-primary" tabIndex={3}>
-        submit
-      </button>
+      <div className="d-inline">
+        <button className="btn btn-primary" tabIndex={3}>
+          submit
+        </button>
+      </div>
+      <div className="d-inline col-md-3">
+        <button
+          className="btn btn-primary"
+          tabIndex={4}
+          onClick={carEdit.props.onCancel}>
+          cancel
+        </button>
+      </div>
     </div>
   </form>
 ));

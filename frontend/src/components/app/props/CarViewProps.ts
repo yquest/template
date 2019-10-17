@@ -1,8 +1,10 @@
-import { Car, MAKERS } from "../../../model/Car";
+import { Car, MAKERS, makerToString } from "../../../model/Car";
 import { dateToStringReadable } from "../../../util";
 import * as React from "react";
 import { CarView } from "../../gen/CarViewTpl";
 import { stores } from "../../../stores/Stores";
+import { uiStore, showModal } from "../../tpl/ModalTpl";
+import { ModalContent } from "../../../stores/UIStore";
 
 
 export namespace carView {
@@ -17,6 +19,7 @@ export namespace carView {
         maturityDate: string;
         price: string;
         authenticated: boolean;
+        blockedRemove: boolean;
         onEdit: (e: React.MouseEvent<HTMLAnchorElement>) => void;
         onRemove: (e: React.MouseEvent<HTMLAnchorElement>) => void;
     }
@@ -37,6 +40,9 @@ export namespace carView {
             maturityDate: dateToStringReadable(entry.car.maturityDate),
             model: entry.car.model,
             price: entry.car.price + "€",
+            get blockedRemove(){
+                return idx === stores.carEdition.index;
+            },
             onEdit(e) {
                 entry.edit();
                 e.preventDefault();
@@ -61,11 +67,21 @@ export namespace carView {
                     stores.carEdition.updateCar(idx, carViewEntry.car)
                 },
                 remove() {
-                    stores.carList.remove(carViewEntry.car);
+                    if(idx === stores.carEdition.index){
+                        return;                    }
+                    const modalContent:ModalContent = new ModalContent();
+                    modalContent.actionButton = "remove";
+                    modalContent.content = `Do you want to remove the car: (Model:${car.model}) Maker(${makerToString.get(car.make)})`;
+                    modalContent.title = "Alert";
+                    modalContent.actionEvent = ()=>{
+                        stores.carList.remove(carViewEntry.car);
+                    };
+                    uiStore.updateModalContent(modalContent);
+                    showModal();
                 }
             };
             const props = carView.createProps(idx, carViewEntry);
-            return createComponent(idx.toString(), props);
+            return createComponent(`car-view-${idx}`, props);
         });
     }
 }
