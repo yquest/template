@@ -66,6 +66,9 @@ tr.selected{
   background-color: rgb(240, 248, 255);
 }
 
+tr{
+  line-height: 2;
+}
 
 table.calendar{
   td{
@@ -87,4 +90,8 @@ table.calendar{
     height: 2rem;
     text-align: center;    
   }
+}
+.invalid-feedback-show{
+  @extend .invalid-feedback;
+  display: block;
 }

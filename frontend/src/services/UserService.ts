@@ -1,48 +1,46 @@
 import axios from "axios";
 import { User } from "../model/User";
 import Axios from "axios";
+import { UserService } from "./UsrService";
 
 export interface RestResult {
     data: any;
     status: number;
 }
 
-export class UserService {
-    get initialIsAuthenticated():boolean{
-        const initialData: AppInitialData = window["__state"];
-        return initialData.auth;
+export class UserServiceImp implements UserService{
+    private nameCached: string = (window["__state"] as AppInitialData).username;
+    private authenticatedCache: boolean = (window["__state"] as AppInitialData).auth;
+    get name ():string{
+        return this.nameCached;
     }
-    registerUser(user: User): Promise<RestResult> {
+    get authenticated(): boolean {
+        return this.authenticatedCache;
+    }
+    get initialIsAuthenticated(): boolean {
+        return this.authenticated;
+    }
+    async registerUser(user: User): Promise<void> {
         let body = {
             name: user.username,
             email: user.email,
             password: user.password
         };
-        return Axios.post("api/user", body)
+        await Axios.post("api/user", body)
     };
-    userLogin(user: User): Promise<RestResult> {
-        let body = {
+
+    async userLogin(user: User): Promise<boolean> {
+        this.authenticatedCache = await Axios.post("api/user/login", {
             user: user.username,
             pass: user.password
-        };
-
-        let call = Axios.post("api/user/login", body)
-
-        let error = call.catch(res => {
-            console.log(res);
-            return res.response;
-        });
-
-        let success = call.then(res => {
-            console.log(res);
-            return res;
-        });
-
-        return Promise.race([error, success]);
+        }).then(res=> res.status === 200);
+        return this.authenticatedCache;
     };
 
-    userLogout(): Promise<any> {
-        return axios.get("/api/user/logout");
+    async userLogout(): Promise<void> {
+        this.authenticatedCache = false;
+        this.nameCached = null;
+        await axios.get("/api/user/logout");
     };
 
     get initialName(): string {
@@ -51,4 +49,4 @@ export class UserService {
     }
 }
 
-export const userService = new UserService();
+export const userService = new UserServiceImp();

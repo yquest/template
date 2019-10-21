@@ -1,7 +1,9 @@
 import * as React from "react";
 import { stores } from "../../stores/Stores";
+import { observer } from "mobx-react";
+import { navbar } from "../app/props/NavbarProps";
 
-export const Navbar = () => (
+export const Navbar = observer((props:navbar.Props) => (
   <div>
     <div className="d-flex flex-column flex-md-row align-items-center p-3 px-md-4 mb-3 bg-white border-bottom">
       <h5
@@ -9,22 +11,16 @@ export const Navbar = () => (
         onClick={stores.navigation.root}>
         Company name
       </h5>
-      <a
-        href=""
-        className="p-2 text-dark"
-        onClick={stores.navigation.gotoPage2}>
-        Page 2
-      </a>
       {stores.user.authenticated && (
-        <a href="" className="btn btn-outline-primary" onClick={stores.navigation.loginOffEvent}>
+        <a href="" className="btn btn-outline-primary" onClick={props.loginOff}>
           Sign off <i className="fas fa-sign-out-alt"></i>
         </a>
       )}
       {!stores.user.authenticated && (
-        <a href="" onClick={stores.navigation.loginPage}>
+        <a href="" onClick={props.gotoLoginPage}>
           Sign in <i className="fas fa-sign-in-alt"></i>
         </a>
       )}
     </div>
   </div>
-);
+));

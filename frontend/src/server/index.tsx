@@ -1,11 +1,7 @@
 import express from "express";
 import { renderToString } from "react-dom/server";
 import * as React from "react";
-import { Car } from "../model/Car";
 import { App } from "../components/gen/AppTpl";
-import { CarService } from "../components/app/props/CarService";
-import { cars } from "./cars";
-const port = 3000;
 const server = express();
 
 server.use(express.static("dist"));
@@ -24,14 +20,6 @@ const html = ({ body }: { body: string }) => `
 </html>
 `;
 
-const createCarManager = (car: Car) => {
-  const cm: CarService = {
-    car: car,
-    edit: () => { },
-    remove: () => { }
-  }
-  return cm;
-};
 
 const Root = () => {
   return <App/>;

@@ -116,6 +116,8 @@ module.exports = [function (env, argv) {
       './initData.ts',
       './index3.tsx'
     ]
+    base.devServer.historyApiFallback = true;
+    base.output.publicPath = '/';
     base.output.filename = 'bundle.js';
   }
   return base;
@@ -138,9 +140,9 @@ function (env, argv) {
           options: {
             useBabel: true,
             "babelCore": "@babel/core", // needed for Babel v7
-          },
+          }
         }
-      ],
+      ]
     }
   };
 

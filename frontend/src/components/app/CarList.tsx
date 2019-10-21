@@ -3,9 +3,9 @@ import * as React from "react";
 import { CarView } from "./CarView";
 import { observable, flow, action } from "mobx";
 import { Car, MAKERS, CarPK } from "../../model/Car";
-import { carService } from "../../services/CarService";
+import { carService } from "../../services/CarServiceImp";
 import { dateToStringReadable } from "../../util";
-
+/*
 enum State {
   PENDING,
   DONE,
@@ -17,18 +17,6 @@ export class CarStore {
   @observable state: State = State.PENDING;
   @observable dropDownOpen: boolean = false;
   detail: Car;
-
-  fetchCars = flow(function*() {
-    this.state = State.PENDING;
-    try {
-      const cars = yield carService.fetchCars();
-      this.state = State.DONE;
-      this.cars = cars;
-    } catch (error) {
-      this.state = State.ERROR;
-      console.error(error);
-    }
-  });
 
   @action
   removeCar(carPK: CarPK) {
@@ -171,3 +159,4 @@ export class CarsList extends React.Component<CarListProps, any> {
 }
 
 carStore.fetchCars();
+*/

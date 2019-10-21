@@ -4,18 +4,17 @@ import { Notifications } from "../app/Notifications";
 import { CarList } from "./CarListTpl";
 import { uiStore } from "../../stores/UIStore";
 import { Modal } from "../tpl/ModalTpl";
-import { Navbar } from "../gen/NavbarTpl";
 import { CarEditor } from "../tpl/CarEditorTpl";
 import { stores } from "../../stores/Stores";
+import { navbar } from "../app/props/NavbarProps";
 
 export const App = observer(() => (
   <div className="container app">
     <Modal></Modal>
-    <Navbar></Navbar>
+    {navbar.createComponent()}
     <Notifications></Notifications>
-    {stores.carEdition.isReadyToEdition && <div className="float-right"></div>}
     <CarList />
-    {stores.carEdition.isReadyToEdition && <CarEditor></CarEditor>}
+    {stores.carEdition.isReadyToEdition && stores.user.authenticated && <CarEditor></CarEditor>}
     {uiStore.modelInDOM && <div className="modal-backdrop fade show"></div>}
   </div>
 ));
