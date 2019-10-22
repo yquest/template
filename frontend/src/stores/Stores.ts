@@ -15,7 +15,7 @@ const router = observable({
     }
 }, routerActions);
 
-const carListActions = { remove: action, update: action, updateCars: action };
+const carListActions = { remove: action, update: action, updateCars: action, createCar:action };
 const carList = observable({
     cars: services.carService.initialList as IObservableArray<Car>,
     remove(car: Car) {
@@ -23,6 +23,9 @@ const carList = observable({
     },
     updateCars(cars: Car[]) {
         carList.cars.replace(cars);
+    },
+    createCar(car:Car){
+        carList.cars.push(car);
     },
     update(idx: number, car: Car): void {
         carList.cars[idx] = { ...car };
@@ -46,8 +49,8 @@ const user = observable({
 }, userActions);
 
 const carEditionActions = {
-    updateCar: action, updateCreationType: action, updateMaturityDate: action,
-    updateModel: action, unselectCar: action, updateMaker: action
+    updateCar: action, updateCreationType: action, updateMaturityDate: action,updatePrice:action,
+    updateModel: action, unselectCar: action, updateMaker: action, createNewCar:action
 }
 const carEdition = observable({
     creationType: false,
@@ -59,10 +62,14 @@ const carEdition = observable({
     updateModel(model: string) {
         carEdition.car.model = model;
     },
+    updatePrice(price: string) {
+        carEdition.car.price = Number(price);
+    },
     updateMaturityDate(maturityDate: Date): void {
         carEdition.car.maturityDate = maturityDate;
     },
     updateCar(idx: number, car: Car): void {
+        carEdition.creationType = false;
         carEdition.index = idx;
         carEdition.car = { ...car };
     },
@@ -73,7 +80,19 @@ const carEdition = observable({
     updateCreationType(creationType: boolean) {
         carEdition.creationType = creationType;
     },
-
+    createNewCar(){
+        carEdition.index = null;
+        carEdition.creationType = true;
+        carEdition.car = {
+            make:null,
+            maturityDate:new Date(),
+            model:null,
+            price:null,
+            getPK(){
+                return carEdition.car;
+            }
+        };
+    },
     get isReadyToEdition(): Boolean {
         return carEdition.car !== null;
     },

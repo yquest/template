@@ -1,22 +1,23 @@
-import { Car, MAKERS } from "./model/Car"
+import { MAKERS, RawCar, carToRaw, carFromRaw } from "./model/Car"
 
 
-const cars = [
+const cars:RawCar[] = [
     {
-        make:MAKERS[MAKERS.AUDI],
+        make:MAKERS.AUDI,
         model:"A3",
-        maturityDate:new Date(1569000000000),
-        price:"30000"
+        maturityDate:1569000000000,
+        price:30000
     },
     {
-        make:MAKERS[MAKERS.NISSAN],
+        make:MAKERS.NISSAN,
         model:"Note",
-        maturityDate:new Date(1569512798493),
-        price:"10000"
+        maturityDate:1569512798493,
+        price:10000
     }
 ]
 
-console.log(new Date().getTime());
+//localStorage.setItem("cars",JSON.stringify(cars.map(carFromRaw)));
+
 
 window["__state"] = {
     auth:true,

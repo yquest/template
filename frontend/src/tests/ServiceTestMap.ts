@@ -1,5 +1,5 @@
 import { Services } from "../services/Services";
-import { CarServiceTest } from "../tests/CarServiceTest";
+import { CarServiceTest } from "./CarServiceTest";
 import { UserServiceTest } from "./UserServiceTest";
 
 export const servicesTest: Services = {

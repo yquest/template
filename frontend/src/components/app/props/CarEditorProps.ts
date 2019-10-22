@@ -7,6 +7,7 @@ import * as React from "react";
 import { makerToString } from "../../../model/Car";
 import { dropDown } from "./DropDownProps";
 import { DropDownInput } from "../../gen/DropDownTpl";
+import { services } from "../../../services/Services";
 
 
 export namespace carEdit {
@@ -30,46 +31,46 @@ export namespace carEdit {
         }
     }, errorActions);
 
-    const dd1StoreActions = {updateOpen:action};
-    const dd1Store = observable({
+    const makeStoreActions = { updateOpen: action };
+    const makeStore = observable({
         open: false,
         updateOpen(open: boolean): void {
-            dd1Store.open = open;
+            makeStore.open = open;
         }
-    }, dd1StoreActions);
+    }, makeStoreActions);
 
-    export function createMakeInput(): React.FunctionComponentElement<dropDown.Props> {
+    export function createMakeInput(tabIndex: number): React.FunctionComponentElement<dropDown.Props> {
 
         const store: dropDown.Store = {
             error: errors.make,
-            open: dd1Store.open,
-            get selectedIndex(){
+            open: makeStore.open,
+            get selectedIndex() {
                 if (stores.carEdition.car.make === null) return 0;
-                else return stores.carEdition.car.make +1;
+                else return stores.carEdition.car.make + 1;
             },
-            updateAndClose(selectedIndex){
+            updateAndClose(selectedIndex) {
                 store.updateSelectIndex(selectedIndex);
-                dd1Store.updateOpen(false);
+                makeStore.updateOpen(false);
             },
             updateError: errors.updateMake,
-            updateOpen: dd1Store.updateOpen,
-            updateSelectIndex(selectedIndex){
-                if(selectedIndex === 0) stores.carEdition.updateMaker(null);
-                else stores.carEdition.updateMaker(selectedIndex-1);
+            updateOpen: makeStore.updateOpen,
+            updateSelectIndex(selectedIndex) {
+                if (selectedIndex === 0) stores.carEdition.updateMaker(null);
+                else stores.carEdition.updateMaker(selectedIndex - 1);
             }
         };
 
         return React.createElement(DropDownInput, dropDown.createProps({
-            disabled:true,
+            disabled: !stores.carEdition.creationType,
             inputName: "make",
-            items: ['(none)',...Array.from(makerToString.values())],
+            items: ['(none)', ...Array.from(makerToString.values())],
             label: "Maker",
             store: store,
-            tabIndex: 3
+            tabIndex: tabIndex
         }));
     }
 
-    export function createModelInput(): React.FunctionComponentElement<appInput.Props> {
+    export function createModelInput(tabIndex: number): React.FunctionComponentElement<appInput.Props> {
 
         const modelStore: appInput.Store = {
             error: errors.model,
@@ -86,18 +87,52 @@ export namespace carEdit {
 
         modelStore.updateValue(stores.carEdition.car.model);
         const props = appInput.createAppInputProps({
-            disabled: true,
+            disabled: !stores.carEdition.creationType,
             inputType: appInput.Type.TEXT,
             label: "Model",
             labelId: "model",
             placeholder: "model",
             store: modelStore,
-            tabIndex: 3
+            tabIndex: tabIndex
         });
         return React.createElement(AppInput, props);
     }
+
+    export function createPriceInput(tabIndex: number): React.FunctionComponentElement<appInput.Props> {
+
+        const priceStore: appInput.Store = {
+            error: errors.price,
+            get value() {
+                if (stores.carEdition.car.price === null) return "";
+                return stores.carEdition.car.price.toString();
+            },
+            updateValue(value) {
+                stores.carEdition.updatePrice(value)
+            },
+            updateError(error) {
+                errors.updateModel(error);
+            }
+        };
+
+        if (stores.carEdition.car.price === null) {
+            priceStore.updateValue("0");
+        } else {
+            priceStore.updateValue(stores.carEdition.car.price.toString());
+        }
+        const props = appInput.createAppInputProps({
+            disabled: false,
+            inputType: appInput.Type.NUMBER,
+            label: "Price",
+            labelId: "price",
+            placeholder: "price",
+            store: priceStore,
+            tabIndex: tabIndex
+        });
+        return React.createElement(AppInput, props);
+    }
+
     export const props = {
-        onCancel(e:React.MouseEvent<HTMLButtonElement>){
+        onCancel(e: React.MouseEvent<HTMLButtonElement>) {
             stores.carEdition.unselectCar();
             e.preventDefault();
         },
@@ -109,14 +144,24 @@ export namespace carEdit {
             } else {
                 errors.updateModel("")
             }
-            if(stores.carEdition.car.make === null){
+            if (stores.carEdition.car.make === null) {
                 errors.updateMake("should be filled");
                 hasErrors = true;
-            }else {
+            } else {
                 errors.updateMake("")
             }
             if (!hasErrors) {
-                stores.carList.update(stores.carEdition.index, stores.carEdition.car);
+                const carToUpadate = {...stores.carEdition.car};
+                if (stores.carEdition.creationType) { 
+                    services.carService.create(carToUpadate).then(res=>{
+                        stores.carList.createCar(carToUpadate); 
+                    });
+                }
+                else {
+                    services.carService.update(carToUpadate).then(res=>{
+                        stores.carList.update(stores.carEdition.index, carToUpadate);
+                    });
+                }
                 errors.updateModel(null);
                 errors.updateMake(null);
                 stores.carEdition.unselectCar();

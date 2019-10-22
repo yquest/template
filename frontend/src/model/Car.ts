@@ -9,6 +9,13 @@ export const makerToString: Map<MAKERS, string> = new Map<MAKERS, string>([
   [MAKERS.PEUGEOT, "Peugeot"],
 ]);
 
+export interface RawCar{
+  maturityDate:number;
+  model:string;
+  price:number;
+  make:number; 
+}
+
 export interface CarPK {
   make: MAKERS;
   model: string;
@@ -20,6 +27,15 @@ export interface Car extends CarPK {
   getPK: () => CarPK
 }
 
+export function carToRaw(car:Car):RawCar{
+  return {
+    make:car.make,
+    maturityDate:car.maturityDate.getTime(),
+    model:car.model,
+    price:car.price
+  }
+}
+
 export function carToJson(car: Car) {
   let json = (car as any)
   json.make = MAKERS[car.make];
@@ -28,12 +44,12 @@ export function carToJson(car: Car) {
   return json;
 }
 
-export function carFromJson(json: any): Car {
+export function carFromRaw(raw: RawCar): Car {
   return {
-    maturityDate: new Date(json.maturityDate),
-    make: (MAKERS[json.make as string]),
-    price: json.price,
-    model: json.model,
+    maturityDate: new Date(raw.maturityDate),
+    make: raw.make,
+    price: raw.price,
+    model: raw.model,
     getPK: () => this
   };
 }

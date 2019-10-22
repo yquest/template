@@ -2,6 +2,7 @@ import express from "express";
 import { renderToString } from "react-dom/server";
 import * as React from "react";
 import { App } from "../components/gen/AppTpl";
+import { app } from "../components/app/props/AppProps";
 const server = express();
 
 server.use(express.static("dist"));
@@ -20,9 +21,9 @@ const html = ({ body }: { body: string }) => `
 </html>
 `;
 
-
+const appProps = app.createProps();
 const Root = () => {
-  return <App/>;
+  return <App createCarClick={appProps.createCarClick}/>;
 };
 
 server.get("/", (req, res) => {

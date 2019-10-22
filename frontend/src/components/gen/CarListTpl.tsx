@@ -5,7 +5,7 @@ import { stores } from "../../stores/Stores";
 const noContent = () => <div>no cars available</div>;
 const content = () => {
   return (
-    <table>
+    <table className="form-group">
       <thead>
         <tr>
           <th>Make</th>

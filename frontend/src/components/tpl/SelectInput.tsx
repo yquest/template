@@ -10,7 +10,7 @@ export interface SelectInputProps {
 }
 
 export const SelectInput = (props: SelectInputProps) => (
-  <select className={props.className} onChange={props.onChange} value={props.selected}>
+  <select className={props.className} onChange={props.onChange} value={props.selected} tabIndex={props.tabIndex}>
     {props.list.map((value, index) => (
       <option key={props.toKey(index, value)} value={index}>
         {value}

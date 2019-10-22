@@ -8,14 +8,14 @@ import { stores } from "../../stores/Stores";
 
 export const CarEditor = observer(() => (
   <form onSubmit={carEdit.props.updateCar}>
-    <h3>Car {stores.carEdition.title}</h3>
+    <h3>{stores.carEdition.title}</h3>
     <div>
       <div className="row">
         <div className="col-md-6">
           <small>date</small>
           <div className="input-group">
             <input
-              tabIndex={1}
+              tabIndex={2}
               type="number"
               placeholder="Year"
               className="form-control"
@@ -24,14 +24,14 @@ export const CarEditor = observer(() => (
             />
             <SelectInput
               selected={stores.carEdition.car.maturityDate.getMonth()}
-              tabIndex={2}
+              tabIndex={3}
               className="form-control"
               list={monthsListCondensed}
               toKey={(idx, _) => "month" + idx}
               onChange={carEdit.props.onChangeMonth}
             />
             <input
-              tabIndex={3}
+              tabIndex={4}
               type="number"
               placeholder="Day"
               className="form-control"
@@ -58,7 +58,7 @@ export const CarEditor = observer(() => (
           <small>hour</small>
           <div className="input-group">
             <input
-              tabIndex={4}
+              tabIndex={5}
               type="number"
               placeholder="Hour"
               className="form-control"
@@ -66,7 +66,7 @@ export const CarEditor = observer(() => (
               onChange={carEdit.props.onChangeHour}
             />
             <input
-              tabIndex={5}
+              tabIndex={6}
               type="number"
               placeholder="Hour"
               className="form-control"
@@ -77,18 +77,21 @@ export const CarEditor = observer(() => (
         </div>
       </div>
       <div className="row">
-        <div className="col-md-6">{carEdit.createModelInput()}</div>
-        <div className="col-md-6">{carEdit.createMakeInput()}</div>
+        <div className="col-md-6">{carEdit.createModelInput(7)}</div>
+        <div className="col-md-6">{carEdit.createMakeInput(8)}</div>
+      </div>
+      <div className="row">
+        <div className="col-md-12">{carEdit.createPriceInput(9)}</div>
       </div>
       <div className="d-inline">
-        <button className="btn btn-primary" tabIndex={3}>
-          submit
+        <button className="btn btn-primary" tabIndex={10}>
+          save
         </button>
       </div>
       <div className="d-inline col-md-3">
         <button
           className="btn btn-primary"
-          tabIndex={4}
+          tabIndex={11}
           onClick={carEdit.props.onCancel}>
           cancel
         </button>

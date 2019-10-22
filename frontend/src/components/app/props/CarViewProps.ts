@@ -5,6 +5,7 @@ import { CarView } from "../../gen/CarViewTpl";
 import { stores } from "../../../stores/Stores";
 import { uiStore, showModal } from "../../tpl/ModalTpl";
 import { ModalContent } from "../../../stores/UIStore";
+import { services } from "../../../services/Services";
 
 
 export namespace carView {
@@ -40,7 +41,7 @@ export namespace carView {
             maturityDate: dateToStringReadable(entry.car.maturityDate),
             model: entry.car.model,
             price: entry.car.price + "€",
-            get blockedRemove(){
+            get blockedRemove() {
                 return idx === stores.carEdition.index;
             },
             onEdit(e) {
@@ -67,13 +68,15 @@ export namespace carView {
                     stores.carEdition.updateCar(idx, carViewEntry.car)
                 },
                 remove() {
-                    if(idx === stores.carEdition.index){
-                        return;                    }
-                    const modalContent:ModalContent = new ModalContent();
+                    if (idx === stores.carEdition.index) {
+                        return;
+                    }
+                    const modalContent: ModalContent = new ModalContent();
                     modalContent.actionButton = "remove";
                     modalContent.content = `Do you want to remove the car: (Model:${car.model}) Maker(${makerToString.get(car.make)})`;
                     modalContent.title = "Alert";
-                    modalContent.actionEvent = ()=>{
+                    modalContent.actionEvent = () => {
+                        services.carService.remove(carViewEntry.car);
                         stores.carList.remove(carViewEntry.car);
                     };
                     uiStore.updateModalContent(modalContent);
