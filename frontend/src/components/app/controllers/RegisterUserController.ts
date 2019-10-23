@@ -1,4 +1,4 @@
-import { appInput } from "./AppInputProps";
+import { appInput } from "../../../controllers/AppInputController";
 import * as React from "react";
 import { services } from "../../../services/Services";
 import { stores } from "../../../stores/Stores";

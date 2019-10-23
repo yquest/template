@@ -1,9 +1,9 @@
 import { observer } from "mobx-react";
-import { carEdit } from "../app/props/CarEditorProps";
+import { carEdit } from "../app/controllers/CarEditorController";
 import * as React from "react";
 import { monthsListCondensed } from "../../util";
-import { StyledCalendar } from "./StyledCalendar";
-import { SelectInput } from "./SelectInput";
+import { StyledCalendar } from "../tpl/StyledCalendar";
+import { SelectInput } from "./global/SelectInputTpl";
 import { stores } from "../../stores/Stores";
 
 export const CarEditor = observer(() => (

@@ -1,12 +1,12 @@
 import { observer } from "mobx-react";
 import * as React from "react";
-import { Notifications } from "../app/Notifications";
+import { Notifications } from "../tpl/Notifications";
 import { uiStore } from "../../stores/UIStore";
 import { Modal } from "../tpl/ModalTpl";
 import { AppInput } from "./AppInputTpl";
 import { Navbar } from "./NavbarTpl";
-import { registerPage } from "../app/props/RegisterUserProps";
-import { navbar } from "../app/props/NavbarProps";
+import { registerPage } from "../app/controllers/RegisterUserController";
+import { navbar } from "../app/controllers/NavbarController";
 
 export const Register = observer((props: registerPage.Props) => {
   return (

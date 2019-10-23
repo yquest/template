@@ -1,7 +1,7 @@
 import * as React from "react";
 import { stores } from "../../stores/Stores";
 import { observer } from "mobx-react";
-import { navbar } from "../app/props/NavbarProps";
+import { navbar } from "../app/controllers/NavbarController";
 
 export const Navbar = observer((props:navbar.Props) => (
   <div>

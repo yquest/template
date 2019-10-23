@@ -1,5 +1,5 @@
 import * as React from "react";
-import { appInput } from "../app/props/AppInputProps";
+import { appInput } from "../../controllers/AppInputController";
 
 export const AppInput = (props: appInput.Props) => (
   <div className="form-group">

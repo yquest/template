@@ -1,5 +1,5 @@
 import * as React from "react";
-import { carView } from "../app/props/CarViewProps";
+import { carView } from "../app/controllers/CarViewController";
 
 export const CarView = (props: carView.Props) => (
   <tr className={props.classes}>

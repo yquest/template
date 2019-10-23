@@ -1,6 +1,6 @@
 import * as React from "react";
 import { observer } from "mobx-react";
-import { carView } from "../app/props/CarViewProps";
+import { carView } from "../app/controllers/CarViewController";
 import { stores } from "../../stores/Stores";
 const noContent = () => <div>no cars available</div>;
 const content = () => {

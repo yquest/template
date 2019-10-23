@@ -1,4 +1,4 @@
-import { appInput } from "./AppInputProps";
+import { appInput } from "../../../controllers/AppInputController";
 import { Login } from "../../gen/LoginTpl";
 import * as React from "react";
 import { services } from "../../../services/Services";

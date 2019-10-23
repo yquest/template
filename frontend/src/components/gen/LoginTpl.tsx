@@ -1,12 +1,12 @@
 import { observer } from "mobx-react";
-import { loginPage } from "../app/props/LoginProps";
+import { loginPage } from "../app/controllers/LoginController";
 import * as React from "react";
-import { Notifications } from "../app/Notifications";
+import { Notifications } from "../tpl/Notifications";
 import { uiStore } from "../../stores/UIStore";
 import { Modal } from "../tpl/ModalTpl";
 import { AppInput } from "./AppInputTpl";
 import { Navbar } from "./NavbarTpl";
-import { navbar } from "../app/props/NavbarProps";
+import { navbar } from "../app/controllers/NavbarController";
 
 export const Login = observer((props: loginPage.Props) => {
   return (

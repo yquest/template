@@ -1,6 +1,5 @@
 //import { services as serviceMap} from "../services/ServiceMap";
 import { servicesTest } from "../tests/ServiceTestMap";
-debugger;
 import { CarService } from "./CarService";
 import { UserService } from "./UsrService";
 

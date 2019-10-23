@@ -1,5 +1,5 @@
 import { observer } from "mobx-react";
-import { dropDown } from "../app/props/DropDownProps";
+import { dropDown } from "../../../controllers/DropDownController";
 import * as React from "react";
 
 export const DropDownInput = observer((props: dropDown.Props) => {
@@ -13,7 +13,7 @@ export const DropDownInput = observer((props: dropDown.Props) => {
           className="btn btn-outline-secondary dropdown-toggle"
           type="button"
           disabled={props.disabled}
-          onClick={props.togle}
+          onClick={props.toggle}
           onBlur={props.blur}>
           Choose maker...
         </button>

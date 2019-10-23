@@ -1,5 +1,5 @@
 import styled from "styled-components";
-import { Calendar } from "../app/Calendar";
+import { Calendar } from "./Calendar";
 
 export const StyledCalendar = styled(Calendar)`
   height: ${props => (props.open ? "20rem" : "0")};

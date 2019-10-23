@@ -1522,7 +1522,7 @@ textarea.form-control {
   border-color: #28a745;
   box-shadow: 0 0 0 0.2rem rgba(40, 167, 69, 0.25); }
 
-.invalid-feedback {
+.invalid-feedback, .invalid-feedback-show {
   display: none;
   width: 100%;
   margin-top: 0.25rem;
@@ -1553,8 +1553,8 @@ textarea.form-control {
   .was-validated .form-control:invalid:focus, .form-control.is-invalid:focus {
     border-color: #dc3545;
     box-shadow: 0 0 0 0.2rem rgba(220, 53, 69, 0.25); }
-  .was-validated .form-control:invalid ~ .invalid-feedback,
-  .was-validated .form-control:invalid ~ .invalid-tooltip, .form-control.is-invalid ~ .invalid-feedback,
+  .was-validated .form-control:invalid ~ .invalid-feedback, .was-validated .form-control:invalid ~ .invalid-feedback-show,
+  .was-validated .form-control:invalid ~ .invalid-tooltip, .form-control.is-invalid ~ .invalid-feedback, .form-control.is-invalid ~ .invalid-feedback-show,
   .form-control.is-invalid ~ .invalid-tooltip {
     display: block; }
 
@@ -1569,21 +1569,21 @@ textarea.form-control {
   .was-validated .custom-select:invalid:focus, .custom-select.is-invalid:focus {
     border-color: #dc3545;
     box-shadow: 0 0 0 0.2rem rgba(220, 53, 69, 0.25); }
-  .was-validated .custom-select:invalid ~ .invalid-feedback,
-  .was-validated .custom-select:invalid ~ .invalid-tooltip, .custom-select.is-invalid ~ .invalid-feedback,
+  .was-validated .custom-select:invalid ~ .invalid-feedback, .was-validated .custom-select:invalid ~ .invalid-feedback-show,
+  .was-validated .custom-select:invalid ~ .invalid-tooltip, .custom-select.is-invalid ~ .invalid-feedback, .custom-select.is-invalid ~ .invalid-feedback-show,
   .custom-select.is-invalid ~ .invalid-tooltip {
     display: block; }
 
-.was-validated .form-control-file:invalid ~ .invalid-feedback,
-.was-validated .form-control-file:invalid ~ .invalid-tooltip, .form-control-file.is-invalid ~ .invalid-feedback,
+.was-validated .form-control-file:invalid ~ .invalid-feedback, .was-validated .form-control-file:invalid ~ .invalid-feedback-show,
+.was-validated .form-control-file:invalid ~ .invalid-tooltip, .form-control-file.is-invalid ~ .invalid-feedback, .form-control-file.is-invalid ~ .invalid-feedback-show,
 .form-control-file.is-invalid ~ .invalid-tooltip {
   display: block; }
 
 .was-validated .form-check-input:invalid ~ .form-check-label, .form-check-input.is-invalid ~ .form-check-label {
   color: #dc3545; }
 
-.was-validated .form-check-input:invalid ~ .invalid-feedback,
-.was-validated .form-check-input:invalid ~ .invalid-tooltip, .form-check-input.is-invalid ~ .invalid-feedback,
+.was-validated .form-check-input:invalid ~ .invalid-feedback, .was-validated .form-check-input:invalid ~ .invalid-feedback-show,
+.was-validated .form-check-input:invalid ~ .invalid-tooltip, .form-check-input.is-invalid ~ .invalid-feedback, .form-check-input.is-invalid ~ .invalid-feedback-show,
 .form-check-input.is-invalid ~ .invalid-tooltip {
   display: block; }
 
@@ -1592,8 +1592,8 @@ textarea.form-control {
   .was-validated .custom-control-input:invalid ~ .custom-control-label::before, .custom-control-input.is-invalid ~ .custom-control-label::before {
     border-color: #dc3545; }
 
-.was-validated .custom-control-input:invalid ~ .invalid-feedback,
-.was-validated .custom-control-input:invalid ~ .invalid-tooltip, .custom-control-input.is-invalid ~ .invalid-feedback,
+.was-validated .custom-control-input:invalid ~ .invalid-feedback, .was-validated .custom-control-input:invalid ~ .invalid-feedback-show,
+.was-validated .custom-control-input:invalid ~ .invalid-tooltip, .custom-control-input.is-invalid ~ .invalid-feedback, .custom-control-input.is-invalid ~ .invalid-feedback-show,
 .custom-control-input.is-invalid ~ .invalid-tooltip {
   display: block; }
 
@@ -1610,8 +1610,8 @@ textarea.form-control {
 .was-validated .custom-file-input:invalid ~ .custom-file-label, .custom-file-input.is-invalid ~ .custom-file-label {
   border-color: #dc3545; }
 
-.was-validated .custom-file-input:invalid ~ .invalid-feedback,
-.was-validated .custom-file-input:invalid ~ .invalid-tooltip, .custom-file-input.is-invalid ~ .invalid-feedback,
+.was-validated .custom-file-input:invalid ~ .invalid-feedback, .was-validated .custom-file-input:invalid ~ .invalid-feedback-show,
+.was-validated .custom-file-input:invalid ~ .invalid-tooltip, .custom-file-input.is-invalid ~ .invalid-feedback, .custom-file-input.is-invalid ~ .invalid-feedback-show,
 .custom-file-input.is-invalid ~ .invalid-tooltip {
   display: block; }
 
@@ -8016,7 +8016,7 @@ pre {
     margin-left: 91.66667%; } }
 
 /*!
- * Font Awesome Free 5.10.2 by @fontawesome - https://fontawesome.com
+ * Font Awesome Free 5.11.2 by @fontawesome - https://fontawesome.com
  * License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License)
  */
 .fa,
@@ -8684,6 +8684,9 @@ readers do not read off random characters that represent icons */
 
 .fa-business-time:before {
   content: "\F64A"; }
+
+.fa-buy-n-large:before {
+  content: "\F8A6"; }
 
 .fa-buysellads:before {
   content: "\F20D"; }
@@ -10044,6 +10047,12 @@ readers do not read off random characters that represent icons */
 .fa-hashtag:before {
   content: "\F292"; }
 
+.fa-hat-cowboy:before {
+  content: "\F8C0"; }
+
+.fa-hat-cowboy-side:before {
+  content: "\F8C1"; }
+
 .fa-hat-wizard:before {
   content: "\F6E8"; }
 
@@ -10524,6 +10533,9 @@ readers do not read off random characters that represent icons */
 .fa-maxcdn:before {
   content: "\F136"; }
 
+.fa-mdb:before {
+  content: "\F8CA"; }
+
 .fa-medal:before {
   content: "\F5A2"; }
 
@@ -10662,6 +10674,9 @@ readers do not read off random characters that represent icons */
 .fa-mountain:before {
   content: "\F6FC"; }
 
+.fa-mouse:before {
+  content: "\F8CC"; }
+
 .fa-mouse-pointer:before {
   content: "\F245"; }
 
@@ -10742,6 +10757,9 @@ readers do not read off random characters that represent icons */
 
 .fa-optin-monster:before {
   content: "\F23C"; }
+
+.fa-orcid:before {
+  content: "\F8D2"; }
 
 .fa-osi:before {
   content: "\F41A"; }
@@ -11084,6 +11102,9 @@ readers do not read off random characters that represent icons */
 
 .fa-receipt:before {
   content: "\F543"; }
+
+.fa-record-vinyl:before {
+  content: "\F8D9"; }
 
 .fa-recycle:before {
   content: "\F1B8"; }
@@ -11673,6 +11694,9 @@ readers do not read off random characters that represent icons */
 .fa-swatchbook:before {
   content: "\F5C3"; }
 
+.fa-swift:before {
+  content: "\F8E1"; }
+
 .fa-swimmer:before {
   content: "\F5C4"; }
 
@@ -11957,6 +11981,9 @@ readers do not read off random characters that represent icons */
 
 .fa-uikit:before {
   content: "\F403"; }
+
+.fa-umbraco:before {
+  content: "\F8E8"; }
 
 .fa-umbrella:before {
   content: "\F0E9"; }
@@ -12361,7 +12388,7 @@ readers do not read off random characters that represent icons */
   width: auto; }
 
 /*!
- * Font Awesome Free 5.10.2 by @fontawesome - https://fontawesome.com
+ * Font Awesome Free 5.11.2 by @fontawesome - https://fontawesome.com
  * License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License)
  */
 @font-face {
@@ -12369,8 +12396,8 @@ readers do not read off random characters that represent icons */
   font-style: normal;
   font-weight: 900;
   font-display: auto;
-  src: url(42e1fbd2cf655a0b44a2dfae9ca2f8c1.eot);
-  src: url(42e1fbd2cf655a0b44a2dfae9ca2f8c1.eot?#iefix) format("embedded-opentype"), url(d6d8d5da9214dc7d46b297672a602d55.woff2) format("woff2"), url(3ded831d708bf90b2da86756551b5c1c.woff) format("woff"), url(896e20e26ad07dc63c9526ed814117e9.ttf) format("truetype"), url(assets/img/fa-solid-900.svg?0e9ef30d9657d06b0227fe9a1a64e15b#fontawesome) format("svg"); }
+  src: url(8e4a6dcc692b3887f9f542cd6894d6d4.eot);
+  src: url(8e4a6dcc692b3887f9f542cd6894d6d4.eot?#iefix) format("embedded-opentype"), url(44d537ab79f921fde5a28b2c1636f397.woff2) format("woff2"), url(333bae208dc363746961b234ff6c2500.woff) format("woff"), url(0bff33a5fd7ec390235476b4859747a0.ttf) format("truetype"), url(assets/img/fa-solid-900.svg?c7f1dc89bed19e3930b88cea9af3720d#fontawesome) format("svg"); }
 
 .fa,
 .fas {
@@ -12378,7 +12405,7 @@ readers do not read off random characters that represent icons */
   font-weight: 900; }
 
 /*!
- * Font Awesome Free 5.10.2 by @fontawesome - https://fontawesome.com
+ * Font Awesome Free 5.11.2 by @fontawesome - https://fontawesome.com
  * License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License)
  */
 @font-face {
@@ -12386,8 +12413,8 @@ readers do not read off random characters that represent icons */
   font-style: normal;
   font-weight: normal;
   font-display: auto;
-  src: url(14c590d124662eb50efa4c00f027b79c.eot);
-  src: url(14c590d124662eb50efa4c00f027b79c.eot?#iefix) format("embedded-opentype"), url(3e1b2a654a784ceb385157140b4ccd71.woff2) format("woff2"), url(df02c782834b113d605d8329368737b4.woff) format("woff"), url(5e8aa9ea0ebcd2218178f554cdd8e6b0.ttf) format("truetype"), url(assets/img/fa-brands-400.svg?0cc140e913904c46f717424a881af7b1#fontawesome) format("svg"); }
+  src: url(5063b105c7646c8043d58c5289f02cca.eot);
+  src: url(5063b105c7646c8043d58c5289f02cca.eot?#iefix) format("embedded-opentype"), url(cccc9d29470e879e40eb70249d9a2705.woff2) format("woff2"), url(c5e0f14f88a828261ba01558ce2bf26f.woff) format("woff"), url(06147b6cd88c7346cecd1edd060cd5de.ttf) format("truetype"), url(assets/img/fa-brands-400.svg?2c12bf9a79a20d7e8ee68e39fa373825#fontawesome) format("svg"); }
 
 .fab {
   font-family: 'Font Awesome 5 Brands'; }
@@ -12413,9 +12440,23 @@ table td {
   padding: .5em;
   border: 1px solid lightgrey; }
 
+.car-edit {
+  margin-top: 1rem;
+  margin-bottom: 1rem;
+  padding: 1.5rem; }
+
+.pointer-cursor {
+  cursor: pointer; }
+
 .app {
   margin-top: 2rem;
   margin-bottom: 5rem; }
+
+tr.selected {
+  background-color: aliceblue; }
+
+tr {
+  line-height: 2; }
 
 table.calendar td {
   width: 2rem;
@@ -12429,4 +12470,7 @@ table.calendar td {
     background-color: burlywood; }
   table.calendar td:hover div.valid-day, table.calendar tddiv.selected {
     border-radius: 0.2rem; }
+
+.invalid-feedback-show {
+  display: block; }
 

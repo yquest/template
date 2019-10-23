@@ -1,10 +1,10 @@
 import { observer } from "mobx-react";
-import { loginPage } from "./components/app/props/LoginProps";
+import { loginPage } from "./components/app/controllers/LoginController";
 import { stores } from "./stores/Stores";
 import { App } from "./components/gen/AppTpl";
 import * as React from "react";
-import { registerPage } from "./components/app/props/RegisterUserProps";
-import { app } from "./components/app/props/AppProps";
+import { registerPage } from "./components/app/controllers/RegisterUserController";
+import { app } from "./components/app/controllers/AppController";
 
 const appProps = app.createProps();
 export const Root = observer(() => {

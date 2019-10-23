@@ -1,5 +1,5 @@
 {
-  "name": "reactbysample",
+  "name": "carapp",
   "version": "1.0.0",
   "description": "In this sample we setup the basic plumbing to \"build\" our project and launch it in a dev server.",
   "main": "index.js",

@@ -1,12 +1,12 @@
 import { uiStore } from "../../../stores/UIStore";
 import { observable, action } from "mobx";
 import { stores } from "../../../stores/Stores";
-import { appInput } from "./AppInputProps";
+import { appInput } from "../../../controllers/AppInputController";
 import { AppInput } from "../../gen/AppInputTpl";
 import * as React from "react";
 import { makerToString } from "../../../model/Car";
-import { dropDown } from "./DropDownProps";
-import { DropDownInput } from "../../gen/DropDownTpl";
+import { dropDown } from "../../../controllers/DropDownController";
+import { DropDownInput } from "../../gen/global/DropDownTpl";
 import { services } from "../../../services/Services";
 
 
@@ -110,7 +110,7 @@ export namespace carEdit {
                 stores.carEdition.updatePrice(value)
             },
             updateError(error) {
-                errors.updateModel(error);
+                errors.updatePrice(error);
             }
         };
 
@@ -150,8 +150,15 @@ export namespace carEdit {
             } else {
                 errors.updateMake("")
             }
+            if (stores.carEdition.car.price <= 0) {
+                errors.updatePrice("should be greater than 0");
+                hasErrors = true;
+            } else {
+                errors.updatePrice("")
+            }
             if (!hasErrors) {
                 const carToUpadate = {...stores.carEdition.car};
+                const carIndex = stores.carEdition.index;
                 if (stores.carEdition.creationType) { 
                     services.carService.create(carToUpadate).then(res=>{
                         stores.carList.createCar(carToUpadate); 
@@ -159,11 +166,13 @@ export namespace carEdit {
                 }
                 else {
                     services.carService.update(carToUpadate).then(res=>{
-                        stores.carList.update(stores.carEdition.index, carToUpadate);
+                        console.log("index",carIndex)
+                        stores.carList.update(carIndex, carToUpadate);
                     });
                 }
                 errors.updateModel(null);
                 errors.updateMake(null);
+                errors.updatePrice(null);
                 stores.carEdition.unselectCar();
             }
             e.preventDefault();

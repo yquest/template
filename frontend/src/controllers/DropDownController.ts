@@ -7,7 +7,7 @@ export namespace dropDown {
         tabIndex: number;
         disabled: boolean;
         keyDown: (e) => void;
-        togle: (e) => void;
+        toggle: (e) => void;
         blur: (e: React.FocusEvent) => void;
         classesIsOpen: string;
         labels: string[];
@@ -120,7 +120,7 @@ export namespace dropDown {
                 }
             },
             labels: entry.items,
-            togle() { entry.store.updateOpen(!entry.store.open) },
+            toggle() { entry.store.updateOpen(!entry.store.open) },
             onSelectItem(idx) {
                 return (e) => {
                     entry.store.updateAndClose(idx);

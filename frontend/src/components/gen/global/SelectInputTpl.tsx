@@ -1,15 +1,7 @@
 import * as React from "react";
+import { selectInput } from "../../../controllers/SelectInputController";
 
-export interface SelectInputProps {
-  selected:number;
-  className?: string;
-  tabIndex?:number;
-  list: string[];
-  onChange: (e: React.ChangeEvent<HTMLSelectElement>) => void;
-  toKey: (index: number, value: string) => string;
-}
-
-export const SelectInput = (props: SelectInputProps) => (
+export const SelectInput = (props: selectInput.Props) => (
   <select className={props.className} onChange={props.onChange} value={props.selected} tabIndex={props.tabIndex}>
     {props.list.map((value, index) => (
       <option key={props.toKey(index, value)} value={index}>

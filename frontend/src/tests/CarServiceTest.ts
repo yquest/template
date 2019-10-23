@@ -17,12 +17,15 @@ export class CarServiceTest implements CarService {
         this.saveInStore();
         return Promise.resolve();
     }
+
     get initialList(): Car[] {
         return this.carList;
     }
+
     list(): Promise<Car[]> {
         return Promise.resolve(this.carList);
     }
+
     update(car: Car): Promise<void> {
         const index = this.carList.findIndex(current=>{
             current.make === car.make && current.model === car.model;
@@ -31,6 +34,7 @@ export class CarServiceTest implements CarService {
         this.saveInStore();
         return Promise.resolve();
     }
+    
     remove(car: Car): Promise<void> {
         function reducer(acc: Car[], cur: Car): Car[] {
             if (cur.make !== car.make || cur.model !== car.model) {
@@ -38,7 +42,6 @@ export class CarServiceTest implements CarService {
             }
             return acc;
         }
-
         this.carList = this.carList.reduce(reducer, []);
         this.saveInStore();
         return Promise.resolve();

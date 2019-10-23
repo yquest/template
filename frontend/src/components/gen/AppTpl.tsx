@@ -1,13 +1,13 @@
 import { observer } from "mobx-react";
 import * as React from "react";
-import { Notifications } from "../app/Notifications";
+import { Notifications } from "../tpl/Notifications";
 import { CarList } from "./CarListTpl";
 import { uiStore } from "../../stores/UIStore";
 import { Modal } from "../tpl/ModalTpl";
-import { CarEditor } from "../tpl/CarEditorTpl";
+import { CarEditor } from "./CarEditorTpl";
 import { stores } from "../../stores/Stores";
-import { navbar } from "../app/props/NavbarProps";
-import { app } from "../app/props/AppProps";
+import { navbar } from "../app/controllers/NavbarController";
+import { app } from "../app/controllers/AppController";
 
 export const App = observer((props:app.Props) => (
   <div className="container app">
