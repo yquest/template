@@ -18,7 +18,6 @@ import pt.fabm.template.rest.controllers.UserController
 import pt.fabm.template.validation.RequiredException
 import pt.fabm.tpl.Type
 import pt.fabm.tpl.component.page.App
-import pt.fabm.tpl.component.page.Page2
 import java.io.File
 import java.time.Instant
 
@@ -107,13 +106,10 @@ class RestVerticle : AbstractVerticle() {
           )
         )
 
-
         var content = StringBuilder().let {
           App(
             type = Type.SERVER,
             carList = cars,
-            username = { username },
-            carEdit = edit,
             auth = auth
           ).create().renderTag(it);it.toString()
         }
@@ -150,18 +146,6 @@ class RestVerticle : AbstractVerticle() {
         "input2" to input2
       )
 
-      rc.response().end(Page2(
-        type = Type.SERVER,
-        edit = edit,
-        auth = auth,
-        username = { username },
-        input1 = { input1 },
-        input2 = { input2 }
-      ).create().let {
-        val sb = StringBuilder()
-        it.renderTag(sb)
-        renderContent(sb.toString(), appInitData)
-      })
     }
 
     router.route().handler {

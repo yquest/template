@@ -4,7 +4,6 @@ import { Notifications } from "../tpl/Notifications";
 import { uiStore } from "../../stores/UIStore";
 import { Modal } from "../tpl/ModalTpl";
 import { AppInput } from "./AppInputTpl";
-import { Navbar } from "./NavbarTpl";
 import { registerPage } from "../app/controllers/RegisterUserController";
 import { navbar } from "../app/controllers/NavbarController";
 

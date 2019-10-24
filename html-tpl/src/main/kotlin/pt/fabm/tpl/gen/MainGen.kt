@@ -10,10 +10,9 @@ fun main() {
       AppGen(),
       CarListGen(),
       CarViewGen(),
-      Page2Gen(),
       AppInputGen(),
       TsGen.fromElement("NavbarTpl.tsx") {
-        NavBar(Type.CLIENT_IMPLEMENTATION, { false }, { false }).create()
+        NavBar(Type.CLIENT_IMPLEMENTATION).create()
       }
     )
   )

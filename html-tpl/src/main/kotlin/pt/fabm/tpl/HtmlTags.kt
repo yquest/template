@@ -6,10 +6,10 @@ import pt.fabm.tpl.WithChildren.Companion.initTag
 annotation class HtmlTagMarker
 
 interface WithChildren {
-  val children: MutableList<ElementCreator>
+  val children: MutableList<in ElementCreator>
 
   companion object {
-    fun <T : ElementCreator> initTag(children: MutableList<ElementCreator>, tag: T, init: T.() -> Unit): T {
+    fun <T : ElementCreator> initTag(children: MutableList<in ElementCreator>, tag: T, init: T.() -> Unit): T {
       tag.init()
       children.add(tag)
       return tag
@@ -148,7 +148,7 @@ open class TagWithText(override val name: String, override val type: Type) : Nam
 }
 
 interface BodyTag : WithChildren, ElementCreator {
-  fun <T : ElementCreator> initTag(tag: T, init: T.() -> Unit): T = initTag(children, tag, init)
+  fun <T : ElementCreator> initTag(tag: T, init: T.() -> Unit = {}): T = initTag(children, tag, init)
 
   fun table(init: Table.() -> Unit): Table = initTag(Table(type), init)
 
@@ -258,44 +258,21 @@ class A(
     )
 }
 
-class ShowIf(
-  private val clause: Pair<() -> Boolean, String>,
-  override val type: Type
-) : BodyTag {
+class Button(type: Type, override val attributes: () -> String) : TagWithText("button", type), BodyTag
 
-  //client only
-  constructor(clause: String, type: Type) : this({ false } to clause, type)
-
-  override val children: MutableList<ElementCreator> = mutableListOf()
-
-  fun td(init: TD.() -> Unit): TD = initTag(children, TD(type), init)
-
-  fun th(colSpan: Int? = null, init: TH.() -> Unit): TH = initTH(type, children, colSpan, init)
-
-  override fun create(): Element {
-    val elements = mutableListOf<Element>()
-    return if (type != Type.SERVER) {
-      elements += TextElement("{" + clause.second + " && (")
-      elements += object : Element {
-        override val children: Iterable<Element> = this@ShowIf.children.map { it.create() }
-        override fun renderTag(builder: Appendable, ident: String) {
-          for (child in children) {
-            child.renderTag(builder, ident)
-          }
-        }
-      }
-      elements += TextElement(")}")
-      NoTagElement(elements)
-    } else {
-      object : Element {
-        override val children: Iterable<Element> get() = this@ShowIf.children.map { it.create() }
-        override fun renderTag(builder: Appendable, ident: String) {
-          if (this@ShowIf.clause.first()) {
-            NoTagElement(children).renderTag(builder, ident)
-          }
-        }
-      }
+fun <T>conditionElement(element:T, server:()->Boolean, client:String, block:T.()->Unit)
+  where T:ElementCreator, T:WithChildren{
+  if(element.type == Type.SERVER && server()){
+    element.block()
+  }
+  if(element.type == Type.CLIENT_IMPLEMENTATION){
+    element.apply {
+      this.children += TextVarCreator({ error("not expected")}, "{$client && (",type)
+      element.block()
+      this.children += TextVarCreator({ error("not expected")},")}",type)
     }
+  }else{
+    element.block()
   }
 }
 
@@ -347,12 +324,6 @@ class TR(type: Type) : NameElementCreator("tr", type), WithChildren {
       name,
       children.map { it.create() }
     ) { "" }
-
-  fun showIf(clause: Pair<() -> Boolean, String>, init: ShowIf.() -> Unit): ShowIf = initTag(
-    children,
-    ShowIf(clause, type),
-    init
-  )
 
   fun td(init: TD.() -> Unit): TD = initTag(children, TD(type), init)
   fun th(colSpan: Int? = null, init: TH.() -> Unit): TH = initTH(type, children, colSpan, init)
