@@ -9,14 +9,24 @@ import { stores } from "../../stores/Stores";
 import { navbar } from "../app/controllers/NavbarController";
 import { app } from "../app/controllers/AppController";
 
-export const App = observer((props:app.Props) => (
+export const App = observer((props: app.Props) => (
   <div className="container app">
     <Modal></Modal>
     {navbar.createComponent()}
     <Notifications></Notifications>
     <CarList />
-    <button className="btn btn-primary form-group" onClick={props.createCarClick} tabIndex={1}>Create car</button>
-    {stores.carEdition.isReadyToEdition && stores.user.authenticated && <CarEditor></CarEditor>}
+    {stores.user.authenticated && (
+      <button
+        className="btn btn-primary form-group"
+        onClick={props.createCarClick}
+        tabIndex={1}
+      >
+        Create car
+      </button>
+    )}
+    {stores.carEdition.isReadyToEdition && stores.user.authenticated && (
+      <CarEditor></CarEditor>
+    )}
     {uiStore.modelInDOM && <div className="modal-backdrop fade show"></div>}
   </div>
 ));
