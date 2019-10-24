@@ -1,22 +1,13 @@
 package pt.fabm.tpl
 
-import com.datastax.dse.driver.api.core.DseSession
-import com.datastax.oss.driver.api.core.CqlSession
-import com.datastax.oss.driver.internal.core.auth.PlainTextAuthProvider
 import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.api.Test
 import pt.fabm.template.models.Car
 import pt.fabm.template.models.CarMake
-import pt.fabm.tpl.component.page.App
 import pt.fabm.tpl.component.car.CarList
-import pt.fabm.tpl.gen.AppGen
+import pt.fabm.tpl.component.page.App
 import java.time.LocalDateTime
 import java.time.ZoneOffset
-import com.sun.rowset.internal.Row
-
-
-
-
 
 
 class RenderTests {
@@ -27,8 +18,8 @@ class RenderTests {
       Car(
         model = "model",
         maturityDate = LocalDateTime
-        .of(2019, 1, 1, 1, 1)
-        .toInstant(ZoneOffset.UTC)!!,
+          .of(2019, 1, 1, 1, 1)
+          .toInstant(ZoneOffset.UTC)!!,
         make = CarMake.VOLKSWAGEN, price = 200
       )
     )
@@ -37,7 +28,7 @@ class RenderTests {
   private fun createNotifications(type: Type): Component {
     class Notifications(type: Type) : Component("Notifications", type) {
       init {
-        children += object : ElementCreator,WithChildren {
+        children += object : ElementCreator, WithChildren {
           override val type: Type get() = type
           override val children: MutableList<ElementCreator> = mutableListOf()
           override fun create(): Element {
@@ -77,11 +68,13 @@ class RenderTests {
   fun renderCarList() {
     val carListClientImplementation = CarList(
       Type.CLIENT_IMPLEMENTATION,
-      true,
-      defaultCarList
+      authenticated = true,
+      carEdit = true,
+      list = defaultCarList
     )
     val carListServer = CarList(
       Type.SERVER,
+      true,
       true,
       defaultCarList
     )
@@ -130,7 +123,8 @@ class RenderTests {
     """.trimIndent()
     Assertions.assertEquals(expected, current)
 
-    current = StringBuilder().let { CarList(Type.CLIENT, true, defaultCarList).create().renderTag(it);it.toString() }
+    current =
+      StringBuilder().let { CarList(Type.CLIENT, true, true, defaultCarList).create().renderTag(it);it.toString() }
     expected = """ 
       <CarList cars={props.cars} authenticated={props.authenticated} carManagerCreator={props.carManagerCreator}></CarList>
       
@@ -313,10 +307,10 @@ class RenderTests {
     var current = StringBuilder().let {
       App(
         type = Type.CLIENT,
-        carEdit = true,
-        auth = true,
-        carList = defaultCarList,
-        username = { "rockMyWorld" })
+        authenticated = { true },
+        readyToEdition = { true },
+        carList = defaultCarList
+      )
         .create()
         .renderTag(it)
       it.toString()
@@ -350,10 +344,10 @@ class RenderTests {
     current = StringBuilder().let {
       App(
         type = Type.SERVER,
-        carEdit = true,
-        auth = true,
-        carList = defaultCarList,
-        username = { "rockMyWorld" })
+        authenticated = { true },
+        readyToEdition = { true },
+        carList = emptyList()
+      )
         .create()
         .renderTag(it)
       it.toString()
@@ -425,4 +419,32 @@ class RenderTests {
 
   }
 
+  @Test
+  fun test() {
+    App(
+      Type.CLIENT_IMPLEMENTATION,
+      { true },
+      { true },
+      listOf(
+        Car(
+          model = "Golf 4",
+          make = CarMake.VOLKSWAGEN,
+          price = 30001,
+          maturityDate = LocalDateTime.now().toInstant(ZoneOffset.UTC)
+        ),
+        Car(
+          model = "308",
+          make = CarMake.PEUGEOT,
+          price = 30002,
+          maturityDate = LocalDateTime.now().toInstant(ZoneOffset.UTC)
+        ),
+        Car(
+          model = "Note",
+          make = CarMake.NISSAN,
+          price = 30003,
+          maturityDate = LocalDateTime.now().toInstant(ZoneOffset.UTC)
+        )
+      )
+    ).create().renderTag(System.out)
+  }
 }

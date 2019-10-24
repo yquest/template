@@ -7,33 +7,42 @@ import pt.fabm.tpl.component.car.CarList
 
 class App(
   override val type: Type,
-  val authenticated: () -> Boolean = {false},
-  val readyToEdition: () -> Boolean = {false},
-  private val carList:List<Car> = emptyList()
+  val authenticated: () -> Boolean = { false },
+  val readyToEdition: () -> Boolean = { false },
+  private val carList: List<Car> = emptyList()
 ) : ElementCreator {
 
   override fun create(): Element {
 
     fun DIV.navbar() {
-      children += NavBar(type, authenticated())
+      if(type == Type.CLIENT_IMPLEMENTATION){
+        children += TextVarCreator(
+          { error("not expected") },
+          """{navbar.createComponent()}""",
+          Type.CLIENT_IMPLEMENTATION
+        )
+      }else children += NavBar(type, authenticated())
     }
 
     fun DIV.showIfAuthenticated(block: DIV.() -> Unit) {
-      conditionElement(this,authenticated,"stores.user.authenticated",block)
+      conditionElement(this, authenticated, "stores.user.authenticated", block)
     }
 
     fun DIV.showIfAuthenticatedAndReadyToEdition(block: DIV.() -> Unit) {
       val jsCondition = "stores.carEdition.isReadyToEdition && stores.user.authenticated"
       val javaCondition = { authenticated() && readyToEdition() }
-      conditionElement(this,javaCondition, jsCondition, block)
+      conditionElement(this, javaCondition, jsCondition, block)
     }
 
     fun DIV.carList() {
-      initTag(CarList(
-        type = type,
-        authenticated = authenticated(),
-        carEdit = readyToEdition()
-      ))
+      initTag(
+        CarList(
+          type = type.toFirstLevel(),
+          authenticated = authenticated(),
+          carEdit = readyToEdition(),
+          list = carList
+        )
+      )
     }
 
     fun DIV.button(className: String, init: Button.() -> Unit) {
@@ -42,7 +51,9 @@ class App(
           type = type,
           attributes = {
             AttributeValue.render(type,
-              AttributeValue.create { className(className) }
+              AttributeValue.create { className(className) },
+              AttributeValue.create { clientAttribute("onClick","props.createCarClick") },
+              AttributeValue.create { clientAttribute("tabIndex","1") }
             )
           }
         ), init)
@@ -57,12 +68,36 @@ class App(
         )
       }
     }
+
     fun DIV.modal() {
       if (type == Type.CLIENT_IMPLEMENTATION) {
         children += TextVarCreator(
           { error("not expected") },
-          """{uiStore.modelInDOM && <div className="modal-backdrop fade show"></div>}""",
+          """<Modal></Modal>""",
           Type.CLIENT_IMPLEMENTATION
+        )
+      }
+    }
+
+    fun DIV.notifications(){
+      if (type == Type.CLIENT_IMPLEMENTATION) {
+        children += TextVarCreator(
+          serverText = { error("not expected") },
+          clientText = "<Notifications></Notifications>",
+          type = Type.CLIENT_IMPLEMENTATION
+        )
+      }
+    }
+
+    /**
+     * CarEditor will only appears in client implementation
+     */
+    fun DIV.carEditor() {
+      if (type == Type.CLIENT_IMPLEMENTATION) {
+        children += TextVarCreator(
+          serverText = { error("not expected") },
+          clientText = "<CarEditor></CarEditor>",
+          type = Type.CLIENT_IMPLEMENTATION
         )
       }
     }
@@ -70,8 +105,9 @@ class App(
     val root = Component("App", type, attributes = { "createCarClick={appProps.createCarClick}" })
       .apply {
         div(className = "container app") {
-
+          modal()
           navbar()
+          notifications()
           carList()
           showIfAuthenticated {
             button(className = "btn btn-primary form-group") {
@@ -79,7 +115,7 @@ class App(
             }
           }
           showIfAuthenticatedAndReadyToEdition {
-            TODO("add car editor")
+            carEditor()
           }
           modalBackground()
         }

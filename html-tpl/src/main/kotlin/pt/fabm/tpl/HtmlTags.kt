@@ -6,10 +6,10 @@ import pt.fabm.tpl.WithChildren.Companion.initTag
 annotation class HtmlTagMarker
 
 interface WithChildren {
-  val children: MutableList<in ElementCreator>
+  val children: MutableList<ElementCreator>
 
   companion object {
-    fun <T : ElementCreator> initTag(children: MutableList<in ElementCreator>, tag: T, init: T.() -> Unit): T {
+    fun <T : ElementCreator> initTag(children: MutableList<ElementCreator>, tag: T, init: T.() -> Unit): T {
       tag.init()
       children.add(tag)
       return tag
@@ -84,7 +84,7 @@ class TagElement(
 
 }
 
-class NoNameElementCreator(override val type: Type):WithChildren,ElementCreator{
+class NoNameElementCreator(override val type: Type) : WithChildren, ElementCreator {
   override fun create(): Element = NoTagElement(children.map { it.create() })
   override val children: MutableList<ElementCreator> = mutableListOf()
 }
@@ -93,9 +93,9 @@ open class NameElementCreator(
   protected open val name: String,
   override val type: Type,
   protected open val attributes: () -> String = { "" }
-) : ElementCreator, WithChildren{
+) : ElementCreator, WithChildren {
   override val children: MutableList<ElementCreator> = mutableListOf()
-  override fun create(): Element = TagElement(name,children.map { it.create() },attributes)
+  override fun create(): Element = TagElement(name, children.map { it.create() }, attributes)
 }
 
 interface ElementCreator {
@@ -130,7 +130,11 @@ class TextVarCreator(
     else TextElement(clientText)
 }
 
-open class TagWithText(override val name: String, override val type: Type) : NameElementCreator(name, type) {
+open class TagWithText(
+  override val name: String,
+  override val type: Type,
+  override val attributes: () -> String = { "" }
+) : NameElementCreator(name, type) {
 
   operator fun String.unaryPlus() {
     val noNamedElementCreator = object : ElementCreator, WithChildren {
@@ -260,18 +264,17 @@ class A(
 
 class Button(type: Type, override val attributes: () -> String) : TagWithText("button", type), BodyTag
 
-fun <T>conditionElement(element:T, server:()->Boolean, client:String, block:T.()->Unit)
-  where T:ElementCreator, T:WithChildren{
-  if(element.type == Type.SERVER && server()){
+fun <T> conditionElement(element: T, server: () -> Boolean, client: String, block: T.() -> Unit)
+  where T : ElementCreator, T : WithChildren {
+  if (element.type == Type.SERVER && server()) {
     element.block()
-  }
-  if(element.type == Type.CLIENT_IMPLEMENTATION){
+  }else if (element.type == Type.CLIENT_IMPLEMENTATION) {
     element.apply {
-      this.children += TextVarCreator({ error("not expected")}, "{$client && (",type)
+      this.children += TextVarCreator({ error("not expected") }, "{$client && (", type)
       element.block()
-      this.children += TextVarCreator({ error("not expected")},")}",type)
+      this.children += TextVarCreator({ error("not expected") }, ")}", type)
     }
-  }else{
+  } else {
     element.block()
   }
 }

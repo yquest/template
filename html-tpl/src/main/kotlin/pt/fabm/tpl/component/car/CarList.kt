@@ -10,24 +10,29 @@ class CarList(
   var list: List<Car> = emptyList()
 ) : ElementCreator {
   override fun create(): Element {
+    if(type == Type.CLIENT) return TextElement("<CarList></CarList>")
+
     fun TR.showIfAuthenticated(block: TR.() -> Unit) {
       if (authenticated) {
         block()
       }
     }
 
-    fun Tbody.createCarViewList(): ElementCreator {
-      if (type == Type.CLIENT) return object : ElementCreator {
+    fun Tbody.createCarViewList() {
+      val element = if (type.toFirstLevel() == Type.CLIENT) object : ElementCreator {
         override val type: Type = Type.CLIENT
         override fun create(): Element = TextElement("{carView.carViewList()}")
-      } else if (type == Type.SERVER) return object : ElementCreator {
+      } else if (type == Type.SERVER) object : ElementCreator {
         override val type: Type = Type.SERVER
-        override fun create(): Element = NoTagElement(
-          list.map {
-            CarView({it},authenticated,Type.SERVER).create()
-          }
-        )
+        override fun create(): Element {
+          return NoTagElement(
+            list.map {
+              CarView({ it }, authenticated, Type.SERVER).create()
+            }
+          )
+        }
       } else throw IllegalStateException("there is no client implementation expected")
+      initTag(element)
     }
 
     val root = DIV(type = type, attributes = {

@@ -110,7 +110,8 @@ class RestVerticle : AbstractVerticle() {
           App(
             type = Type.SERVER,
             carList = cars,
-            auth = auth
+            readyToEdition = {true},
+            authenticated = {true}
           ).create().renderTag(it);it.toString()
         }
 
@@ -132,20 +133,6 @@ class RestVerticle : AbstractVerticle() {
       ).map { message ->
         response.end(renderHtml(message.body()))
       }.subscribe()
-    }
-
-    router.get("/page2").handler { rc ->
-      val input1 = "myTest 1"
-      val input2 = "myTest 2"
-      val appInitData = jsonObjectOf(
-        "page" to "page2",
-        "username" to username,
-        "edit" to edit,
-        "auth" to auth,
-        "input1" to input1,
-        "input2" to input2
-      )
-
     }
 
     router.route().handler {
