@@ -266,16 +266,32 @@ class Button(type: Type, override val attributes: () -> String) : TagWithText("b
 
 fun <T> conditionElement(element: T, server: () -> Boolean, client: String, block: T.() -> Unit)
   where T : ElementCreator, T : WithChildren {
-  if (element.type == Type.SERVER && server()) {
+  if (element.type == Type.SERVER) {
+    //create all children nodes
     element.block()
+
+    //resolve all elements
+    val elements = element.children.map { it.create() }
+
+    element.children.clear()
+    val elementWrapper = object: ElementCreator,WithChildren {
+      override val children: MutableList<ElementCreator> = mutableListOf()
+      override val type: Type = Type.SERVER
+      override fun create(): Element {
+        if(server()){
+          return NoTagElement(elements)
+        }
+        return NoTagElement(emptyList())
+      }
+    }
+
+    element.children += elementWrapper
   }else if (element.type == Type.CLIENT_IMPLEMENTATION) {
     element.apply {
       this.children += TextVarCreator({ error("not expected") }, "{$client && (", type)
       element.block()
       this.children += TextVarCreator({ error("not expected") }, ")}", type)
     }
-  } else {
-    element.block()
   }
 }
 

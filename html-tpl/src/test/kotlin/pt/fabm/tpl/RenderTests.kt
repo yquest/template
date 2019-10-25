@@ -13,7 +13,6 @@ import java.time.ZoneOffset
 class RenderTests {
   companion object {
 
-
     private val defaultCarList = listOf(
       Car(
         model = "model",
@@ -421,11 +420,19 @@ class RenderTests {
 
   @Test
   fun test() {
-    App(
-      Type.CLIENT_IMPLEMENTATION,
-      { true },
-      { true },
-      listOf(
+    val x = mutableListOf(true,true)
+
+
+
+    val app = App(
+      type = Type.SERVER,
+      readyToEdition = {
+        x[0]
+      },
+      authenticated = {
+        x[1]
+      },
+      carList = listOf(
         Car(
           model = "Golf 4",
           make = CarMake.VOLKSWAGEN,
@@ -445,6 +452,14 @@ class RenderTests {
           maturityDate = LocalDateTime.now().toInstant(ZoneOffset.UTC)
         )
       )
-    ).create().renderTag(System.out)
+    ).create()
+
+    app.renderTag(System.out)
+    println()
+
+    x[0] = false
+    x[1] = false
+
+    app.renderTag(System.out)
   }
 }
