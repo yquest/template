@@ -418,48 +418,4 @@ class RenderTests {
 
   }
 
-  @Test
-  fun test() {
-    val x = mutableListOf(true,true)
-
-
-
-    val app = App(
-      type = Type.SERVER,
-      readyToEdition = {
-        x[0]
-      },
-      authenticated = {
-        x[1]
-      },
-      carList = listOf(
-        Car(
-          model = "Golf 4",
-          make = CarMake.VOLKSWAGEN,
-          price = 30001,
-          maturityDate = LocalDateTime.now().toInstant(ZoneOffset.UTC)
-        ),
-        Car(
-          model = "308",
-          make = CarMake.PEUGEOT,
-          price = 30002,
-          maturityDate = LocalDateTime.now().toInstant(ZoneOffset.UTC)
-        ),
-        Car(
-          model = "Note",
-          make = CarMake.NISSAN,
-          price = 30003,
-          maturityDate = LocalDateTime.now().toInstant(ZoneOffset.UTC)
-        )
-      )
-    ).create()
-
-    app.renderTag(System.out)
-    println()
-
-    x[0] = false
-    x[1] = false
-
-    app.renderTag(System.out)
-  }
 }
