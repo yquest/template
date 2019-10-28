@@ -1,16 +1,21 @@
 package pt.fabm.tpl.test
 
 abstract class AppInput(appendable: Appendable) : Element(appendable) {
+  enum class Type(val label: String) {
+    TEXT("text"),
+    PASSWORD("password")
+  }
+
   companion object {
     fun render(
       label: String,
       type: String,
-      value:String,
-      tabIndex: Int?=null,
-      placeHolder: String?=null,
+      value: String,
+      tabIndex: Int? = null,
+      placeHolder: String? = null,
       appInputCreator: () -> AppInput
     ) {
-      fun appInput(className: String,block: AppInput.() -> Unit) {
+      fun appInput(className: String, block: AppInput.() -> Unit) {
         val appInput = appInputCreator()
         appInput.start(className)
         appInput.block()
@@ -35,9 +40,9 @@ abstract class AppInput(appendable: Appendable) : Element(appendable) {
   abstract fun label(block: AppInput.() -> Unit)
   abstract fun input(
     type: String,
-    tabIndex: Int?,
-    placeHolder: String?,
-    value:String
+    tabIndex: Int? = null,
+    placeHolder: String? = null,
+    value: String
   )
 
 }

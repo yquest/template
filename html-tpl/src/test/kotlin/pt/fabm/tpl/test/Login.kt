@@ -27,7 +27,7 @@ abstract class Login(appendable: Appendable) : Element(appendable) {
                   button(className = "btn btn-primary col-sm-12", tabIndex = 3) { +"Login" }
                 }
                 showIfErrorForm {
-                  div(lClassName = "props.errorFormClasses") {clientText("props.errorForm")}
+                  div(className = asClientText("props.errorFormClasses")) { clientText("{props.errorForm}") }
                 }
               }
             }
@@ -45,11 +45,12 @@ abstract class Login(appendable: Appendable) : Element(appendable) {
   abstract fun navbar()
   abstract fun notifications()
   abstract fun appInput(label: String, tabIndex: Int, type: String = "TEXT")
-  abstract fun clientText(text:String)
   abstract fun a(onClick: String, block: Login.() -> Unit)
-  abstract fun div(lClassName: String? = null, className: String? = null, block: Login.() -> Unit)
+  abstract fun div(className: String? = null, block: Login.() -> Unit)
   abstract fun form(onSubmit: String, block: Login.() -> Unit)
   abstract fun button(className: String, tabIndex: Int, block: Login.() -> Unit)
   abstract fun showIfErrorForm(block: Login.() -> Unit)
   abstract fun modalBackground()
+  abstract fun clientText(text: String)
+  abstract fun asClientText(text: String): String?
 }

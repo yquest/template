@@ -6,6 +6,12 @@ import pt.fabm.tpl.test.*
 class RenderTestElements {
 
   @Test
+  fun testLogin(){
+    Login.render { LoginServer(System.out,false) }
+  }
+
+
+  @Test
   fun testAppInput(){
     AppInput.render(
       label = "myLabel",
