@@ -6,6 +6,16 @@ import pt.fabm.tpl.test.*
 class RenderTestElements {
 
   @Test
+  fun testAppInput(){
+    AppInput.render(
+      label = "myLabel",
+      type = "text",
+      value = "value",
+      appInputCreator = {AppInputServer(System.out)}
+    )
+  }
+
+  @Test
   fun testApp() {
     App.render {
       AppServer(
