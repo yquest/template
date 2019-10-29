@@ -3,7 +3,7 @@ package pt.fabm.tpl.test
 import java.lang.StringBuilder
 
 class AppClient(appendable: Appendable) : App(appendable), ClientElement {
-  override val helper: Helper = HelperClient()
+  override val attributesBuilder: AttributesBuilder = AttributesBuilderClient()
 
   override fun renderImplementation(){
     appendBody(
@@ -23,19 +23,6 @@ class AppClient(appendable: Appendable) : App(appendable), ClientElement {
     )
     render(this)
     appendBody("));")
-  }
-
-  override fun button(className: String, tabindex: Int, onClick: String, block: TagElement.() -> Unit) {
-    val button = TagElement(appendable, "button")
-    button.appendStart(
-      StringBuilder()
-        .append(helper.classNameAttr(className))
-        .append(helper.onClickAttr(onClick))
-        .append(helper.tabIndexAttr(tabindex))
-        .toString()
-    )
-    button.block()
-    button.appendEnd()
   }
 
   override fun modal() {

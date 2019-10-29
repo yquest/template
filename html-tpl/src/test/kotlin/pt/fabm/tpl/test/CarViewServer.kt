@@ -1,7 +1,7 @@
 package pt.fabm.tpl.test
 
 class CarViewServer(private val auth: Boolean, appendable: Appendable) : CarView(appendable) {
-  override val helper: Helper = HelperServer()
+  override val attributesBuilder: AttributesBuilder = AttributesBuilderServer()
   override fun start() {
     root.appendStart()
   }

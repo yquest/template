@@ -1,7 +1,7 @@
 package pt.fabm.tpl.test
 
 class AppServer(appendable: Appendable, private val auth:Boolean, private val cars:List<CarFields>) : App(appendable) {
-  override val helper: Helper = HelperServer()
+  override val attributesBuilder: AttributesBuilder = AttributesBuilderServer()
   override fun modal() {
     //ignore
   }

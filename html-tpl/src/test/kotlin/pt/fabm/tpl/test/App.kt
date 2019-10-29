@@ -7,7 +7,9 @@ abstract class App(appendable: Appendable): Element(appendable) {
   companion object{
     internal fun render(app:App){
       fun app(className: String, block: App.() -> Unit) {
-        app.root.appendStart(app.helper.classNameAttr(className))
+        app.attributesBuilder.builder.clear()
+        app.attributesBuilder.classNameAttr(className)
+        app.root.appendStart(app.attributesBuilder.builder.toString())
         app.block()
         app.root.appendEnd()
       }
@@ -34,7 +36,7 @@ abstract class App(appendable: Appendable): Element(appendable) {
   }
 
   internal val root = TagElement(appendable,"div")
-  abstract val helper:Helper
+  abstract val attributesBuilder:AttributesBuilder
   abstract fun modal()
   abstract fun navBar()
   abstract fun notifications()
@@ -44,13 +46,14 @@ abstract class App(appendable: Appendable): Element(appendable) {
   abstract fun carEditor()
   abstract fun modalBackground()
   fun button(className: String, tabindex: Int,onClick:String, block:App.()->Unit){
-    val button = TagElement(appendable,"button").appendStart(
-      StringBuilder()
-        .append(helper.classNameAttr(className))
-        .append(helper.tabIndexAttr(tabindex))
-        .append(helper.onClickAttr(onClick))
-        .toString()
-    )
+    attributesBuilder.builder.clear()
+    attributesBuilder
+      .classNameAttr(className)
+      .tabIndexAttr(tabindex)
+      .onClickAttr(onClick)
+
+    val button = TagElement(appendable,"button")
+      .appendStart(attributesBuilder.builder.toString())
     this.block()
     button.appendEnd()
   }

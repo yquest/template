@@ -6,7 +6,9 @@ abstract class NavBar(appendable: Appendable) : Element(appendable) {
   companion object{
     fun render(navBar:NavBar){
       fun navBar(className: String, block: NavBar.() -> Unit) {
-        navBar.root.appendStart(navBar.helper.classNameAttr(className))
+        navBar.attributesBuilder.builder.clear()
+        navBar.attributesBuilder.classNameAttr(className)
+        navBar.root.appendStart(navBar.attributesBuilder.builder.toString())
         navBar.block()
         navBar.root.appendEnd()
       }
@@ -34,18 +36,20 @@ abstract class NavBar(appendable: Appendable) : Element(appendable) {
     }
   }
 
-  abstract val helper:Helper
+  abstract val attributesBuilder:AttributesBuilder
   abstract val root:TagElement
   fun i(className: String){
+    attributesBuilder.builder.clear()
+    attributesBuilder.classNameAttr(className)
     TagElement(appendable,"i")
-      .appendStart(helper.classNameAttr(className))
+      .appendStart(attributesBuilder.builder.toString())
       .appendEnd()
   }
   fun h5(className: String, onClick: String, block: NavBar.() -> Unit){
     val h5 = TagElement(appendable,"h5").appendStart(
       StringBuilder()
-        .append(helper.classNameAttr(className))
-        .append(helper.onClickAttr(onClick))
+        .append(attributesBuilder.classNameAttr(className))
+        .append(attributesBuilder.onClickAttr(onClick))
         .toString()
     )
     this.block()
@@ -56,8 +60,8 @@ abstract class NavBar(appendable: Appendable) : Element(appendable) {
   fun a(className: String? = null, onClick: String, block: NavBar.() -> Unit){
     val a = TagElement(appendable,"a").appendStart(
       StringBuilder()
-        .append(helper.classNameEval(className))
-        .append(helper.onClickAttr(onClick))
+        .append(attributesBuilder.classNameEval(className))
+        .append(attributesBuilder.onClickAttr(onClick))
         .toString()
     )
     this.block()

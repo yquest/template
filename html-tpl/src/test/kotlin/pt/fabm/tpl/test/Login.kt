@@ -6,9 +6,11 @@ abstract class Login(appendable: Appendable) : Element(appendable) {
     fun render(loginCreator: () -> Login) {
       fun login(className: String, block: Login.() -> Unit) {
         val loginElement = loginCreator()
-        loginElement.start(className)
+        loginElement.attributesBuilder.builder.clear()
+        loginElement.attributesBuilder.classNameAttr(className)
+        loginElement.root.appendStart(loginElement.attributesBuilder.builder.toString())
         loginElement.block()
-        loginElement.end()
+        loginElement.root.appendEnd()
       }
 
       login(className = "container app") {
@@ -38,17 +40,39 @@ abstract class Login(appendable: Appendable) : Element(appendable) {
     }
   }
 
-  protected val root = TagElement(appendable, "div")
-  abstract fun start(className: String)
-  abstract fun end()
+  internal val root = TagElement(appendable, "div")
+  abstract val attributesBuilder: AttributesBuilder
   abstract fun modal()
   abstract fun navbar()
   abstract fun notifications()
   abstract fun appInput(label: String, tabIndex: Int, type: String = "TEXT")
-  abstract fun a(onClick: String, block: Login.() -> Unit)
-  abstract fun div(className: String? = null, block: Login.() -> Unit)
+  fun a(onClick: String, block: Login.() -> Unit){
+    attributesBuilder.builder.clear()
+    attributesBuilder.onClickAttr(onClick)
+    val a = TagElement(appendable,"a")
+      .appendStart(attributesBuilder.builder.toString())
+    this.block()
+    a.appendEnd()
+  }
+  fun div(className: String? = null, block: Login.() -> Unit){
+    attributesBuilder.builder.clear()
+    attributesBuilder.classNameEval(className)
+    val a = TagElement(appendable,"a")
+      .appendStart(attributesBuilder.builder.toString())
+    this.block()
+    a.appendEnd()
+  }
+  fun button(className: String, tabIndex: Int, block: Login.() -> Unit){
+    attributesBuilder.builder.clear()
+    attributesBuilder
+      .classNameAttr(className)
+      .tabIndexAttr(tabIndex)
+    val button = TagElement(appendable,"button")
+      .appendStart(attributesBuilder.builder.toString())
+    this.block()
+    button.appendEnd()
+  }
   abstract fun form(onSubmit: String, block: Login.() -> Unit)
-  abstract fun button(className: String, tabIndex: Int, block: Login.() -> Unit)
   abstract fun showIfErrorForm(block: Login.() -> Unit)
   abstract fun modalBackground()
   abstract fun clientText(text: String)

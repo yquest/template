@@ -44,24 +44,27 @@ abstract class CarView(appendable: Appendable) : Element(appendable) {
   }
 
   internal val root = TagElement(appendable, "tr")
-  abstract val helper:Helper
+  abstract val attributesBuilder:AttributesBuilder
   abstract fun start()
   abstract fun end()
   abstract fun showIfAuthenticated(block: CarView.() -> Unit)
   abstract fun showIfBlockedRemove(block: CarView.() -> Unit)
   abstract fun showIfBlockedNotRemove(block: CarView.() -> Unit)
   fun i(className: String){
+    attributesBuilder.builder.clear()
+    attributesBuilder.classNameAttr(className)
     TagElement(appendable,"i")
-      .appendStart(helper.classNameAttr(className))
+      .appendStart(attributesBuilder.toString())
       .appendEnd()
   }
   fun a(className: String, onClick: String? = null, block: CarView.() -> Unit){
-    val a=TagElement(appendable, "a").appendStart(
-      StringBuilder()
-        .append(helper.classNameAttr(className))
-        .append(helper.onClickEval(onClick))
-        .toString()
-    )
+    attributesBuilder.builder.clear()
+    attributesBuilder
+      .classNameAttr(className)
+      .onClickEval(onClick)
+
+    val a=TagElement(appendable, "a")
+      .appendStart(attributesBuilder.builder.toString())
     this.block()
     a.appendEnd()
   }

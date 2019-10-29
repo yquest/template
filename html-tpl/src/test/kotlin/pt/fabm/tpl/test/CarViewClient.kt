@@ -1,7 +1,7 @@
 package pt.fabm.tpl.test
 
 class CarViewClient(appendable: Appendable) : CarView(appendable) {
-  override val helper: Helper = HelperClient()
+  override val attributesBuilder: AttributesBuilder = AttributesBuilderClient()
 
   override fun start() {
     root.appendStart(" className={props.classes}")

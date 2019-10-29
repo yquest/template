@@ -19,7 +19,9 @@ abstract class AppInput(appendable: Appendable) : Element(appendable) {
     ) {
       fun appInput(className: String, block: AppInput.() -> Unit) {
         val appInput = appInputCreator()
-        appInput.root.appendStart(appInput.helper.classNameAttr(className))
+        appInput.attributesBuilder.builder.clear()
+        appInput.attributesBuilder.classNameAttr(className)
+        appInput.root.appendStart(appInput.attributesBuilder.toString())
         appInput.block()
         appInput.root.appendEnd()
       }
@@ -37,7 +39,7 @@ abstract class AppInput(appendable: Appendable) : Element(appendable) {
   }
 
   internal val root = TagElement(appendable, "div")
-  abstract val helper:Helper
+  abstract val attributesBuilder:AttributesBuilder
   fun typeHelper(type:Type):String = type.label
   fun valueHelper(value:String):String = """ value="${value}""""
   fun placeHolderEval(value: String?) = if(value == null) "" else """ placeholder="$value""""
@@ -54,7 +56,7 @@ abstract class AppInput(appendable: Appendable) : Element(appendable) {
   ){
     TagElement(appendable,"input").appendStart(
       StringBuilder()
-        .append(helper.tabIndexEval(tabIndex))
+        .append(attributesBuilder.tabIndexEval(tabIndex))
         .append(placeHolderEval(placeHolder))
         .append(typeHelper(type))
         .append(valueHelper(value))
