@@ -1,6 +1,8 @@
 package pt.fabm.tpl.test
 
 class CarViewClient(appendable: Appendable) : CarView(appendable) {
+  override val helper: Helper = HelperClient()
+
   override fun start() {
     root.appendStart(" className={props.classes}")
   }
@@ -27,22 +29,4 @@ class CarViewClient(appendable: Appendable) : CarView(appendable) {
     appendable.append(")}")
   }
 
-  override fun i(className: String) {
-    val i = TagElement(appendable, "i")
-    i.appendStart(""" className="$className"""").appendEnd()
-  }
-
-  override fun a(className: String, onClick: String?, block: CarView.() -> Unit) {
-    val a = TagElement(appendable, "a")
-    a.appendStart(""" href="" className="$className" onClick={$onClick}""")
-    block()
-    a.appendEnd()
-  }
-
-  override fun td(block: CarView.() -> Unit) {
-    val td = TagElement(appendable, "td")
-    td.appendStart()
-    block()
-    td.appendEnd()
-  }
 }

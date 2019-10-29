@@ -7,15 +7,14 @@ class RenderTestElements {
 
   @Test
   fun testLogin(){
-    Login.render { LoginServer(System.out,false) }
+    Login.render { LoginClient(System.out) }
   }
-
 
   @Test
   fun testAppInput(){
     AppInput.render(
       label = "myLabel",
-      type = "text",
+      type = AppInput.Type.TEXT,
       value = "value",
       appInputCreator = {AppInputServer(System.out)}
     )
@@ -59,7 +58,6 @@ class RenderTestElements {
 
     CarList.render(carListCreator)
   }
-
 
   @Test
   fun testCarView() {

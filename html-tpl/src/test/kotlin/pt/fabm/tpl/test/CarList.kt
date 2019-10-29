@@ -37,7 +37,7 @@ abstract class CarList(appendable: Appendable) : Element(appendable) {
   private fun appendElement(attributes:String="",name:String,block:CarList.()->Unit){
     val element = TagElement(appendable,name)
     element.appendStart(attributes)
-    block()
+    this.block()
     element.appendEnd()
   }
 

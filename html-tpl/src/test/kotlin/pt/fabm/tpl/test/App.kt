@@ -1,15 +1,15 @@
 package pt.fabm.tpl.test
 
 import java.lang.Appendable
+import java.lang.StringBuilder
 
 abstract class App(appendable: Appendable): Element(appendable) {
   companion object{
-    fun render(appCreator:()->App){
+    internal fun render(app:App){
       fun app(className: String, block: App.() -> Unit) {
-        val appClient = appCreator()
-        appClient.start(className)
-        appClient.block()
-        appClient.end()
+        app.root.appendStart(app.helper.classNameAttr(className))
+        app.block()
+        app.root.appendEnd()
       }
 
       app(className = "container app") {
@@ -28,10 +28,13 @@ abstract class App(appendable: Appendable): Element(appendable) {
         modalBackground()
       }
     }
+    fun render(appCreator:()->App){
+      render(appCreator())
+    }
   }
 
-  abstract fun start(className: String)
-  abstract fun end()
+  internal val root = TagElement(appendable,"div")
+  abstract val helper:Helper
   abstract fun modal()
   abstract fun navBar()
   abstract fun notifications()
@@ -40,5 +43,15 @@ abstract class App(appendable: Appendable): Element(appendable) {
   abstract fun showIfEditableAndAuthenticated(block:App.()->Unit)
   abstract fun carEditor()
   abstract fun modalBackground()
-  abstract fun button(className: String, tabindex: Int,onClick:String, block:TagElement.()->Unit)
+  fun button(className: String, tabindex: Int,onClick:String, block:App.()->Unit){
+    val button = TagElement(appendable,"button").appendStart(
+      StringBuilder()
+        .append(helper.classNameAttr(className))
+        .append(helper.tabIndexAttr(tabindex))
+        .append(helper.onClickAttr(onClick))
+        .toString()
+    )
+    this.block()
+    button.appendEnd()
+  }
 }

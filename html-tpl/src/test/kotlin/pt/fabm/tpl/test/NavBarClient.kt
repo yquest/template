@@ -1,9 +1,11 @@
 package pt.fabm.tpl.test
 
-class NavBarClient(appendable: Appendable) : NavBar(appendable) {
-  private val root = TagElement(appendable, "div")
-  override fun start(className: String) {
-    appendable.append("""
+class NavBarClient(appendable: Appendable) : NavBar(appendable),ClientElement {
+  override val helper: Helper = HelperClient()
+  override val root = TagElement(appendable, "div")
+
+  override fun renderImplementation(){
+    appendBody("""
       import * as React from "react";
       import { stores } from "../../stores/Stores";
       import { observer } from "mobx-react";
@@ -11,24 +13,8 @@ class NavBarClient(appendable: Appendable) : NavBar(appendable) {
       
       export const Navbar = observer((props: navbar.Props) => (
     """.trimIndent())
-    root.appendStart(""" className="$className"""")
-  }
-
-  override fun end() {
-    root.appendEnd()
-    appendable.append("));");
-  }
-
-  override fun i(className: String) {
-    val i = TagElement(appendable, "i")
-    i.appendStart(""" class="$className"""").appendEnd()
-  }
-
-  override fun h5(className: String, onClick: String, block: TagElement.() -> Unit) {
-    val h5 = TagElement(appendable, "h5")
-    h5.appendStart(""" className="$className" onClick={$onClick}""")
-    h5.block()
-    h5.appendEnd()
+    render(this)
+    appendBody("));")
   }
 
   override fun showIfAuthenticated(block: NavBar.() -> Unit) {
@@ -41,13 +27,6 @@ class NavBarClient(appendable: Appendable) : NavBar(appendable) {
     appendable.append("""{!stores.user.authenticated && (""")
     block()
     appendable.append(""")}""")
-  }
-
-  override fun a(className: String?, onClick: String, block: TagElement.() -> Unit) {
-    val a = TagElement(appendable, "a")
-    a.appendStart(""" href="" ${if(className==null) "" else """ className="$className"""" } onClick={$onClick}""")
-    a.block()
-    a.appendEnd()
   }
 
 }

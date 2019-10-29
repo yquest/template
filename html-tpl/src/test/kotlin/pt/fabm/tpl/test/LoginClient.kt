@@ -1,10 +1,13 @@
 package pt.fabm.tpl.test
 
-class LoginServer(appendable: Appendable, private val auth: Boolean) : Login(appendable) {
-  private val helper = HelperServer()
-  override fun asClientText(text: String): String? = null
+import java.lang.StringBuilder
+
+class LoginClient(appendable: Appendable) : Login(appendable) {
+  private val helper = HelperClient()
+
+  override fun asClientText(text: String): String? = text
   override fun start(className: String) {
-    root.appendStart(""" class="$className"""")
+    root.appendStart(helper.classNameEval(className))
   }
 
   override fun end() {
@@ -12,29 +15,26 @@ class LoginServer(appendable: Appendable, private val auth: Boolean) : Login(app
   }
 
   override fun modal() {
-    //ignore
+    TagElement(appendable,"Modal").appendStart().appendEnd()
   }
 
   override fun navbar() {
-    NavBar.render { NavBarServer(appendable, auth) }
+    appendBody("{navbar.createComponent()}")
   }
 
   override fun notifications() {
-    //ignore
+    TagElement(appendable,"Notifications").appendStart().appendEnd()
   }
 
   override fun appInput(label: String, tabIndex: Int, type: String) {
-    val appInput = AppInputServer(appendable)
-    appInput.label { +label }
-
     when (label) {
-      "Login" -> appInput.input(type = AppInput.Type.TEXT, value = "", tabIndex = 1)
-      "Password" -> appInput.input(type = AppInput.Type.PASSWORD, value = "", tabIndex = 2)
+      "Login" -> appendBody("{React.createElement(AppInput, { ...props.login })}")
+      "Password" -> appendBody("{React.createElement(AppInput, { ...props.password })}")
     }
   }
 
   override fun clientText(text: String) {
-    //ignore
+    appendBody(text)
   }
 
   override fun a(onClick: String, block: Login.() -> Unit) {
@@ -46,8 +46,7 @@ class LoginServer(appendable: Appendable, private val auth: Boolean) : Login(app
 
   override fun div(className: String?, block: Login.() -> Unit) {
     val a = TagElement(appendable,"div")
-    fun checkedClassName():String = if(className == null) "" else """ class="$className""""
-    a.appendStart(checkedClassName())
+    a.appendStart(helper.classNameEval(className))
     block()
     a.appendEnd()
   }
@@ -61,17 +60,24 @@ class LoginServer(appendable: Appendable, private val auth: Boolean) : Login(app
 
   override fun button(className: String, tabIndex: Int, block: Login.() -> Unit) {
     val button = TagElement(appendable,"button")
-    button.appendStart(""" class="$className" tabindex="$tabIndex"""")
+    button.appendStart(
+      StringBuilder()
+        .append(helper.classNameAttr(className))
+        .append(helper.tabIndexAttr(tabIndex))
+        .toString()
+    )
     block()
     button.appendEnd()
   }
 
   override fun showIfErrorForm(block: Login.() -> Unit) {
-    //ignore
+    appendBody("{props.showErrorForm && (")
+    block()
+    appendBody(")}")
   }
 
   override fun modalBackground() {
-    //ignore
+    appendBody("""{uiStore.modelInDOM && <div className="modal-backdrop fade show"></div>}""")
   }
 
 }

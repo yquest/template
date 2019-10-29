@@ -1,22 +1,7 @@
 package pt.fabm.tpl.test
 
 class AppServer(appendable: Appendable, private val auth:Boolean, private val cars:List<CarFields>) : App(appendable) {
-  private val rootDiv = TagElement(appendable, "div")
-  override fun start(className: String) {
-    rootDiv.appendStart(""" class="$className"""")
-  }
-
-  override fun end() {
-    rootDiv.appendEnd()
-  }
-
-  override fun button(className: String, tabindex: Int, onClick: String, block: TagElement.() -> Unit) {
-    val button = TagElement(appendable, "button")
-    button.appendStart(""" class="$className" tabIndex="$tabindex"""")
-    button.block()
-    button.appendEnd()
-  }
-
+  override val helper: Helper = HelperServer()
   override fun modal() {
     //ignore
   }

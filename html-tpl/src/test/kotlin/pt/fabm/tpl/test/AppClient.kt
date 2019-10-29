@@ -1,9 +1,12 @@
 package pt.fabm.tpl.test
 
-class AppClient(appendable: Appendable) : App(appendable) {
-  private val rootDiv = TagElement(appendable, "div")
-  override fun start(className: String) {
-    appendable.append(
+import java.lang.StringBuilder
+
+class AppClient(appendable: Appendable) : App(appendable), ClientElement {
+  override val helper: Helper = HelperClient()
+
+  override fun renderImplementation(){
+    appendBody(
       """
       import { observer } from "mobx-react";
       import * as React from "react";
@@ -18,17 +21,19 @@ class AppClient(appendable: Appendable) : App(appendable) {
 
       export const App = observer((props: app.Props) => (""".trimIndent()
     )
-    rootDiv.appendStart(""" className="$className"""")
-  }
-
-  override fun end() {
-    rootDiv.appendEnd()
-    appendable.append("));")
+    render(this)
+    appendBody("));")
   }
 
   override fun button(className: String, tabindex: Int, onClick: String, block: TagElement.() -> Unit) {
     val button = TagElement(appendable, "button")
-    button.appendStart(""" className="$className" onClick={$onClick} tabIndex={$tabindex}""")
+    button.appendStart(
+      StringBuilder()
+        .append(helper.classNameAttr(className))
+        .append(helper.onClickAttr(onClick))
+        .append(helper.tabIndexAttr(tabindex))
+        .toString()
+    )
     button.block()
     button.appendEnd()
   }

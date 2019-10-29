@@ -1,5 +1,7 @@
 package pt.fabm.tpl.test
 
+import java.lang.StringBuilder
+
 abstract class AppInput(appendable: Appendable) : Element(appendable) {
   enum class Type(val label: String) {
     TEXT("text"),
@@ -9,7 +11,7 @@ abstract class AppInput(appendable: Appendable) : Element(appendable) {
   companion object {
     fun render(
       label: String,
-      type: String,
+      type: Type,
       value: String,
       tabIndex: Int? = null,
       placeHolder: String? = null,
@@ -17,9 +19,9 @@ abstract class AppInput(appendable: Appendable) : Element(appendable) {
     ) {
       fun appInput(className: String, block: AppInput.() -> Unit) {
         val appInput = appInputCreator()
-        appInput.start(className)
+        appInput.root.appendStart(appInput.helper.classNameAttr(className))
         appInput.block()
-        appInput.end()
+        appInput.root.appendEnd()
       }
 
       appInput(className = "form-group") {
@@ -34,15 +36,30 @@ abstract class AppInput(appendable: Appendable) : Element(appendable) {
     }
   }
 
-  protected val root = TagElement(appendable, "div")
-  abstract fun start(className: String)
-  abstract fun end()
-  abstract fun label(block: AppInput.() -> Unit)
-  abstract fun input(
-    type: String,
+  internal val root = TagElement(appendable, "div")
+  abstract val helper:Helper
+  fun typeHelper(type:Type):String = type.label
+  fun valueHelper(value:String):String = """ value="${value}""""
+  fun placeHolderEval(value: String?) = if(value == null) "" else """ placeholder="$value""""
+  internal fun label(block: AppInput.() -> Unit){
+    val label = TagElement(appendable,"label").appendStart()
+    this.block()
+    label.appendEnd()
+  }
+  internal fun input(
+    type: Type,
     tabIndex: Int? = null,
     placeHolder: String? = null,
     value: String
-  )
+  ){
+    TagElement(appendable,"input").appendStart(
+      StringBuilder()
+        .append(helper.tabIndexEval(tabIndex))
+        .append(placeHolderEval(placeHolder))
+        .append(typeHelper(type))
+        .append(valueHelper(value))
+        .toString()
+    ).appendEnd()
+  }
 
 }
