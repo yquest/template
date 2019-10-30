@@ -49,6 +49,7 @@ abstract class Login(appendable: Appendable) : Element(appendable) {
   abstract fun literalClassName(value:String):String
   fun a(onClick: String, block: Login.() -> Unit) {
     attributesBuilder.builder.clear()
+    attributesBuilder.emptyHref()
     attributesBuilder.onClickAttr(onClick)
     val a = TagElement(appendable, "a")
       .appendStart(attributesBuilder.builder.toString())
