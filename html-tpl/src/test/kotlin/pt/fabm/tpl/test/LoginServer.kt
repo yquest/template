@@ -1,8 +1,10 @@
 package pt.fabm.tpl.test
 
 class LoginServer(appendable: Appendable, private val auth: Boolean) : Login(appendable) {
+  //ignore
   override val attributesBuilder: AttributesBuilder = AttributesBuilderServer()
   override fun asClientText(text: String): String? = null
+  override fun literalClassName(value: String): String = ""
 
   override fun modal() {
     //ignore
@@ -31,7 +33,7 @@ class LoginServer(appendable: Appendable, private val auth: Boolean) : Login(app
   }
 
   override fun form(onSubmit: String, block: Login.() -> Unit) {
-    val form = TagElement(appendable,"form")
+    val form = TagElement(appendable, "form")
     form.appendStart()
     block()
     form.appendEnd()

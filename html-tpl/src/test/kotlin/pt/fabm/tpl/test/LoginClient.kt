@@ -1,7 +1,7 @@
 package pt.fabm.tpl.test
 
 class LoginClient(appendable: Appendable) : Login(appendable) {
-
+  override fun literalClassName(value: String): String = " className={$value}"
   override val attributesBuilder = AttributesBuilderClient()
   override fun asClientText(text: String): String? = text
 
@@ -30,7 +30,7 @@ class LoginClient(appendable: Appendable) : Login(appendable) {
 
   override fun form(onSubmit: String, block: Login.() -> Unit) {
     val form = TagElement(appendable,"form")
-    form.appendStart()
+    form.appendStart(" onSubmit={props.submitForm}")
     block()
     form.appendEnd()
   }
