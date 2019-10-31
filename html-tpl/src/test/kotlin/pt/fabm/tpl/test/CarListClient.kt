@@ -1,23 +1,43 @@
 package pt.fabm.tpl.test
 
-class CarListClient(appendable: Appendable) : CarList(appendable) {
-  private val root = TagElement(appendable,"div")
-  override fun colspanTr(colspan: Int): String = """colSpan={$colspan}"""
+class CarListClient(appendable: Appendable) : CarList(appendable), ClientElement {
+  override fun renderImplementation() {
+    appendable.append("""
+    import * as React from "react";
+    import { observer } from "mobx-react";
+    import { carView } from "../app/controllers/CarViewController";
+    import { stores } from "../../stores/Stores";
+    """.trimIndent())
+    render{this}
+    appendable.append("""
+    export const CarList = observer(() =>
+      stores.carList.cars.length === 0 ? noContent() : content()
+    );
+    """.trimIndent())
+  }
+
+  override val attributesBuilder: AttributesBuilder = AttributesBuilderClient()
+
+  override fun ifHasCars(block: CarList.() -> Unit) {
+    appendable.append("const content = () => (")
+    block()
+    appendable.append(");")
+  }
+
+  override fun ifHasNoCars(block: CarList.() -> Unit) {
+    appendable.append("const noContent = () => (")
+    block()
+    appendable.append(");")
+  }
+
+  override fun colspanTr(colspan: Int): String = """ colSpan={$colspan}"""
   override fun carLines() {
     appendable.append("{carView.carViewList()}")
   }
 
-  override fun start(className:String) {
-    root.appendStart(""" className="$className"""")
-  }
-
-  override fun end() {
-    root.appendEnd()
-  }
-
-  override fun showIfAuthenticated(block: TagElement.() -> Unit) {
+  override fun showIfAuthenticated(block: CarList.() -> Unit) {
     appendable.append("{stores.user.authenticated && (")
-    root.block()
+    block()
     appendable.append(")}")
   }
 

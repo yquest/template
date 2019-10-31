@@ -1,24 +1,23 @@
 package pt.fabm.tpl.test
 
-class CarListServer(appendable: Appendable, private val auth:Boolean, private val cars:List<CarFields>) : CarList(appendable) {
-  private val root = TagElement(appendable,"div")
-  override fun colspanTr(colspan: Int): String = """colspan="$colspan""""
+class CarListServer(appendable: Appendable, private val auth: Boolean, private val cars: List<CarFields>) :
+  CarList(appendable) {
+  override val attributesBuilder: AttributesBuilder = AttributesBuilderServer()
+  override fun ifHasCars(block: CarList.() -> Unit) {
+    if(cars.isNotEmpty()) block()
+  }
+
+  override fun ifHasNoCars(block: CarList.() -> Unit) {
+    if(cars.isEmpty()) block()
+  }
+
+  override fun colspanTr(colspan: Int): String = """ colspan="$colspan""""
   override fun carLines() {
-    cars.forEach {
-      CarView.render({CarViewServer(auth, appendable)},cars)
-    }
+    CarView.render({ CarViewServer(auth, appendable) }, cars)
   }
 
-  override fun start(className:String) {
-    root.appendStart(""" class="$className"""")
-  }
-
-  override fun end() {
-    root.appendEnd()
-  }
-
-  override fun showIfAuthenticated(block: TagElement.() -> Unit) {
-    if(auth) root.block()
+  override fun showIfAuthenticated(block: CarList.() -> Unit) {
+    if (auth) block()
   }
 
 }

@@ -1,7 +1,6 @@
 package pt.fabm.tpl.test
 
 import java.lang.Appendable
-import java.lang.StringBuilder
 
 abstract class App(appendable: Appendable): Element(appendable) {
   companion object{

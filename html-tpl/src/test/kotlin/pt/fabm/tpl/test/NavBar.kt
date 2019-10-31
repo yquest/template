@@ -46,24 +46,26 @@ abstract class NavBar(appendable: Appendable) : Element(appendable) {
       .appendEnd()
   }
   fun h5(className: String, onClick: String, block: NavBar.() -> Unit){
-    val h5 = TagElement(appendable,"h5").appendStart(
-      StringBuilder()
-        .append(attributesBuilder.classNameAttr(className))
-        .append(attributesBuilder.onClickAttr(onClick))
-        .toString()
-    )
+    attributesBuilder.builder.clear()
+    attributesBuilder
+      .classNameAttr(className)
+      .onClickAttr(onClick)
+
+    val h5 = TagElement(appendable,"h5")
+      .appendStart(attributesBuilder.builder.toString())
     this.block()
     h5.appendEnd()
   }
   abstract fun showIfAuthenticated(block: NavBar.() -> Unit)
   abstract fun showIfNotAuthenticated(block: NavBar.() -> Unit)
   fun a(className: String? = null, onClick: String, block: NavBar.() -> Unit){
-    val a = TagElement(appendable,"a").appendStart(
-      StringBuilder()
-        .append(attributesBuilder.classNameEval(className))
-        .append(attributesBuilder.onClickAttr(onClick))
-        .toString()
-    )
+    attributesBuilder.builder.clear()
+    attributesBuilder
+      .classNameEval(className)
+      .onClickAttr(onClick)
+
+    val a = TagElement(appendable,"a")
+      .appendStart(attributesBuilder.builder.toString())
     this.block()
     a.appendEnd()
   }

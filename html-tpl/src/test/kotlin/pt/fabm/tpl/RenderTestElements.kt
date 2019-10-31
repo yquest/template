@@ -5,35 +5,38 @@ import pt.fabm.tpl.test.*
 
 class RenderTestElements {
 
+  val carListServer = listOf(1, 2, 3, 4).map {
+    CarFields(
+      maker = "maker server $it",
+      model = "model server $it",
+      matDate = "maturity date server $it",
+      price = "price server $it"
+    )
+  }
+
   @Test
-  fun testLogin(){
+  fun testLoginClient() {
     Login.render { LoginClient(System.out) }
   }
 
   @Test
-  fun testAppInput(){
+  fun testLoginServer() {
+    Login.render { LoginServer(System.out,true) }
+  }
+
+  @Test
+  fun testAppInput() {
     AppInput.render(
       label = "myLabel",
       type = AppInput.Type.TEXT,
       value = "value",
-      appInputCreator = {AppInputServer(System.out)}
+      appInputCreator = { AppInputServer(System.out) }
     )
   }
 
   @Test
   fun testApp() {
-    App.render {
-      AppServer(
-        System.out, false, listOf(
-          CarFields(
-            maker = "{props.maker}",
-            model = "{props.model}",
-            matDate = "{props.maturityDate}",
-            price = "{props.price}"
-          )
-        )
-      )
-    }
+    App.render { AppServer(System.out, false, carListServer) }
   }
 
   @Test
@@ -42,40 +45,22 @@ class RenderTestElements {
   }
 
   @Test
-  fun testCarList() {
-    val carListCreator = {
-      CarListServer(
-        System.out, true, listOf(
-          CarFields(
-            maker = "{props.maker}",
-            model = "{props.model}",
-            matDate = "{props.maturityDate}",
-            price = "{props.price}"
-          )
-        )
-      )
-    }
+  fun testCarListServer() {
+    CarList.render { CarListServer(System.out, true, carListServer) }
+  }
 
-    CarList.render(carListCreator)
+  @Test
+  fun testCarListClient() {
+    CarList.render { CarListClient(System.out) }
+  }
+
+  @Test
+  fun testCarListClientImplementation() {
+    CarListClient(System.out).renderImplementation()
   }
 
   @Test
   fun testCarView() {
-    CarView.render(
-      { CarViewServer(true, System.out) }, listOf(
-        CarFields(
-          maker = "{props.maker}",
-          model = "{props.model}",
-          matDate = "{props.maturityDate}",
-          price = "{props.price}"
-        ),
-        CarFields(
-          maker = "{props.maker1}",
-          model = "{props.model1}",
-          matDate = "{props.maturityDate1}",
-          price = "{props.price1}"
-        )
-      )
-    )
+    CarView.render({ CarViewServer(true, System.out) }, carListServer)
   }
 }

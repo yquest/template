@@ -1,7 +1,5 @@
 package pt.fabm.tpl.test
 
-import java.lang.StringBuilder
-
 abstract class AppInput(appendable: Appendable) : Element(appendable) {
   enum class Type(val label: String) {
     TEXT("text"),
@@ -40,8 +38,8 @@ abstract class AppInput(appendable: Appendable) : Element(appendable) {
 
   internal val root = TagElement(appendable, "div")
   abstract val attributesBuilder:AttributesBuilder
-  fun typeHelper(type:Type):String = type.label
-  fun valueHelper(value:String):String = """ value="${value}""""
+  fun typeHelper(type:Type):String = """ type="${type.label}""""
+  fun valueHelper(value:String):String = """ value="$value""""
   fun placeHolderEval(value: String?) = if(value == null) "" else """ placeholder="$value""""
   internal fun label(block: AppInput.() -> Unit){
     val label = TagElement(appendable,"label").appendStart()
@@ -54,14 +52,15 @@ abstract class AppInput(appendable: Appendable) : Element(appendable) {
     placeHolder: String? = null,
     value: String
   ){
-    TagElement(appendable,"input").appendStart(
-      StringBuilder()
-        .append(attributesBuilder.tabIndexEval(tabIndex))
-        .append(placeHolderEval(placeHolder))
-        .append(typeHelper(type))
-        .append(valueHelper(value))
-        .toString()
-    ).appendEnd()
+    attributesBuilder.builder.clear()
+    attributesBuilder.tabIndexEval(tabIndex)
+    attributesBuilder.builder.append(placeHolderEval(placeHolder))
+    attributesBuilder.builder.append(typeHelper(type))
+    attributesBuilder.builder.append(valueHelper(value))
+
+    TagElement(appendable,"input")
+      .appendStart(attributesBuilder.builder.toString())
+      .appendEnd()
   }
 
 }

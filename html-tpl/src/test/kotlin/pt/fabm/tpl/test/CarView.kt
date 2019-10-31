@@ -1,7 +1,5 @@
 package pt.fabm.tpl.test
 
-import java.lang.StringBuilder
-
 abstract class CarView(appendable: Appendable) : Element(appendable) {
   companion object {
     fun render(carViewCreator: () -> CarView, cars: List<CarFields>) {
@@ -54,7 +52,7 @@ abstract class CarView(appendable: Appendable) : Element(appendable) {
     attributesBuilder.builder.clear()
     attributesBuilder.classNameAttr(className)
     TagElement(appendable,"i")
-      .appendStart(attributesBuilder.toString())
+      .appendStart(attributesBuilder.builder.toString())
       .appendEnd()
   }
   fun a(className: String, onClick: String? = null, block: CarView.() -> Unit){
