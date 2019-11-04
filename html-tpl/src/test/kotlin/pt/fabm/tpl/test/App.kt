@@ -1,59 +1,57 @@
 package pt.fabm.tpl.test
 
-import java.lang.Appendable
+abstract class App(appendable: Appendable) : Element(appendable) {
 
-abstract class App(appendable: Appendable): Element(appendable) {
-  companion object{
-    internal fun render(app:App){
-      fun app(className: String, block: App.() -> Unit) {
-        app.attributesBuilder.builder.clear()
-        app.attributesBuilder.classNameAttr(className)
-        app.root.appendStart(app.attributesBuilder.builder.toString())
-        app.block()
-        app.root.appendEnd()
-      }
-
-      app(className = "container app") {
-        modal()
-        navBar()
-        notifications()
-        carList()
-        showIfAuthenticated {
-          button(className = "btn btn-primary form-group", tabindex = 1, onClick = "props.createCarClick") {
-            +"Create car"
-          }
+  fun render() {
+    div(className = "container app") {
+      modal()
+      navBar()
+      notifications()
+      carList()
+      showIfAuthenticated {
+        button(className = "btn btn-primary form-group", tabindex = 1, onClick = "props.createCarClick") {
+          +"Create car"
         }
-        showIfEditableAndAuthenticated {
-          carEditor()
-        }
-        modalBackground()
       }
-    }
-    fun render(appCreator:()->App){
-      render(appCreator())
+      showIfEditableAndAuthenticated {
+        carEditor()
+      }
+      modalBackground()
     }
   }
 
-  internal val root = TagElement(appendable,"div")
-  abstract val attributesBuilder:AttributesBuilder
+  private fun appendElement(attributes: String = "", name: String, block: App.() -> Unit) {
+    val element = TagElement(appendable, name)
+    element.appendStart(attributes)
+    this.block()
+    element.appendEnd()
+  }
+
+  abstract val attributesBuilder: AttributesBuilder
   abstract fun modal()
   abstract fun navBar()
   abstract fun notifications()
   abstract fun carList()
-  abstract fun showIfAuthenticated(block:App.()->Unit)
-  abstract fun showIfEditableAndAuthenticated(block:App.()->Unit)
+  abstract fun showIfAuthenticated(block: App.() -> Unit)
+  abstract fun showIfEditableAndAuthenticated(block: App.() -> Unit)
   abstract fun carEditor()
   abstract fun modalBackground()
-  fun button(className: String, tabindex: Int,onClick:String, block:App.()->Unit){
-    attributesBuilder.builder.clear()
-    attributesBuilder
+  fun div(className: String, block: App.() -> Unit) = appendElement(
+    attributes = attributesBuilder
       .classNameAttr(className)
-      .tabIndexAttr(tabindex)
-      .onClickAttr(onClick)
+      .build(),
+    name = "div",
+    block = block
+  )
 
-    val button = TagElement(appendable,"button")
-      .appendStart(attributesBuilder.builder.toString())
-    this.block()
-    button.appendEnd()
-  }
+  fun button(className: String, tabindex: Int, onClick: String, block: App.() -> Unit) =
+    appendElement(
+      attributes = attributesBuilder
+        .classNameAttr(className)
+        .tabIndexAttr(tabindex)
+        .onClickAttr(onClick)
+        .build(),
+      name = "button",
+      block = block
+    )
 }

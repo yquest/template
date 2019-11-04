@@ -2,7 +2,6 @@ package pt.fabm.tpl.test
 
 class NavBarClient(appendable: Appendable) : NavBar(appendable),ClientElement {
   override val attributesBuilder: AttributesBuilder = AttributesBuilderClient()
-  override val root = TagElement(appendable, "div")
 
   override fun renderImplementation(){
     appendBody("""
@@ -13,7 +12,7 @@ class NavBarClient(appendable: Appendable) : NavBar(appendable),ClientElement {
       
       export const Navbar = observer((props: navbar.Props) => (
     """.trimIndent())
-    render(this)
+    render()
     appendBody("));")
   }
 

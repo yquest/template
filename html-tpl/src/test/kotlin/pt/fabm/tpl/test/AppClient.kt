@@ -21,7 +21,7 @@ class AppClient(appendable: Appendable) : App(appendable), ClientElement {
 
       export const App = observer((props: app.Props) => (""".trimIndent()
     )
-    render(this)
+    render()
     appendBody("));")
   }
 

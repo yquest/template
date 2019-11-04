@@ -6,61 +6,63 @@ abstract class AppInput(appendable: Appendable) : Element(appendable) {
     PASSWORD("password")
   }
 
-  companion object {
-    fun render(
-      label: String,
-      type: Type,
-      value: String,
-      tabIndex: Int? = null,
-      placeHolder: String? = null,
-      appInputCreator: () -> AppInput
-    ) {
-      fun appInput(className: String, block: AppInput.() -> Unit) {
-        val appInput = appInputCreator()
-        appInput.attributesBuilder.builder.clear()
-        appInput.attributesBuilder.classNameAttr(className)
-        appInput.root.appendStart(appInput.attributesBuilder.toString())
-        appInput.block()
-        appInput.root.appendEnd()
-      }
+  fun render(
+    label: String,
+    type: Type,
+    value: String,
+    tabIndex: Int? = null,
+    placeHolder: String? = null
+  ) {
 
-      appInput(className = "form-group") {
-        label { +label }
-        input(
-          type = type,
-          tabIndex = tabIndex,
-          placeHolder = placeHolder,
-          value = value
-        )
-      }
+    div(className = "form-group") {
+      label { +label }
+      input(
+        type = type,
+        tabIndex = tabIndex,
+        placeHolder = placeHolder,
+        value = value
+      )
     }
   }
 
-  internal val root = TagElement(appendable, "div")
-  abstract val attributesBuilder:AttributesBuilder
-  fun typeHelper(type:Type):String = """ type="${type.label}""""
-  fun valueHelper(value:String):String = """ value="$value""""
-  fun placeHolderEval(value: String?) = if(value == null) "" else """ placeholder="$value""""
-  internal fun label(block: AppInput.() -> Unit){
-    val label = TagElement(appendable,"label").appendStart()
+  private fun appendElement(attributes: String = "", name: String, block: AppInput.() -> Unit) {
+    val element = TagElement(appendable, name)
+    element.appendStart(attributes)
+    this.block()
+    element.appendEnd()
+  }
+
+  fun div(className: String, block: AppInput.() -> Unit) = appendElement(
+    attributes = attributesBuilder.classNameAttr(className).build(),
+    name = "div",
+    block = block
+  )
+
+  abstract val attributesBuilder: AttributesBuilder
+  fun typeHelper(type: Type): String = """ type="${type.label}""""
+  fun valueHelper(value: String): String = """ value="$value""""
+  fun placeHolderEval(value: String?) = if (value == null) "" else """ placeholder="$value""""
+  internal fun label(block: AppInput.() -> Unit) {
+    val label = TagElement(appendable, "label").appendStart()
     this.block()
     label.appendEnd()
   }
+
   internal fun input(
     type: Type,
     tabIndex: Int? = null,
     placeHolder: String? = null,
     value: String
-  ){
-    attributesBuilder.builder.clear()
-    attributesBuilder.tabIndexEval(tabIndex)
-    attributesBuilder.builder.append(placeHolderEval(placeHolder))
-    attributesBuilder.builder.append(typeHelper(type))
-    attributesBuilder.builder.append(valueHelper(value))
-
-    TagElement(appendable,"input")
-      .appendStart(attributesBuilder.builder.toString())
-      .appendEnd()
+  ) {
+    TagElement(appendable, "input")
+      .appendStart(
+        attributesBuilder
+          .tabIndexEval(tabIndex)
+          .append(placeHolderEval(placeHolder))
+          .append(typeHelper(type))
+          .append(valueHelper(value))
+          .build()
+      ).appendEnd()
   }
 
 }

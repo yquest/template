@@ -13,7 +13,7 @@ class CarListServer(appendable: Appendable, private val auth: Boolean, private v
 
   override fun colspanTr(colspan: Int): String = """ colspan="$colspan""""
   override fun carLines() {
-    CarView.render({ CarViewServer(auth, appendable) }, cars)
+    CarViewServer(auth, appendable).renderServer(cars)
   }
 
   override fun showIfAuthenticated(block: CarList.() -> Unit) {

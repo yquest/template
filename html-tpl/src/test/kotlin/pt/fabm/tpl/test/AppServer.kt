@@ -7,7 +7,7 @@ class AppServer(appendable: Appendable, private val auth:Boolean, private val ca
   }
 
   override fun navBar() {
-    NavBar.render { NavBarServer(appendable, auth) }
+    NavBarServer(appendable, auth).render()
   }
 
   override fun notifications() {
@@ -15,7 +15,7 @@ class AppServer(appendable: Appendable, private val auth:Boolean, private val ca
   }
 
   override fun carList() {
-    CarList.render { CarListServer(appendable, auth, cars) }
+    CarListServer(appendable, auth, cars).render()
   }
 
   override fun showIfAuthenticated(block: App.() -> Unit) {

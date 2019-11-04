@@ -1,10 +1,8 @@
 package pt.fabm.tpl.test
 
-class LoginServer(appendable: Appendable, private val auth: Boolean) : Login(appendable) {
+class RegisterUserServer(appendable: Appendable, private val auth: Boolean) : RegisterUser(appendable) {
   //ignore
   override val attributesBuilder: AttributesBuilder = AttributesBuilderServer()
-  override fun asClientText(text: String): String? = null
-  override fun literalClassName(value: String): String = ""
 
   override fun modal() {
     //ignore
@@ -23,28 +21,22 @@ class LoginServer(appendable: Appendable, private val auth: Boolean) : Login(app
     appInput.label { +label }
 
     when (label) {
-      Fields.LOGIN -> appInput.input(type = AppInput.Type.TEXT, value = "", tabIndex = 1)
+      Fields.USERNAME -> appInput.input(type = AppInput.Type.TEXT, value = "", tabIndex = 1)
       Fields.PASSWORD -> appInput.input(type = AppInput.Type.PASSWORD, value = "", tabIndex = 2)
+      Fields.EMAIL -> appInput.input(type = AppInput.Type.TEXT, value = "", tabIndex = 3)
     }
   }
 
-  override fun clientText(text: String) {
+  override fun modalBackground() {
     //ignore
   }
 
-  override fun form(onSubmit: String, block: Login.() -> Unit) {
+  override fun form(onSubmit: String, block: RegisterUser.() -> Unit) {
     val form = TagElement(appendable, "form")
     form.appendStart()
     block()
     form.appendEnd()
   }
 
-  override fun showIfErrorForm(block: Login.() -> Unit) {
-    //ignore
-  }
-
-  override fun modalBackground() {
-    //ignore
-  }
 
 }

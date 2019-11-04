@@ -7,30 +7,4 @@ import { AppInput } from "./AppInputTpl";
 import { registerPage } from "../app/controllers/RegisterUserController";
 import { navbar } from "../app/controllers/NavbarController";
 
-export const Register = observer((props: registerPage.Props) => {
-  return (
-    <div className="container app">
-      <Modal></Modal>
-      {navbar.createComponent()}
-      <Notifications></Notifications>
-      <div>
-        <div className="row justify-content-sm-center">User register</div>
-        <div className="row justify-content-sm-center">
-          <div className="card col-sm-6 col-lg-4">
-            <div className="card-body">
-              <form onSubmit={props.submitForm}>
-                {React.createElement(AppInput, { ...props.username })}
-                {React.createElement(AppInput, { ...props.password })}
-                {React.createElement(AppInput, { ...props.email })}
-                <button className="btn btn-primary col-sm-12" tabIndex={3}>
-                  Register user
-                </button>
-              </form>
-            </div>
-          </div>
-        </div>
-      </div>
-      {uiStore.modelInDOM && <div className="modal-backdrop fade show"></div>}
-    </div>
-  );
-});
+export const Register = observer((props: registerPage.Props) => ( <div className="container app"><Modal></Modal>{navbar.createComponent()}<Notifications></Notifications><div><div className="row justify-content-sm-center">User Register</div><div className="row justify-content-sm-center"><div className="card col-sm-6 col-lg-4"><div className="card-body"><form onSubmit={props.submitForm}>{React.createElement(AppInput, { ...props.username })}{React.createElement(AppInput, { ...props.password })}{React.createElement(AppInput, { ...props.email })}<button className="btn btn-primary col-sm-12" tabIndex={4}>Register User</button></form></div></div></div></div>{uiStore.modelInDOM && <div className="modal-backdrop fade show"></div>}</div>));

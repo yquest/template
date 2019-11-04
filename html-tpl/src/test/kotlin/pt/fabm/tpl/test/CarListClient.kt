@@ -8,7 +8,7 @@ class CarListClient(appendable: Appendable) : CarList(appendable), ClientElement
     import { carView } from "../app/controllers/CarViewController";
     import { stores } from "../../stores/Stores";
     """.trimIndent())
-    render{this}
+    render()
     appendable.append("""
     export const CarList = observer(() =>
       stores.carList.cars.length === 0 ? noContent() : content()

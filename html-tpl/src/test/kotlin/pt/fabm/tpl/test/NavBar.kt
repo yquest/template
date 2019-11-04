@@ -1,71 +1,74 @@
 package pt.fabm.tpl.test
 
-import java.lang.StringBuilder
-
 abstract class NavBar(appendable: Appendable) : Element(appendable) {
-  companion object{
-    fun render(navBar:NavBar){
-      fun navBar(className: String, block: NavBar.() -> Unit) {
-        navBar.attributesBuilder.builder.clear()
-        navBar.attributesBuilder.classNameAttr(className)
-        navBar.root.appendStart(navBar.attributesBuilder.builder.toString())
-        navBar.block()
-        navBar.root.appendEnd()
-      }
 
-      navBar("d-flex flex-column flex-md-row align-items-center p-3 px-md-4 mb-3 bg-white border-bottom") {
-        h5(className = "my-0 mr-md-auto font-weight-normal pointer-cursor", onClick = "stores.navigation.root") {
-          +"Company name"
-        }
-        showIfAuthenticated {
-          a(className = "btn btn-outline-primary", onClick = "props.loginOff") {
-            +"Sign off "
-            i(className = "fas fa-sign-out-alt")
-          }
-        }
-        showIfNotAuthenticated {
-          a(onClick = "props.gotoLoginPage") {
-            +"Sign in "
-            i(className = "fas fa-sign-in-alt")
-          }
+  fun render() {
+    div(className = "d-flex flex-column flex-md-row align-items-center p-3 px-md-4 mb-3 bg-white border-bottom") {
+      h5(className = "my-0 mr-md-auto font-weight-normal pointer-cursor", onClick = "stores.navigation.root") {
+        +"Company name"
+      }
+      showIfAuthenticated {
+        a(className = "btn btn-outline-primary", onClick = "props.loginOff") {
+          +"Sign off "
+          i(className = "fas fa-sign-out-alt")
         }
       }
-    }
-    fun render(navBarCreator: ()->NavBar){
-      render(navBarCreator())
+      showIfNotAuthenticated {
+        a(onClick = "props.gotoLoginPage") {
+          +"Sign in "
+          i(className = "fas fa-sign-in-alt")
+        }
+      }
     }
   }
 
-  abstract val attributesBuilder:AttributesBuilder
-  abstract val root:TagElement
-  fun i(className: String){
-    attributesBuilder.builder.clear()
-    attributesBuilder.classNameAttr(className)
-    TagElement(appendable,"i")
-      .appendStart(attributesBuilder.builder.toString())
+  abstract val attributesBuilder: AttributesBuilder
+  fun i(className: String) {
+    TagElement(appendable, "i")
+      .appendStart(
+        attributesBuilder
+          .classNameAttr(className)
+          .build()
+      )
       .appendEnd()
   }
-  fun h5(className: String, onClick: String, block: NavBar.() -> Unit){
-    attributesBuilder.builder.clear()
-    attributesBuilder
-      .classNameAttr(className)
-      .onClickAttr(onClick)
 
-    val h5 = TagElement(appendable,"h5")
-      .appendStart(attributesBuilder.builder.toString())
+  fun h5(className: String, onClick: String, block: NavBar.() -> Unit) {
+
+    val h5 = TagElement(appendable, "h5")
+      .appendStart(
+        attributesBuilder
+          .classNameAttr(className)
+          .onClickAttr(onClick)
+          .build()
+      )
     this.block()
     h5.appendEnd()
   }
-  abstract fun showIfAuthenticated(block: NavBar.() -> Unit)
-  abstract fun showIfNotAuthenticated(block: NavBar.() -> Unit)
-  fun a(className: String? = null, onClick: String, block: NavBar.() -> Unit){
-    attributesBuilder.builder.clear()
-    attributesBuilder
-      .classNameEval(className)
-      .onClickAttr(onClick)
 
-    val a = TagElement(appendable,"a")
-      .appendStart(attributesBuilder.builder.toString())
+  abstract fun showIfAuthenticated(block: NavBar.() -> Unit)
+
+  abstract fun showIfNotAuthenticated(block: NavBar.() -> Unit)
+  fun div(className: String, block: NavBar.() -> Unit) {
+    val div = TagElement(appendable, "div")
+      .appendStart(
+        attributesBuilder
+          .classNameAttr(className)
+          .build()
+      )
+    this.block()
+    div.appendEnd()
+  }
+
+  fun a(className: String? = null, onClick: String, block: NavBar.() -> Unit) {
+
+    val a = TagElement(appendable, "a")
+      .appendStart(    attributesBuilder
+        .emptyHref()
+        .classNameEval(className)
+        .onClickAttr(onClick)
+        .build()
+      )
     this.block()
     a.appendEnd()
   }

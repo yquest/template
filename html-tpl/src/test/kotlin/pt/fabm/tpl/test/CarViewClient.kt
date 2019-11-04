@@ -1,14 +1,19 @@
 package pt.fabm.tpl.test
 
-class CarViewClient(appendable: Appendable) : CarView(appendable) {
+class CarViewClient(appendable: Appendable) : CarView(appendable),ClientElement {
   override val attributesBuilder: AttributesBuilder = AttributesBuilderClient()
 
-  override fun start() {
-    root.appendStart(" className={props.classes}")
-  }
-
-  override fun end() {
-    root.appendEnd()
+  fun render() {
+    render(
+      listOf(
+        CarFields(
+          maker = "{props.maker}",
+          model = "{props.model}",
+          price = "{props.price}",
+          matDate = "{props.maturityDate}"
+        )
+      )
+    )
   }
 
   override fun showIfAuthenticated(block: CarView.() -> Unit) {
@@ -27,6 +32,17 @@ class CarViewClient(appendable: Appendable) : CarView(appendable) {
     appendable.append("""{!props.blockedRemove &&(""")
     block()
     appendable.append(")}")
+  }
+
+  override fun renderImplementation() {
+    appendable.append("""
+    import * as React from "react";
+    import { carView } from "../app/controllers/CarViewController";
+    
+    export const CarView = (props: carView.Props) => (
+    """.trimIndent())
+    render()
+    appendable.append(");")
   }
 
 }

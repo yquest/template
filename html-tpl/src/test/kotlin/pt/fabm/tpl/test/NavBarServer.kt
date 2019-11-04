@@ -2,7 +2,6 @@ package pt.fabm.tpl.test
 
 class NavBarServer(appendable: Appendable, private val auth:Boolean) : NavBar(appendable) {
   override val attributesBuilder: AttributesBuilder = AttributesBuilderServer()
-  override val root = TagElement(appendable, "div")
 
   override fun showIfAuthenticated(block: NavBar.() -> Unit) {
     if(auth) block()
