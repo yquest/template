@@ -1,6 +1,6 @@
 package pt.fabm.tpl.test
 
-class CarViewServer(private val auth: Boolean, appendable: Appendable) : CarView(appendable) {
+class CarViewServer(private val auth: Boolean, appendable: Appendable) : CarView(appendable,false) {
   override val attributesBuilder: AttributesBuilder = AttributesBuilderServer()
 
   fun renderServer(cars:List<CarFields>){
@@ -18,5 +18,13 @@ class CarViewServer(private val auth: Boolean, appendable: Appendable) : CarView
   override fun showIfBlockedNotRemove(block: CarView.() -> Unit) {
     //do always
     block()
+  }
+
+  override fun appendClient(text: String) {
+   //ignore on server
+  }
+
+  override fun appendServer(text: String) {
+    appendable.append(text)
   }
 }

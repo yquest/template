@@ -1,6 +1,6 @@
 package pt.fabm.tpl.test
 
-abstract class NavBar(appendable: Appendable) : Element(appendable) {
+abstract class NavBar(appendable: Appendable) : Element(appendable), MultiEnvTemplate {
 
   fun render() {
     div(className = "d-flex flex-column flex-md-row align-items-center p-3 px-md-4 mb-3 bg-white border-bottom") {
@@ -24,26 +24,23 @@ abstract class NavBar(appendable: Appendable) : Element(appendable) {
 
   abstract val attributesBuilder: AttributesBuilder
   fun i(className: String) {
-    TagElement(appendable, "i")
-      .appendStart(
-        attributesBuilder
-          .classNameAttr(className)
-          .build()
-      )
-      .appendEnd()
+    val i = TagElement(appendable, "i")
+    i.startStarterTag()
+    //attributes
+    appendClassName(className)
+    i.endStarterTag()
+    i.endTag()
   }
 
   fun h5(className: String, onClick: String, block: NavBar.() -> Unit) {
-
     val h5 = TagElement(appendable, "h5")
-      .appendStart(
-        attributesBuilder
-          .classNameAttr(className)
-          .onClickAttr(onClick)
-          .build()
-      )
+    h5.startStarterTag()
+    //attributes
+    appendClassName(className)
+    appendClient(" onClick={$onClick}")
+    h5.endStarterTag()
     this.block()
-    h5.appendEnd()
+    h5.endTag()
   }
 
   abstract fun showIfAuthenticated(block: NavBar.() -> Unit)
@@ -51,26 +48,27 @@ abstract class NavBar(appendable: Appendable) : Element(appendable) {
   abstract fun showIfNotAuthenticated(block: NavBar.() -> Unit)
   fun div(className: String, block: NavBar.() -> Unit) {
     val div = TagElement(appendable, "div")
-      .appendStart(
-        attributesBuilder
-          .classNameAttr(className)
-          .build()
-      )
+      .startStarterTag()
+    appendClassName(className)
     this.block()
-    div.appendEnd()
+    div.endTag()
+  }
+
+  private fun emptyHref() {
+    appendable.append(""" href=""""")
   }
 
   fun a(className: String? = null, onClick: String, block: NavBar.() -> Unit) {
 
     val a = TagElement(appendable, "a")
-      .appendStart(    attributesBuilder
-        .emptyHref()
-        .classNameEval(className)
-        .onClickAttr(onClick)
-        .build()
-      )
+      .startStarterTag()
+    //attributes
+    emptyHref()
+    if (className != null) appendClassName(className)
+    appendClient(" onClick={$onClick}")
+    a.endStarterTag()
     this.block()
-    a.appendEnd()
+    a.endTag()
   }
 }
 

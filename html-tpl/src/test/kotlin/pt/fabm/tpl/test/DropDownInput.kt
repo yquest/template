@@ -1,6 +1,6 @@
 package pt.fabm.tpl.test
 
-abstract class DropDownInput(appendable: Appendable) : Element(appendable) {
+abstract class DropDownInput(appendable: Appendable) : Element(appendable), MultiEnvTemplate {
 
   internal fun render(
     label: String,
@@ -16,38 +16,46 @@ abstract class DropDownInput(appendable: Appendable) : Element(appendable) {
             tabIndex = tabIndex,
             className = "btn btn-outline-secondary dropdown-toggle",
             onClick = "props.toggle",
-            onBlur = "props.blur"
+            onBlur = "props.blur",
+            type = "button"
           ) { +btnLabel }
           div(client = " className={props.classesIsOpen}", server = """ class="dropdown-menu"""") {
-            eachItem { idx, item ->
+            eachItem { item, idx ->
               a(
-                key = item,
+                key = "item",
                 onClick = "props.onSelectItem(idx)",
                 className = TemplateTuple(
                   server = "dropdown-item",
                   client = "props.itemClasses(idx)"
                 ),
                 mouseDown = "event => event.preventDefault()"
-              ) { +item }
+              ) {
+                +resolve(item.toString(), "{item}")
+              }
             }
           }
         }
-        input(value = value)
-        showIfError()
-
+        input(value = value, type = AppInput.Type.TEXT)
+        showIfError {
+          div(className = "invalid-feedback") {
+            +clientText("{props.error}")
+          }
+        }
       }
     }
   }
 
-  private fun appendElement(attributes: String = "", name: String, block: DropDownInput.() -> Unit) {
+  private fun appendElement(attributes: Appendable = StringBuilder(), name: String, block: DropDownInput.() -> Unit) {
     val element = TagElement(appendable, name)
-    element.appendStart(attributes)
+    element.startStarterTag()
     this.block()
-    element.appendEnd()
+    element.endTag()
   }
 
+  abstract fun resolve(serverText: String, clientText: String): String
+  abstract fun clientText(text: String): String
   abstract fun eachItem(block: DropDownInput.(idx: Int, listItem: String) -> Unit)
-  abstract fun showIfError()
+  abstract fun showIfError(block: DropDownInput.() -> Unit)
 
   fun div(className: String? = null, client: String = "", server: String = "", block: DropDownInput.() -> Unit) =
     appendElement(
@@ -55,14 +63,13 @@ abstract class DropDownInput(appendable: Appendable) : Element(appendable) {
         .classNameEval(className)
         .appendClientAttr(client)
         .appendServerAttr(server)
-        .build(),
+        .builder,
       name = "div",
       block = block
     )
 
   abstract val attributesBuilder: AttributesBuilder
-  abstract val list:List<String>
-
+  abstract val list: List<String>
 
   internal fun a(
     key: String,
@@ -71,21 +78,26 @@ abstract class DropDownInput(appendable: Appendable) : Element(appendable) {
     className: TemplateTuple,
     block: DropDownInput.() -> Unit
   ) = appendElement(
-      attributes = attributesBuilder
-        .appendClientAttr(
-          """ key="$key" onMouseDown={$mouseDown} onClick={$onClick} className={${className.client}}"""
-        )
-        .appendServerAttr(""" class="${className.server}"""")
-        .emptyHref()
-        .build(),
-      name = "a",
-      block = block
-    )
+    attributes = attributesBuilder
+      .appendClientAttr(
+        """ key={$key} onMouseDown={$mouseDown} onClick={$onClick} className={${className.client}}"""
+      )
+      .appendServerAttr(""" class="${className.server}"""")
+      .emptyHref()
+      .builder,
+    name = "a",
+    block = block
+  )
 
   internal fun label(block: DropDownInput.() -> Unit) {
-    val label = TagElement(appendable, "label").appendStart()
+    val label = TagElement(appendable, "label").startStarterTag()
     this.block()
-    label.appendEnd()
+    label.endTag()
+  }
+
+  private fun AttributesBuilder.disabledButton(): AttributesBuilder {
+    if (this is AttributesBuilderClient) append(""" disabled={props.disabled}""")
+    return this
   }
 
   internal fun button(
@@ -93,31 +105,38 @@ abstract class DropDownInput(appendable: Appendable) : Element(appendable) {
     onClick: String,
     onBlur: String,
     tabIndex: String,
+    type: String,
     block: DropDownInput.() -> Unit
   ) {
+    val attributes = attributesBuilder
+      .clear()
+      .disabledButton()
+      .appendClientAttr(key = "onBlur", value = onBlur, wrapper = AttributesBuilder.VAR_WRAPPER)
+      .appendServerAttr("tabindex", tabIndex)
+      .appendClientAttr("tabIndex", tabIndex, AttributesBuilder.VAR_WRAPPER)
+      .appendClientAttr(" type=\"$type\"")
+      .appendServerAttr(" type=\"$type\"")
+      .classNameAttr(className)
+      .onClickAttr(onClick)
+      .builder
     val label = TagElement(appendable, "button")
-      .appendStart(
-        attributesBuilder
-          .appendClientAttr(key = "onBlur", value = onBlur, wrapper = AttributesBuilder.VAR_WRAPPER)
-          .appendServerAttr("tabindex", tabIndex)
-          .appendClientAttr("tabIndex", tabIndex, AttributesBuilder.VAR_WRAPPER)
-          .classNameAttr(className)
-          .onClickAttr(onClick)
-          .build()
-      )
+      .startStarterTag()
     this.block()
-    label.appendEnd()
+    label.endTag()
   }
 
   internal fun input(
+    name: TemplateTuple,
+    type: AppInput.Type,
     value: String
   ) {
+    val attributes = attributesBuilder
+      .clear()
+      .append(""" type="${type.label}"""")
+      .appendClientAttr(""" name={${name.client}}""")
+      .append()
+      .builder
     TagElement(appendable, "input")
-      .appendStart(
-        attributesBuilder
-          .appendServerAttr("value", value)
-          .appendClientAttr("value", value)
-          .build()
-      ).appendEnd()
+      .startStarterTag().endTag()
   }
 }

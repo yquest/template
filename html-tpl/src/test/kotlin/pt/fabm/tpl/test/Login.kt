@@ -1,6 +1,6 @@
 package pt.fabm.tpl.test
 
-abstract class Login(appendable: Appendable) : Element(appendable) {
+abstract class Login(appendable: Appendable,isClient:Boolean) : Element(isClient,appendable) {
   companion object Fields {
     const val LOGIN = "Login"
     const val PASSWORD = "Password"
@@ -41,34 +41,34 @@ abstract class Login(appendable: Appendable) : Element(appendable) {
   abstract fun literalClassName(value: String): String
 
   fun a(onClick: String, block: Login.() -> Unit) {
-    val a = TagElement(appendable, "a")
-      .appendStart(
+    val a = TagElement(appendable,isClient, "a")
+      .startStarterTag(
         attributesBuilder
           .emptyHref()
           .onClickAttr(onClick)
           .build()
       )
     this.block()
-    a.appendEnd()
+    a.endTag()
   }
 
   fun div(className: String? = null, attr: String? = null, block: Login.() -> Unit) {
 
-    val a = TagElement(appendable, "div")
-      .appendStart(attributesBuilder.classNameEval(className).append(attr ?: "").build())
+    val a = TagElement(appendable,isClient, "div")
+      .startStarterTag(attributesBuilder.classNameEval(className).append(attr ?: "").build())
     this.block()
-    a.appendEnd()
+    a.endTag()
   }
 
   fun button(className: String, tabIndex: Int, block: Login.() -> Unit) {
-    val button = TagElement(appendable, "button")
-      .appendStart(    attributesBuilder
+    val button = TagElement(appendable, isClient,"button")
+      .startStarterTag(    attributesBuilder
         .classNameAttr(className)
         .tabIndexAttr(tabIndex)
         .build()
       )
     this.block()
-    button.appendEnd()
+    button.endTag()
   }
 
   abstract fun form(onSubmit: String, block: Login.() -> Unit)

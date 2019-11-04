@@ -19,6 +19,7 @@ export namespace dropDown {
         error: string;
         index: number;
         updateError(error: string);
+        btnLabel:string;
     }
 
     export interface Entry {

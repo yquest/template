@@ -1,12 +1,12 @@
 package pt.fabm.tpl.test
 
-class LoginClient(appendable: Appendable) : Login(appendable), ClientElement {
+class LoginClient(appendable: Appendable) : Login(appendable,true), ClientElement {
   override fun literalClassName(value: String): String = " className={$value}"
 
   override val attributesBuilder = AttributesBuilderClient()
   override fun asClientText(text: String): String? = text
   override fun modal() {
-    TagElement(appendable,"Modal").appendStart().appendEnd()
+    TagElement(appendable,true,"Modal").startStarterTag().endTag()
   }
 
   override fun navbar() {
@@ -31,7 +31,7 @@ class LoginClient(appendable: Appendable) : Login(appendable), ClientElement {
   }
 
   override fun notifications() {
-    TagElement(appendable,"Notifications").appendStart().appendEnd()
+    TagElement(appendable,true,"Notifications").startStarterTag().endTag()
   }
 
   override fun appInput(label: String, tabIndex: Int, type: AppInput.Type) {
@@ -46,10 +46,10 @@ class LoginClient(appendable: Appendable) : Login(appendable), ClientElement {
   }
 
   override fun form(onSubmit: String, block: Login.() -> Unit) {
-    val form = TagElement(appendable,"form")
-    form.appendStart(" onSubmit={props.submitForm}")
+    val form = TagElement(appendable,true,"form")
+    form.startStarterTag(" onSubmit={props.submitForm}")
     block()
-    form.appendEnd()
+    form.endTag()
   }
 
   override fun showIfErrorForm(block: Login.() -> Unit) {

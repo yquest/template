@@ -1,6 +1,6 @@
 package pt.fabm.tpl.test
 
-abstract class App(appendable: Appendable) : Element(appendable) {
+abstract class App(appendable: Appendable) : Element(appendable),MultiEnvTemplate {
 
   fun render() {
     div(className = "container app") {
@@ -20,14 +20,6 @@ abstract class App(appendable: Appendable) : Element(appendable) {
     }
   }
 
-  private fun appendElement(attributes: String = "", name: String, block: App.() -> Unit) {
-    val element = TagElement(appendable, name)
-    element.appendStart(attributes)
-    this.block()
-    element.appendEnd()
-  }
-
-  abstract val attributesBuilder: AttributesBuilder
   abstract fun modal()
   abstract fun navBar()
   abstract fun notifications()
@@ -36,22 +28,26 @@ abstract class App(appendable: Appendable) : Element(appendable) {
   abstract fun showIfEditableAndAuthenticated(block: App.() -> Unit)
   abstract fun carEditor()
   abstract fun modalBackground()
-  fun div(className: String, block: App.() -> Unit) = appendElement(
-    attributes = attributesBuilder
-      .classNameAttr(className)
-      .build(),
-    name = "div",
-    block = block
-  )
+  fun div(className: String, block: App.() -> Unit) {
+    val div = TagElement(appendable,"div")
+    div.startStarterTag()
+    //attributes
+    appendClassName(className)
+    div.endStarterTag()
 
-  fun button(className: String, tabindex: Int, onClick: String, block: App.() -> Unit) =
-    appendElement(
-      attributes = attributesBuilder
-        .classNameAttr(className)
-        .tabIndexAttr(tabindex)
-        .onClickAttr(onClick)
-        .build(),
-      name = "button",
-      block = block
-    )
+    block()
+    div.endTag()
+  }
+
+  fun button(className: String, tabindex: Int, onClick: String, block: App.() -> Unit){
+    val button = TagElement(appendable, "button")
+    button.startStarterTag()
+    //attributes
+    appendClassName(className)
+    appendClient(""" tabIndex={$tabindex} onClick={$onClick}""")
+    appendServer(""" tabindex="$tabindex"""")
+    button.endStarterTag()
+    this.block()
+    button.endTag()
+  }
 }

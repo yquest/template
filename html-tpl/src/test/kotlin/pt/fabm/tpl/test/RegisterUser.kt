@@ -1,6 +1,6 @@
 package pt.fabm.tpl.test
 
-abstract class RegisterUser(appendable: Appendable) : Element(appendable) {
+abstract class RegisterUser(appendable: Appendable, isClient: Boolean) : Element(isClient,appendable) {
 
   companion object Fields {
     const val USERNAME = "Username"
@@ -40,28 +40,28 @@ abstract class RegisterUser(appendable: Appendable) : Element(appendable) {
 
   fun div(className: String? = null, attr: String? = null, block: RegisterUser.() -> Unit) {
 
-    val a = TagElement(appendable, "div")
-      .appendStart(
+    val a = TagElement(appendable,isClient, "div")
+      .startStarterTag(
         attributesBuilder
           .classNameEval(className)
           .append(attr ?: "")
           .build()
       )
     this.block()
-    a.appendEnd()
+    a.endTag()
   }
 
   fun button(className: String, tabIndex: Int, block: RegisterUser.() -> Unit) {
 
-    val button = TagElement(appendable, "button")
-      .appendStart(
+    val button = TagElement(appendable,isClient, "button")
+      .startStarterTag(
         attributesBuilder
           .classNameAttr(className)
           .tabIndexAttr(tabIndex)
           .build()
       )
     this.block()
-    button.appendEnd()
+    button.endTag()
   }
 
   abstract fun form(onSubmit: String, block: RegisterUser.() -> Unit)

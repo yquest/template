@@ -1,6 +1,6 @@
 package pt.fabm.tpl.test
 
-abstract class AppInput(appendable: Appendable) : Element(appendable) {
+abstract class AppInput(appendable: Appendable) : Element(appendable), MultiEnvTemplate {
   enum class Type(val label: String) {
     TEXT("text"),
     PASSWORD("password")
@@ -10,7 +10,7 @@ abstract class AppInput(appendable: Appendable) : Element(appendable) {
     label: String,
     type: Type,
     value: String,
-    tabIndex: Int? = null,
+    tabIndex: String? = null,
     placeHolder: String? = null
   ) {
 
@@ -25,44 +25,39 @@ abstract class AppInput(appendable: Appendable) : Element(appendable) {
     }
   }
 
-  private fun appendElement(attributes: String = "", name: String, block: AppInput.() -> Unit) {
-    val element = TagElement(appendable, name)
-    element.appendStart(attributes)
+
+  fun div(className: String, block: AppInput.() -> Unit) {
+    val div = TagElement(appendable, "div").startStarterTag()
+    //attributes
+    appendClassName(className)
+    div.endStarterTag()
     this.block()
-    element.appendEnd()
+    div.endTag()
   }
 
-  fun div(className: String, block: AppInput.() -> Unit) = appendElement(
-    attributes = attributesBuilder.classNameAttr(className).build(),
-    name = "div",
-    block = block
-  )
-
-  abstract val attributesBuilder: AttributesBuilder
-  fun typeHelper(type: Type): String = """ type="${type.label}""""
-  fun valueHelper(value: String): String = """ value="$value""""
-  fun placeHolderEval(value: String?) = if (value == null) "" else """ placeholder="$value""""
-  internal fun label(block: AppInput.() -> Unit) {
-    val label = TagElement(appendable, "label").appendStart()
+  private fun label(block: AppInput.() -> Unit) {
+    val label = TagElement(appendable, "label").noAttributesStarterTag()
     this.block()
-    label.appendEnd()
+    label.endTag()
   }
 
   internal fun input(
     type: Type,
-    tabIndex: Int? = null,
+    tabIndex: String? = null,
     placeHolder: String? = null,
     value: String
   ) {
-    TagElement(appendable, "input")
-      .appendStart(
-        attributesBuilder
-          .tabIndexEval(tabIndex)
-          .append(placeHolderEval(placeHolder))
-          .append(typeHelper(type))
-          .append(valueHelper(value))
-          .build()
-      ).appendEnd()
+    val input = TagElement(appendable, "input")
+      .startStarterTag()
+    //attributes
+    appendable.append(" type=${type.label}")
+    if (tabIndex != null) {
+      appendClient(" tabIndex={$tabIndex}")
+      appendServer(""" tabindex="$tabIndex"""")
+    }
+    if (placeHolder != null) appendable.append(""" placeholder="$placeHolder"""")
+    appendable.append(""" value="$value"""")
+    input.endStarterTag().endTag()
   }
 
 }

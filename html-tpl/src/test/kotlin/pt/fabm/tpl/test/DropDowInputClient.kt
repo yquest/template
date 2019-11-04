@@ -1,8 +1,12 @@
 package pt.fabm.tpl.test
 
 class DropDowInputClient(appendable: Appendable) : DropDownInput(appendable) {
-  override val list: List<String> = listOf("item")
+  override fun resolve(serverText: String, clientText: String): String {
+    appendC
+  }
 
+  override val list: List<String> = listOf("item")
+  override fun clientText(text: String): String = text
   override val attributesBuilder: AttributesBuilder = AttributesBuilderClient()
 
   fun render(){
@@ -18,9 +22,9 @@ class DropDowInputClient(appendable: Appendable) : DropDownInput(appendable) {
     this.block(0,"idx")
     appendBody("))}")
   }
-  override fun showIfError() {
+  override fun showIfError(block: DropDownInput.() -> Unit) {
     appendBody("{props.error !== null && props.error.length > 0 && (")
-    appendBody("<div className=\"invalid-feedback\">{props.error}</div>")
+    this.block()
     appendBody(")}")
   }
 }

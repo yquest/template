@@ -1,6 +1,6 @@
 package pt.fabm.tpl.test
 
-class CarViewClient(appendable: Appendable) : CarView(appendable),ClientElement {
+class CarViewClient(appendable: Appendable) : CarView(appendable,true),ClientElement {
   override val attributesBuilder: AttributesBuilder = AttributesBuilderClient()
 
   fun render() {
@@ -43,6 +43,14 @@ class CarViewClient(appendable: Appendable) : CarView(appendable),ClientElement 
     """.trimIndent())
     render()
     appendable.append(");")
+  }
+
+  override fun appendClient(text: String) {
+    appendable.append(text)
+  }
+
+  override fun appendServer(text: String) {
+    //ignore on client
   }
 
 }

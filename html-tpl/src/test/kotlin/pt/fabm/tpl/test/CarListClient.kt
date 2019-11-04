@@ -31,14 +31,22 @@ class CarListClient(appendable: Appendable) : CarList(appendable), ClientElement
   }
 
   override fun colspanTr(colspan: Int): String = """ colSpan={$colspan}"""
+
   override fun carLines() {
     appendable.append("{carView.carViewList()}")
   }
-
   override fun showIfAuthenticated(block: CarList.() -> Unit) {
     appendable.append("{stores.user.authenticated && (")
     block()
     appendable.append(")}")
+  }
+
+  override fun appendClient(text: String) {
+    appendable.append(text)
+  }
+
+  override fun appendServer(text: String) {
+    //ignore on server
   }
 
 }

@@ -1,6 +1,6 @@
 package pt.fabm.tpl.test
 
-abstract class CarList(appendable: Appendable) : Element(appendable) {
+abstract class CarList(appendable: Appendable) : Element(appendable), MultiEnvTemplate {
 
   abstract val attributesBuilder: AttributesBuilder
 
@@ -33,33 +33,38 @@ abstract class CarList(appendable: Appendable) : Element(appendable) {
     }
   }
 
-  private fun appendElement(attributes: String = "", name: String, block: CarList.() -> Unit) {
-    val element = TagElement(appendable, name)
-    element.appendStart(attributes)
-    this.block()
-    element.appendEnd()
-  }
-
   protected abstract fun colspanTr(colspan: Int): String
 
-  fun div(className: String? = null, block: CarList.() -> Unit) =
-    appendElement(
-      attributes = attributesBuilder
-        .clear()
-        .classNameEval(className)
-        .build(),
-      name = "div",
-      block = block
-    )
+  fun div(className: String? = null, block: CarList.() -> Unit) {
+    val div = TagElement(appendable, "div").startStarterTag()
+    //attributes
+    if (className != null) appendClassName(className)
+    block()
+    div.endStarterTag()
+    div.endTag()
+  }
+
+  private fun appendElement(name: String, block: CarList.() -> Unit) {
+    TagElement(appendable, name)
+      .noAttributesStarterTag()
+      .doContainedBlock(this, block)
+      .endTag()
+  }
+
   fun table(block: CarList.() -> Unit) = appendElement(name = "table", block = block)
   fun tr(block: CarList.() -> Unit) = appendElement(name = "tr", block = block)
   fun thead(block: CarList.() -> Unit) = appendElement(name = "thead", block = block)
   fun tbody(block: CarList.() -> Unit) = appendElement(name = "tbody", block = block)
-  fun th(colspan: Int? = null, block: CarList.() -> Unit) = appendElement(
-    name = "th",
-    attributes = if (colspan == null) "" else colspanTr(colspan),
-    block = block
-  )
+  fun th(colspan: Int? = null, block: CarList.() -> Unit) {
+    val th = TagElement(appendable, "th")
+      .startStarterTag()
+    //attributes
+    if(colspan != null) appendable.append(colspanTr(colspan))
+
+    th.endStarterTag()
+    block()
+    th.endTag()
+  }
 
   abstract fun carLines()
   abstract fun showIfAuthenticated(block: CarList.() -> Unit)

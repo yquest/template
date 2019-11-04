@@ -38,6 +38,7 @@ class AttributesBuilderClient : AttributesBuilder() {
     builder.append(fnTabIndexAttr(value))
     return this
   }
+
   override fun classNameEval(value: String?): AttributesBuilder {
     builder.append(
       if (value == null) "" else fnClassNameAttr(value)
@@ -48,7 +49,6 @@ class AttributesBuilderClient : AttributesBuilder() {
     builder.append(""" className="$value"""")
     return this
   }
-
   override fun onClickEval(value: String?): AttributesBuilder {
     builder.append(if (value == null) "" else fnOnClickAttr(value))
     return this
@@ -88,4 +88,5 @@ class AttributesBuilderClient : AttributesBuilder() {
     //ignore
     return this
   }
+
 }

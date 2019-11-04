@@ -1,10 +1,10 @@
 package pt.fabm.tpl.test
 
-class RegisterUserClient(appendable: Appendable) : RegisterUser(appendable),ClientElement {
+class RegisterUserClient(appendable: Appendable) : RegisterUser(appendable,true),ClientElement {
   override val attributesBuilder = AttributesBuilderClient()
 
   override fun modal() {
-    TagElement(appendable,"Modal").appendStart().appendEnd()
+    TagElement(appendable,isClient,"Modal").startStarterTag().endTag()
   }
 
   override fun navbar() {
@@ -12,7 +12,7 @@ class RegisterUserClient(appendable: Appendable) : RegisterUser(appendable),Clie
   }
 
   override fun notifications() {
-    TagElement(appendable,"Notifications").appendStart().appendEnd()
+    TagElement(appendable,isClient,"Notifications").startStarterTag().endTag()
   }
 
   override fun appInput(label: String, tabIndex: Int, type: AppInput.Type) {
@@ -24,10 +24,10 @@ class RegisterUserClient(appendable: Appendable) : RegisterUser(appendable),Clie
   }
 
   override fun form(onSubmit: String, block: RegisterUser.() -> Unit) {
-    val form = TagElement(appendable,"form")
-    form.appendStart(" onSubmit={props.submitForm}")
+    val form = TagElement(appendable,isClient,"form")
+    form.startStarterTag(" onSubmit={props.submitForm}")
     block()
-    form.appendEnd()
+    form.endTag()
   }
 
   override fun modalBackground() {

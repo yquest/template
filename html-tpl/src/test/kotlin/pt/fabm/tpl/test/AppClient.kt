@@ -1,9 +1,6 @@
 package pt.fabm.tpl.test
 
-import java.lang.StringBuilder
-
 class AppClient(appendable: Appendable) : App(appendable), ClientElement {
-  override val attributesBuilder: AttributesBuilder = AttributesBuilderClient()
 
   override fun renderImplementation(){
     appendBody(
@@ -27,8 +24,7 @@ class AppClient(appendable: Appendable) : App(appendable), ClientElement {
 
   override fun modal() {
     TagElement(appendable, "Modal")
-      .appendStart()
-      .appendEnd()
+      .createSingleTag()
   }
 
   override fun navBar() {
@@ -37,14 +33,12 @@ class AppClient(appendable: Appendable) : App(appendable), ClientElement {
 
   override fun notifications() {
     TagElement(appendable, "Notifications")
-      .appendStart()
-      .appendEnd()
+      .createSingleTag()
   }
 
   override fun carList() {
     TagElement(appendable, "CarList")
-      .appendStart()
-      .appendEnd()
+      .createSingleTag()
   }
 
   override fun showIfAuthenticated(block: App.() -> Unit) {
@@ -61,11 +55,18 @@ class AppClient(appendable: Appendable) : App(appendable), ClientElement {
 
   override fun carEditor() {
     TagElement(appendable, "CarEditor")
-      .appendStart()
-      .appendEnd()
+      .createSingleTag()
   }
 
   override fun modalBackground() {
     appendBody("""{uiStore.modelInDOM && <div className="modal-backdrop fade show"></div>}""")
+  }
+
+  override fun appendClient(text: String) {
+    appendable.append(text)
+  }
+
+  override fun appendServer(text: String) {
+    //ignore on server
   }
 }

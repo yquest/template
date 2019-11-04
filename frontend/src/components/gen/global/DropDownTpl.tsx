@@ -15,7 +15,7 @@ export const DropDownInput = observer((props: dropDown.Props) => {
             disabled={props.disabled}
             onClick={props.toggle}
             onBlur={props.blur}>
-            Choose maker...
+            {props.btnLabel}
           </button>
           <div className={props.classesIsOpen}>
             {props.labels.map((item, idx) => (

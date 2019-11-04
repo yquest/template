@@ -1,6 +1,6 @@
 package pt.fabm.tpl.test
 
-class RegisterUserServer(appendable: Appendable, private val auth: Boolean) : RegisterUser(appendable) {
+class RegisterUserServer(appendable: Appendable, private val auth: Boolean) : RegisterUser(appendable,false) {
   //ignore
   override val attributesBuilder: AttributesBuilder = AttributesBuilderServer()
 
@@ -32,10 +32,10 @@ class RegisterUserServer(appendable: Appendable, private val auth: Boolean) : Re
   }
 
   override fun form(onSubmit: String, block: RegisterUser.() -> Unit) {
-    val form = TagElement(appendable, "form")
-    form.appendStart()
+    val form = TagElement(appendable, false,"form")
+    form.startStarterTag()
     block()
-    form.appendEnd()
+    form.endTag()
   }
 
 

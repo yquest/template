@@ -1,9 +1,10 @@
 package pt.fabm.tpl.test
 
-abstract class CarView(appendable: Appendable) : Element(appendable) {
+abstract class CarView(appendable: Appendable, isClient: Boolean) : Element(appendable), MultiEnvTemplate {
+
   protected fun render(cars: List<CarFields>) {
     cars.forEach { carFields ->
-      tr(classVar = "props.classes") {
+      tr(classClientVar = "props.classes") {
         td { +carFields.maker }
         td { +carFields.model }
         td { +carFields.matDate }
@@ -36,33 +37,40 @@ abstract class CarView(appendable: Appendable) : Element(appendable) {
   abstract fun showIfBlockedRemove(block: CarView.() -> Unit)
   abstract fun showIfBlockedNotRemove(block: CarView.() -> Unit)
 
-  fun tr(classVar:String,block: CarView.() -> Unit){
-    val tr=TagElement(appendable,"tr")
-      .appendStart(attributesBuilder.classVarAttr(classVar).build())
+  fun tr(classClientVar: String, block: CarView.() -> Unit) {
+    val tr = TagElement(appendable, "tr")
+      .startStarterTag()
+    appendClient(" className={$classClientVar}")
+    tr.endStarterTag()
     this.block()
-    tr.appendEnd()
-  }
-  fun i(className: String) {
-    TagElement(appendable, "i")
-      .appendStart(attributesBuilder.classNameAttr(className).build())
-      .appendEnd()
+    tr.endTag()
   }
 
-  fun a(className: String, onClick: String? = null, block: CarView.() -> Unit) {
-    val a = TagElement(appendable, "a")
-      .appendStart(attributesBuilder
-        .emptyHref()
-        .classNameAttr(className)
-        .onClickEval(onClick)
-        .build()
-      )
+  fun i(className: String) {
+    val i = TagElement(appendable, "i")
+      .startStarterTag()
+    //attributes
+    appendClassName(className)
+    i.endStarterTag()
+    i.endTag()
+  }
+
+  fun a(className: String, onClick: String, block: CarView.() -> Unit) {
+    val a = TagElement(appendable,  "a")
+      .startStarterTag()
+    //attributes
+    emptyHref()
+    appendClassName(className)
+    appendClient(" onClick={$onClick}")
+
+    a.endStarterTag()
     this.block()
-    a.appendEnd()
+    a.endTag()
   }
 
   fun td(block: CarView.() -> Unit) {
-    val td = TagElement(appendable, "td").appendStart()
+    val td = TagElement(appendable,  "td").noAttributesStarterTag()
     this.block()
-    td.appendEnd()
+    td.endTag()
   }
 }

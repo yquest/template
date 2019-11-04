@@ -1,6 +1,6 @@
 package pt.fabm.tpl.test
 
-class NavBarClient(appendable: Appendable) : NavBar(appendable),ClientElement {
+class NavBarClient(appendable: Appendable) : NavBar(appendable,true),ClientElement {
   override val attributesBuilder: AttributesBuilder = AttributesBuilderClient()
 
   override fun renderImplementation(){

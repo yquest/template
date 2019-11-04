@@ -1,7 +1,14 @@
 package pt.fabm.tpl.test
 
 class AppServer(appendable: Appendable, private val auth:Boolean, private val cars:List<CarFields>) : App(appendable) {
-  override val attributesBuilder: AttributesBuilder = AttributesBuilderServer()
+  override fun appendClient(text: String) {
+    //ignore on server
+  }
+
+  override fun appendServer(text: String) {
+    appendable.append(text)
+  }
+
   override fun modal() {
     //ignore
   }
