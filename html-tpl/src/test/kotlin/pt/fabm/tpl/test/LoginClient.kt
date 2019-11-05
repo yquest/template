@@ -1,14 +1,12 @@
 package pt.fabm.tpl.test
 
-class LoginClient(appendable: Appendable) : Login(appendable,true), ClientElement {
+class LoginClient(appendable: Appendable) : Login(appendable), ClientElement {
   override fun literalClassName(value: String): String = " className={$value}"
 
-  override val attributesBuilder = AttributesBuilderClient()
   override fun asClientText(text: String): String? = text
   override fun modal() {
     TagElement(appendable,"Modal").startStarterTag().endTag()
   }
-
   override fun navbar() {
     appendBody("{navbar.createComponent()}")
   }
@@ -45,13 +43,6 @@ class LoginClient(appendable: Appendable) : Login(appendable,true), ClientElemen
     appendBody(text)
   }
 
-  override fun form(onSubmit: String, block: Login.() -> Unit) {
-    val form = TagElement(appendable,"form")
-    form.startStarterTag(" onSubmit={props.submitForm}")
-    block()
-    form.endTag()
-  }
-
   override fun showIfErrorForm(block: Login.() -> Unit) {
     appendBody("{props.showErrorForm && (")
     block()
@@ -60,6 +51,14 @@ class LoginClient(appendable: Appendable) : Login(appendable,true), ClientElemen
 
   override fun modalBackground() {
     appendBody("""{uiStore.modelInDOM && <div className="modal-backdrop fade show"></div>}""")
+  }
+
+  override fun appendClient(text: String) {
+    appendBody(text)
+  }
+
+  override fun appendServer(text: String) {
+    //ignore
   }
 
 }

@@ -2,8 +2,6 @@ package pt.fabm.tpl.test
 
 abstract class CarList(appendable: Appendable) : Element(appendable), MultiEnvTemplate {
 
-  abstract val attributesBuilder: AttributesBuilder
-
   abstract fun ifHasCars(block: CarList.() -> Unit)
   abstract fun ifHasNoCars(block: CarList.() -> Unit)
 
@@ -39,8 +37,8 @@ abstract class CarList(appendable: Appendable) : Element(appendable), MultiEnvTe
     val div = TagElement(appendable, "div").startStarterTag()
     //attributes
     if (className != null) appendClassName(className)
-    block()
     div.endStarterTag()
+    block()
     div.endTag()
   }
 

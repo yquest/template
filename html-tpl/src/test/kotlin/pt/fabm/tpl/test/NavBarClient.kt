@@ -1,7 +1,6 @@
 package pt.fabm.tpl.test
 
-class NavBarClient(appendable: Appendable) : NavBar(appendable,true),ClientElement {
-  override val attributesBuilder: AttributesBuilder = AttributesBuilderClient()
+class NavBarClient(appendable: Appendable) : NavBar(appendable),ClientElement {
 
   override fun renderImplementation(){
     appendBody("""
@@ -26,6 +25,14 @@ class NavBarClient(appendable: Appendable) : NavBar(appendable,true),ClientEleme
     appendable.append("""{!stores.user.authenticated && (""")
     block()
     appendable.append(""")}""")
+  }
+
+  override fun appendClient(text: String) {
+    appendBody(text)
+  }
+
+  override fun appendServer(text: String) {
+    //ignore
   }
 
 }

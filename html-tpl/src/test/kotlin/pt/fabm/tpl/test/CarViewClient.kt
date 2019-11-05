@@ -1,7 +1,6 @@
 package pt.fabm.tpl.test
 
-class CarViewClient(appendable: Appendable) : CarView(appendable,true),ClientElement {
-  override val attributesBuilder: AttributesBuilder = AttributesBuilderClient()
+class CarViewClient(appendable: Appendable) : CarView(appendable),ClientElement {
 
   fun render() {
     render(

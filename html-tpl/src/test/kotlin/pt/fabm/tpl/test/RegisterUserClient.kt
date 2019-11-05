@@ -1,7 +1,6 @@
 package pt.fabm.tpl.test
 
-class RegisterUserClient(appendable: Appendable) : RegisterUser(appendable,true),ClientElement {
-  override val attributesBuilder = AttributesBuilderClient()
+class RegisterUserClient(appendable: Appendable) : RegisterUser(appendable),ClientElement,MultiEnvTemplate {
 
   override fun modal() {
     TagElement(appendable,"Modal").startStarterTag().endTag()
@@ -23,12 +22,6 @@ class RegisterUserClient(appendable: Appendable) : RegisterUser(appendable,true)
     }
   }
 
-  override fun form(onSubmit: String, block: RegisterUser.() -> Unit) {
-    val form = TagElement(appendable,"form")
-    form.startStarterTag(" onSubmit={props.submitForm}")
-    block()
-    form.endTag()
-  }
 
   override fun modalBackground() {
     appendBody("""{uiStore.modelInDOM && <div className="modal-backdrop fade show"></div>}""")
@@ -49,6 +42,14 @@ class RegisterUserClient(appendable: Appendable) : RegisterUser(appendable,true)
     """.trimIndent())
     render()
     appendable.append("));")
+  }
+
+  override fun appendClient(text: String) {
+    appendBody(text)
+  }
+
+  override fun appendServer(text: String) {
+    //ignore
   }
 
 

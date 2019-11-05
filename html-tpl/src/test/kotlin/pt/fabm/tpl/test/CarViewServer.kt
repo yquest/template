@@ -1,7 +1,6 @@
 package pt.fabm.tpl.test
 
-class CarViewServer(private val auth: Boolean, appendable: Appendable) : CarView(appendable,false) {
-  override val attributesBuilder: AttributesBuilder = AttributesBuilderServer()
+class CarViewServer(private val auth: Boolean, appendable: Appendable) : CarView(appendable) {
 
   fun renderServer(cars:List<CarFields>){
     render(cars)

@@ -22,7 +22,6 @@ abstract class NavBar(appendable: Appendable) : Element(appendable), MultiEnvTem
     }
   }
 
-  abstract val attributesBuilder: AttributesBuilder
   fun i(className: String) {
     val i = TagElement(appendable, "i")
     i.startStarterTag()

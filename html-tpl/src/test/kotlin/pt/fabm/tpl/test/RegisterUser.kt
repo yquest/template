@@ -1,6 +1,6 @@
 package pt.fabm.tpl.test
 
-abstract class RegisterUser(appendable: Appendable) : Element(appendable) {
+abstract class RegisterUser(appendable: Appendable) : Element(appendable),MultiEnvTemplate {
 
   companion object Fields {
     const val USERNAME = "Username"
@@ -19,9 +19,9 @@ abstract class RegisterUser(appendable: Appendable) : Element(appendable) {
           div(className = "card col-sm-6 col-lg-4") {
             div(className = "card-body") {
               form(onSubmit = "props.submitForm") {
-                appInput(label = Fields.USERNAME, tabIndex = 1, type = AppInput.Type.TEXT)
-                appInput(label = Fields.PASSWORD, tabIndex = 2, type = AppInput.Type.PASSWORD)
-                appInput(label = Fields.EMAIL, tabIndex = 3, type = AppInput.Type.TEXT)
+                appInput(label = USERNAME, tabIndex = 1, type = AppInput.Type.TEXT)
+                appInput(label = PASSWORD, tabIndex = 2, type = AppInput.Type.PASSWORD)
+                appInput(label = EMAIL, tabIndex = 3, type = AppInput.Type.TEXT)
                 button(className = "btn btn-primary col-sm-12", tabIndex = 4) { +"Register User" }
               }
             }
@@ -32,38 +32,45 @@ abstract class RegisterUser(appendable: Appendable) : Element(appendable) {
     }
   }
 
-  abstract val attributesBuilder: AttributesBuilder
   abstract fun modal()
   abstract fun navbar()
   abstract fun notifications()
   abstract fun appInput(label: String, tabIndex: Int, type: AppInput.Type = AppInput.Type.TEXT)
 
-  fun div(className: String? = null, attr: String? = null, block: RegisterUser.() -> Unit) {
-
+  fun div(className: String? = null, block: RegisterUser.() -> Unit) {
     val a = TagElement(appendable, "div")
-      .startStarterTag(
-        attributesBuilder
-          .classNameEval(className)
-          .append(attr ?: "")
-          .build()
-      )
+      .startStarterTag()
+    //attributes
+    if(className != null) appendClassName(className)
+
+    a.endStarterTag()
     this.block()
     a.endTag()
   }
 
   fun button(className: String, tabIndex: Int, block: RegisterUser.() -> Unit) {
-
     val button = TagElement(appendable, "button")
-      .startStarterTag(
-        attributesBuilder
-          .classNameAttr(className)
-          .tabIndexAttr(tabIndex)
-          .build()
-      )
+      .startStarterTag()
+    //attributes
+    appendClassName(className)
+    appendClient(" tabIndex={$tabIndex}")
+    appendServer(""" tabindex="$tabIndex"""")
+
+    button.endStarterTag()
     this.block()
     button.endTag()
   }
 
-  abstract fun form(onSubmit: String, block: RegisterUser.() -> Unit)
+  fun form(onSubmit: String, block: RegisterUser.() -> Unit) {
+    val form = TagElement(appendable,"form")
+    form.startStarterTag()
+    //attributes
+    appendClient(" onSubmit={$onSubmit}")
+
+    form.endStarterTag()
+    this.block()
+    form.endTag()
+  }
+
   abstract fun modalBackground()
 }

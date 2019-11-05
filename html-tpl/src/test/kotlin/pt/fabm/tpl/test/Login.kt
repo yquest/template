@@ -1,6 +1,6 @@
 package pt.fabm.tpl.test
 
-abstract class Login(appendable: Appendable) : Element(appendable) {
+abstract class Login(appendable: Appendable) : Element(appendable), MultiEnvTemplate {
   companion object Fields {
     const val LOGIN = "Login"
     const val PASSWORD = "Password"
@@ -17,13 +17,13 @@ abstract class Login(appendable: Appendable) : Element(appendable) {
           div(className = "card col-sm-6 col-lg-4") {
             div(className = "card-body") {
               form(onSubmit = "props.submitForm") {
-                appInput(label = Fields.LOGIN, tabIndex = 1, type = AppInput.Type.TEXT)
-                appInput(label = Fields.PASSWORD, tabIndex = 2, type = AppInput.Type.PASSWORD)
+                appInput(label = LOGIN, tabIndex = 1, type = AppInput.Type.TEXT)
+                appInput(label = PASSWORD, tabIndex = 2, type = AppInput.Type.PASSWORD)
                 a(onClick = "props.onClickRegisterLink") { +"Create User" }
                 button(className = "btn btn-primary col-sm-12", tabIndex = 3) { +"Login" }
               }
               showIfErrorForm {
-                div(attr = literalClassName("props.errorFormClasses")) { clientText("{props.errorForm}") }
+                div(clientClass = "props.errorFormClasses") { clientText("{props.errorForm}") }
               }
             }
           }
@@ -33,7 +33,6 @@ abstract class Login(appendable: Appendable) : Element(appendable) {
     }
   }
 
-  internal abstract val attributesBuilder: AttributesBuilder
   abstract fun modal()
   abstract fun navbar()
   abstract fun notifications()
@@ -41,37 +40,48 @@ abstract class Login(appendable: Appendable) : Element(appendable) {
   abstract fun literalClassName(value: String): String
 
   fun a(onClick: String, block: Login.() -> Unit) {
-    val a = TagElement(appendable,"a")
-      .startStarterTag(
-        attributesBuilder
-          .emptyHref()
-          .onClickAttr(onClick)
-          .build()
-      )
+    val a = TagElement(appendable, "a")
+      .startStarterTag()
+    //attributes
+    appendClient(" onClick={$onClick}")
+
+    a.endStarterTag()
     this.block()
     a.endTag()
   }
 
-  fun div(className: String? = null, attr: String? = null, block: Login.() -> Unit) {
+  fun div(clientClass: String? = null, className: String? = null, block: Login.() -> Unit) {
 
     val a = TagElement(appendable, "div")
-      .startStarterTag(attributesBuilder.classNameEval(className).append(attr ?: "").build())
+      .startStarterTag()
+
+    //attributes
+    if (className != null) appendClassName(className)
+    appendClient(" className={$clientClass}")
+
+    a.endStarterTag()
     this.block()
     a.endTag()
   }
 
   fun button(className: String, tabIndex: Int, block: Login.() -> Unit) {
     val button = TagElement(appendable, "button")
-      .startStarterTag(    attributesBuilder
-        .classNameAttr(className)
-        .tabIndexAttr(tabIndex)
-        .build()
-      )
+      .startStarterTag()
+    //attributes
+    appendClassName(className)
+    appendClient(" tabIndex={$tabIndex}")
+    appendServer(""" tabindex="$tabIndex"""")
+
+    button.endStarterTag()
     this.block()
     button.endTag()
   }
-
-  abstract fun form(onSubmit: String, block: Login.() -> Unit)
+  fun form(onSubmit: String, block: Login.() -> Unit) {
+    val form = TagElement(appendable,"form")
+    appendClient(" onSubmit={$onSubmit}")
+    this.block()
+    form.endTag()
+  }
   abstract fun showIfErrorForm(block: Login.() -> Unit)
   abstract fun modalBackground()
   abstract fun clientText(text: String)

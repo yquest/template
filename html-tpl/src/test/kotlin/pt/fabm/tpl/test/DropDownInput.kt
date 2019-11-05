@@ -20,7 +20,7 @@ abstract class DropDownInput(appendable: Appendable) : Element(appendable), Mult
             type = "button"
           ) { +btnLabel }
           div(classNameIsOpen) {
-            eachItem { item, idx ->
+            eachItem {
               a(
                 key = "item",
                 onClick = "props.onSelectItem(idx)",
@@ -53,11 +53,10 @@ abstract class DropDownInput(appendable: Appendable) : Element(appendable), Mult
   abstract val itemText: String
   abstract val nameInput: String
   abstract val disabledButton: String
-  abstract val attributesBuilder: AttributesBuilder
   abstract val list: List<String>
 
   abstract fun clientText(text: String): String
-  abstract fun eachItem(block: DropDownInput.(idx: Int, listItem: String) -> Unit)
+  abstract fun eachItem(block: DropDownInput.() -> Unit)
   abstract fun showIfError(block: DropDownInput.() -> Unit)
 
   fun div(attr:String, block: DropDownInput.() -> Unit){

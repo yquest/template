@@ -1,9 +1,6 @@
 package pt.fabm.tpl.test
 
-class RegisterUserServer(appendable: Appendable, private val auth: Boolean) : RegisterUser(appendable,false) {
-  //ignore
-  override val attributesBuilder: AttributesBuilder = AttributesBuilderServer()
-
+class RegisterUserServer(appendable: Appendable, private val auth: Boolean) : RegisterUser(appendable) {
   override fun modal() {
     //ignore
   }
@@ -18,12 +15,20 @@ class RegisterUserServer(appendable: Appendable, private val auth: Boolean) : Re
 
   override fun appInput(label: String, tabIndex: Int, type: AppInput.Type) {
     val appInput = AppInputServer(appendable)
-    appInput.label { +label }
+    fun inputRender(label: String, type: AppInput.Type, tabIndex: Int){
+      appInput.render(
+        label=label,
+        type = type,
+        tabIndex = tabIndex.toString(),
+        value = ""
+      )
+    }
+
 
     when (label) {
-      Fields.USERNAME -> appInput.input(type = AppInput.Type.TEXT, value = "", tabIndex = 1)
-      Fields.PASSWORD -> appInput.input(type = AppInput.Type.PASSWORD, value = "", tabIndex = 2)
-      Fields.EMAIL -> appInput.input(type = AppInput.Type.TEXT, value = "", tabIndex = 3)
+      Fields.USERNAME -> inputRender("Username",AppInput.Type.TEXT,1)
+      Fields.PASSWORD -> inputRender("Password",AppInput.Type.TEXT,2)
+      Fields.EMAIL -> inputRender("Email",AppInput.Type.TEXT, tabIndex = 3)
     }
   }
 
@@ -31,12 +36,12 @@ class RegisterUserServer(appendable: Appendable, private val auth: Boolean) : Re
     //ignore
   }
 
-  override fun form(onSubmit: String, block: RegisterUser.() -> Unit) {
-    val form = TagElement(appendable, false,"form")
-    form.startStarterTag()
-    block()
-    form.endTag()
+  override fun appendClient(text: String) {
+    //ignore
   }
 
+  override fun appendServer(text: String) {
+    appendBody(text)
+  }
 
 }

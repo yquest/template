@@ -1,6 +1,6 @@
 package pt.fabm.tpl.test
 
-abstract class CarView(appendable: Appendable, isClient: Boolean) : Element(appendable), MultiEnvTemplate {
+abstract class CarView(appendable: Appendable) : Element(appendable), MultiEnvTemplate {
 
   protected fun render(cars: List<CarFields>) {
     cars.forEach { carFields ->
@@ -32,7 +32,6 @@ abstract class CarView(appendable: Appendable, isClient: Boolean) : Element(appe
     }
   }
 
-  abstract val attributesBuilder: AttributesBuilder
   abstract fun showIfAuthenticated(block: CarView.() -> Unit)
   abstract fun showIfBlockedRemove(block: CarView.() -> Unit)
   abstract fun showIfBlockedNotRemove(block: CarView.() -> Unit)

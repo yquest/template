@@ -8,7 +8,6 @@ class DropDowInputClient(appendable: Appendable) : DropDownInput(appendable) {
   override val list: List<String> = listOf("item")
 
   override fun clientText(text: String): String = text
-  override val attributesBuilder: AttributesBuilder = AttributesBuilderClient()
   fun render(){
     super.render(
       label = "{props.label}",
@@ -18,9 +17,9 @@ class DropDowInputClient(appendable: Appendable) : DropDownInput(appendable) {
     )
   }
 
-  override fun eachItem(block: DropDownInput.(idx: Int, listItem: String) -> Unit) {
+  override fun eachItem(block: DropDownInput.() -> Unit) {
     appendBody("{props.labels.map((item, idx) => (")
-    this.block(0,"idx")
+    this.block()
     appendBody("))}")
   }
   override fun showIfError(block: DropDownInput.() -> Unit) {

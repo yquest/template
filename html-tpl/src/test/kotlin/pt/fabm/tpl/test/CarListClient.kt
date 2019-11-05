@@ -16,8 +16,6 @@ class CarListClient(appendable: Appendable) : CarList(appendable), ClientElement
     """.trimIndent())
   }
 
-  override val attributesBuilder: AttributesBuilder = AttributesBuilderClient()
-
   override fun ifHasCars(block: CarList.() -> Unit) {
     appendable.append("const content = () => (")
     block()
