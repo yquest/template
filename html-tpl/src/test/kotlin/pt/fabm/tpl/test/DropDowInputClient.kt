@@ -1,14 +1,14 @@
 package pt.fabm.tpl.test
 
 class DropDowInputClient(appendable: Appendable) : DropDownInput(appendable) {
-  override fun resolve(serverText: String, clientText: String): String {
-    appendC
-  }
-
+  override val disabledButton: String = " disabled={props.disabled}"
+  override val nameInput: String = "{props.inputName}"
+  override val itemText: String = "{item}"
+  override val classNameIsOpen: String = " className={props.classesIsOpen}"
   override val list: List<String> = listOf("item")
+
   override fun clientText(text: String): String = text
   override val attributesBuilder: AttributesBuilder = AttributesBuilderClient()
-
   fun render(){
     super.render(
       label = "{props.label}",
@@ -17,6 +17,7 @@ class DropDowInputClient(appendable: Appendable) : DropDownInput(appendable) {
       btnLabel = "{props.btnLb}"
     )
   }
+
   override fun eachItem(block: DropDownInput.(idx: Int, listItem: String) -> Unit) {
     appendBody("{props.labels.map((item, idx) => (")
     this.block(0,"idx")
@@ -26,5 +27,12 @@ class DropDowInputClient(appendable: Appendable) : DropDownInput(appendable) {
     appendBody("{props.error !== null && props.error.length > 0 && (")
     this.block()
     appendBody(")}")
+  }
+  override fun appendClient(text: String) {
+    appendBody(text)
+  }
+
+  override fun appendServer(text: String) {
+    //ignore server
   }
 }

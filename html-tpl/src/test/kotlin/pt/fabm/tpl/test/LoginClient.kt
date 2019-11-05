@@ -6,7 +6,7 @@ class LoginClient(appendable: Appendable) : Login(appendable,true), ClientElemen
   override val attributesBuilder = AttributesBuilderClient()
   override fun asClientText(text: String): String? = text
   override fun modal() {
-    TagElement(appendable,true,"Modal").startStarterTag().endTag()
+    TagElement(appendable,"Modal").startStarterTag().endTag()
   }
 
   override fun navbar() {
@@ -31,7 +31,7 @@ class LoginClient(appendable: Appendable) : Login(appendable,true), ClientElemen
   }
 
   override fun notifications() {
-    TagElement(appendable,true,"Notifications").startStarterTag().endTag()
+    TagElement(appendable,"Notifications").startStarterTag().endTag()
   }
 
   override fun appInput(label: String, tabIndex: Int, type: AppInput.Type) {
@@ -46,7 +46,7 @@ class LoginClient(appendable: Appendable) : Login(appendable,true), ClientElemen
   }
 
   override fun form(onSubmit: String, block: Login.() -> Unit) {
-    val form = TagElement(appendable,true,"form")
+    val form = TagElement(appendable,"form")
     form.startStarterTag(" onSubmit={props.submitForm}")
     block()
     form.endTag()

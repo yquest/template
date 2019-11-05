@@ -4,7 +4,7 @@ class RegisterUserClient(appendable: Appendable) : RegisterUser(appendable,true)
   override val attributesBuilder = AttributesBuilderClient()
 
   override fun modal() {
-    TagElement(appendable,isClient,"Modal").startStarterTag().endTag()
+    TagElement(appendable,"Modal").startStarterTag().endTag()
   }
 
   override fun navbar() {
@@ -12,7 +12,7 @@ class RegisterUserClient(appendable: Appendable) : RegisterUser(appendable,true)
   }
 
   override fun notifications() {
-    TagElement(appendable,isClient,"Notifications").startStarterTag().endTag()
+    TagElement(appendable,"Notifications").startStarterTag().endTag()
   }
 
   override fun appInput(label: String, tabIndex: Int, type: AppInput.Type) {
@@ -24,7 +24,7 @@ class RegisterUserClient(appendable: Appendable) : RegisterUser(appendable,true)
   }
 
   override fun form(onSubmit: String, block: RegisterUser.() -> Unit) {
-    val form = TagElement(appendable,isClient,"form")
+    val form = TagElement(appendable,"form")
     form.startStarterTag(" onSubmit={props.submitForm}")
     block()
     form.endTag()

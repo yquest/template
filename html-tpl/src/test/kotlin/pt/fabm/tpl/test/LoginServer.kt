@@ -33,7 +33,7 @@ class LoginServer(appendable: Appendable, private val auth: Boolean) : Login(app
   }
 
   override fun form(onSubmit: String, block: Login.() -> Unit) {
-    val form = TagElement(appendable, false,"form")
+    val form = TagElement(appendable, "form")
     form.startStarterTag()
     block()
     form.endTag()

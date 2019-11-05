@@ -54,10 +54,6 @@ abstract class NavBar(appendable: Appendable) : Element(appendable), MultiEnvTem
     div.endTag()
   }
 
-  private fun emptyHref() {
-    appendable.append(""" href=""""")
-  }
-
   fun a(className: String? = null, onClick: String, block: NavBar.() -> Unit) {
 
     val a = TagElement(appendable, "a")

@@ -1,6 +1,6 @@
 package pt.fabm.tpl.test
 
-abstract class Login(appendable: Appendable,isClient:Boolean) : Element(isClient,appendable) {
+abstract class Login(appendable: Appendable) : Element(appendable) {
   companion object Fields {
     const val LOGIN = "Login"
     const val PASSWORD = "Password"
@@ -41,7 +41,7 @@ abstract class Login(appendable: Appendable,isClient:Boolean) : Element(isClient
   abstract fun literalClassName(value: String): String
 
   fun a(onClick: String, block: Login.() -> Unit) {
-    val a = TagElement(appendable,isClient, "a")
+    val a = TagElement(appendable,"a")
       .startStarterTag(
         attributesBuilder
           .emptyHref()
@@ -54,14 +54,14 @@ abstract class Login(appendable: Appendable,isClient:Boolean) : Element(isClient
 
   fun div(className: String? = null, attr: String? = null, block: Login.() -> Unit) {
 
-    val a = TagElement(appendable,isClient, "div")
+    val a = TagElement(appendable, "div")
       .startStarterTag(attributesBuilder.classNameEval(className).append(attr ?: "").build())
     this.block()
     a.endTag()
   }
 
   fun button(className: String, tabIndex: Int, block: Login.() -> Unit) {
-    val button = TagElement(appendable, isClient,"button")
+    val button = TagElement(appendable, "button")
       .startStarterTag(    attributesBuilder
         .classNameAttr(className)
         .tabIndexAttr(tabIndex)
