@@ -16,8 +16,8 @@ import pt.fabm.template.models.CarMake
 import pt.fabm.template.rest.controllers.CarController
 import pt.fabm.template.rest.controllers.UserController
 import pt.fabm.template.validation.RequiredException
-import pt.fabm.tpl.Type
-import pt.fabm.tpl.component.page.App
+import pt.fabm.tpl.component.app.AppServer
+import pt.fabm.tpl.component.app.CarFields
 import java.io.File
 import java.time.Instant
 
@@ -83,7 +83,7 @@ class RestVerticle : AbstractVerticle() {
     val username = "Xico"
     val edit = true
     val auth = true
-    router.get("/").handler {
+    router.get("/").handler { routingContext ->
 
       fun renderHtml(carList: List<Car>): String {
 
@@ -106,13 +106,16 @@ class RestVerticle : AbstractVerticle() {
           )
         )
 
-        var content = StringBuilder().let {
-          App(
-            type = Type.SERVER,
-            carList = cars,
-            readyToEdition = {true},
-            authenticated = {true}
-          ).create().renderTag(it);it.toString()
+        var content = StringBuilder().let { sb ->
+          AppServer(appendable = sb, auth = true, cars = carList.map {
+            CarFields(
+              maker = it.make.name,
+              model = it.model,
+              matDate = it.maturityDate.toString(),
+              price = it.price.toString()
+            )
+          })
+          sb.toString()
         }
 
         val appInitData = jsonObjectOf(
@@ -127,7 +130,7 @@ class RestVerticle : AbstractVerticle() {
       }
 
 
-      val response = it.response()
+      val response = routingContext.response()
       vertx.eventBus().rxSend<List<Car>>(
         EventBusAddresses.Dao.Car.list, null, DeliveryOptions().setCodecName("List")
       ).map { message ->

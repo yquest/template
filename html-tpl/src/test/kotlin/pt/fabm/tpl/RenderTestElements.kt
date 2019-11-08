@@ -1,7 +1,8 @@
 package pt.fabm.tpl
 
 import org.junit.jupiter.api.Test
-import pt.fabm.tpl.test.*
+import pt.fabm.tpl.component.*
+import pt.fabm.tpl.component.app.*
 import java.io.FileWriter
 import kotlin.text.Appendable
 
@@ -28,11 +29,8 @@ class RenderTestElements {
 
   @Test
   fun testAppInputServer() {
-    AppInputServer(System.out).render(
-      label = "myLabel",
-      type = AppInput.Type.TEXT,
-      value = "value"
-    )
+    AppInputServer(appendable = System.out,type = AppInput.Type.TEXT, value = "")
+      .render("myLabel")
   }
 
   @Test
@@ -87,7 +85,7 @@ class RenderTestElements {
 
   @Test
   fun testDropDown(){
-    DropDowInputServer(System.out,"dd1",false, listOf("element 1","element 2"))
+    DropDowInputServer(System.out, "dd1", false, listOf("element 1", "element 2"))
       .render(
         label = "drop down 1",
         tabIndex = 0,
@@ -110,22 +108,4 @@ class RenderTestElements {
     CarViewClient(System.out).renderImplementation()
   }
 
-  @Test
-  fun renderToFiles() {
-    val root = "/Users/francisco/projs/template/frontend/src/components/gen/"
-
-    val map = mapOf<String,(Appendable)->ClientElement>(
-      "CarViewTpl.tsx" to {appendable->CarViewClient(appendable)},
-      "AppTpl.tsx" to  {appendable-> AppClient(appendable)},
-      "RegisterTpl.tsx" to {appendable-> RegisterUserClient(appendable)},
-      "CarListTpl.tsx" to {appendable -> CarListClient(appendable)},
-      "NavbarTpl.tsx" to {appendable -> NavBarClient(appendable)},
-      "LoginTpl.tsx" to {appendable -> LoginClient(appendable)}
-    )
-    map.entries.forEach { entry->
-      val fw = FileWriter(root+entry.key)
-      entry.value(fw).renderImplementation()
-      fw.close()
-    }
-  }
 }

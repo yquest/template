@@ -180,7 +180,7 @@ class TestClient {
       )
     )
 
-    client.get(port!!, host, "/api/car/list")
+    client.get(port, host, "/api/car/list")
       .rxSend()
       .subscribe { response: HttpResponse<Buffer> ->
         testContext.verify {
