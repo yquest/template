@@ -9,9 +9,8 @@ import org.junit.jupiter.api.extension.ExtendWith
 import pt.fabm.template.EventBusAddresses
 import pt.fabm.template.LocalCodec
 import pt.fabm.template.dao.DaoVerticle
-import pt.fabm.template.models.*
+import pt.fabm.template.models.type.*
 import java.time.Instant
-import java.time.LocalDateTime
 
 @ExtendWith(VertxExtension::class)
 class DaoVerticleTest {

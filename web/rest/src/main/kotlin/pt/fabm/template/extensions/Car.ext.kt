@@ -1,8 +1,8 @@
 package pt.fabm.template.extensions
 
 import io.vertx.core.json.JsonObject
-import pt.fabm.template.models.Car
-import pt.fabm.template.models.CarMake
+import pt.fabm.template.models.type.Car
+import pt.fabm.template.models.type.CarMake
 import java.time.Instant
 
 fun Car.toJson(): JsonObject {

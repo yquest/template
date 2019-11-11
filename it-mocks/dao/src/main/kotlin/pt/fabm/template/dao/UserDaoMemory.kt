@@ -1,9 +1,8 @@
 package pt.fabm.template.dao
 
 import io.vertx.reactivex.core.eventbus.Message
-import pt.fabm.template.models.Login
-import pt.fabm.template.models.UserRegisterIn
-import java.security.MessageDigest
+import pt.fabm.template.models.type.Login
+import pt.fabm.template.models.type.UserRegisterIn
 
 class UserDaoMemory : UserDao {
 

@@ -1,4 +1,4 @@
-package pt.fabm.template.models
+package pt.fabm.template.models.type
 
 data class SimpleDate(
   val year: Int,

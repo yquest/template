@@ -1,12 +1,8 @@
 package pt.fabm.template
 
 import Consts
-import io.jsonwebtoken.Jwts
-import io.netty.handler.codec.http.cookie.ClientCookieDecoder
-import io.netty.handler.codec.http.cookie.ServerCookieDecoder
 import io.vertx.core.http.HttpHeaders
 import io.vertx.core.json.JsonArray
-import io.vertx.core.json.JsonObject
 import io.vertx.junit5.Timeout
 import io.vertx.junit5.VertxExtension
 import io.vertx.junit5.VertxTestContext
@@ -15,37 +11,22 @@ import io.vertx.kotlin.core.json.jsonObjectOf
 import io.vertx.kotlin.core.json.obj
 import io.vertx.reactivex.core.Vertx
 import io.vertx.reactivex.core.buffer.Buffer
-import io.vertx.reactivex.ext.web.Cookie
 import io.vertx.reactivex.ext.web.client.HttpRequest
 import io.vertx.reactivex.ext.web.client.HttpResponse
 import io.vertx.reactivex.ext.web.client.WebClient
-import org.apache.http.impl.cookie.BasicClientCookie
-import org.junit.Assert
 import org.junit.jupiter.api.Assertions.assertEquals
-import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.DisplayName
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.ExtendWith
-import org.yaml.snakeyaml.Yaml
 import pt.fabm.template.dao.DaoMemoryShared
-import pt.fabm.template.extensions.toHash
 import pt.fabm.template.extensions.toJson
-import pt.fabm.template.models.Car
-import pt.fabm.template.models.CarMake
-import pt.fabm.template.models.UserRegisterIn
+import pt.fabm.template.models.type.Car
+import pt.fabm.template.models.type.CarMake
 import pt.fabm.template.validation.AuthException
-import java.io.FileReader
-import java.nio.file.Paths
-import java.security.MessageDigest
 import java.time.Instant
 import java.time.LocalDateTime
-import java.time.Month
 import java.time.ZoneOffset
-import java.time.chrono.ChronoLocalDate
-import java.time.chrono.Chronology
 import java.time.temporal.ChronoUnit
-import java.time.temporal.TemporalAccessor
-import java.time.temporal.TemporalUnit
 import java.util.concurrent.TimeUnit
 
 
@@ -120,7 +101,7 @@ class TestClient {
   @Throws(Throwable::class)
   fun createCar(vertx: Vertx, testContext: VertxTestContext) {
     val client = WebClient.create(vertx)
-    val before1Month = Instant.now().minus(1,ChronoUnit.MONTHS)
+    val before1Month = Instant.now().minus(1,ChronoUnit.DAYS)
 
     val car = Car("Golf VI", CarMake.VOLKSWAGEN, 25000, before1Month)
 
@@ -143,9 +124,10 @@ class TestClient {
   @Throws(Throwable::class)
   fun createCarReplaceToken(vertx: Vertx, testContext: VertxTestContext) {
     val client = WebClient.create(vertx)
-    val before1Month = Instant.now().minus(1,ChronoUnit.MONTHS)
+    val before1Month = Instant.now().minus(1,ChronoUnit.DAYS)
 
-    val car = Car("Golf V", CarMake.VOLKSWAGEN, 25000, before1Month)
+    val car =
+      Car("Golf V", CarMake.VOLKSWAGEN, 25000, before1Month)
 
     fun createCar(clientResponse: HttpResponse<*>) {
       client.post(port, host, "/api/car")

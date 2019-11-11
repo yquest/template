@@ -1,8 +1,8 @@
 package pt.fabm.template.dao
 
 import io.vertx.reactivex.core.eventbus.Message
-import pt.fabm.template.models.Login
-import pt.fabm.template.models.UserRegisterIn
+import pt.fabm.template.models.type.Login
+import pt.fabm.template.models.type.UserRegisterIn
 import java.io.Closeable
 import java.sql.Connection
 

@@ -1,4 +1,4 @@
-package pt.fabm.template.models
+package pt.fabm.template.models.type
 
 data class CarId(
   val model:String,

@@ -4,6 +4,7 @@ import Consts
 import io.jsonwebtoken.ExpiredJwtException
 import io.jsonwebtoken.Jwts
 import io.reactivex.Observable
+import io.vertx.core.json.JsonObject
 import io.vertx.junit5.VertxExtension
 import io.vertx.junit5.VertxTestContext
 import io.vertx.reactivex.core.Vertx
@@ -11,14 +12,11 @@ import org.junit.Assert
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.ExtendWith
-import java.text.SimpleDateFormat
 import java.time.Instant
 import java.time.LocalDateTime
 import java.time.ZoneId
-import java.time.format.DateTimeFormatter
 import java.time.temporal.ChronoUnit
 import java.util.*
-import java.util.logging.SimpleFormatter
 
 @ExtendWith(VertxExtension::class)
 class LooseTests {
@@ -205,15 +203,5 @@ class LooseTests {
       asyncCheck.flag()
     }
 
-  }
-
-  @Test
-  fun test(){
-    fun formattedDate(date:Instant):String{
-      val strFormat = "yyyy-MM-dd, HH:mm"
-      val formatter = SimpleDateFormat(strFormat)
-      return formatter.format(Date(date.toEpochMilli()))
-    }
-    println(formattedDate(Instant.now()))
   }
 }

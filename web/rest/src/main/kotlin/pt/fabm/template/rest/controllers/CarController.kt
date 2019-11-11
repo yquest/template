@@ -12,10 +12,9 @@ import pt.fabm.template.EventBusAddresses
 import pt.fabm.template.extensions.nullIfEmpty
 import pt.fabm.template.extensions.toEnum
 import pt.fabm.template.extensions.toJson
-import pt.fabm.template.extensions.toLocalDateTime
-import pt.fabm.template.models.Car
-import pt.fabm.template.models.CarId
-import pt.fabm.template.models.CarMake
+import pt.fabm.template.models.type.Car
+import pt.fabm.template.models.type.CarId
+import pt.fabm.template.models.type.CarMake
 import pt.fabm.template.rest.RestResponse
 import pt.fabm.template.validation.InvalidEntryException
 import pt.fabm.template.validation.RequiredException
@@ -65,7 +64,9 @@ class CarController(val vertx: Vertx) {
       return RestResponse(statusCode = 404)
     }
 
-    return vertx.eventBus().rxSend<Car>(EventBusAddresses.Dao.Car.retrieve, CarId(model = model, maker = make))
+    return vertx.eventBus().rxSend<Car>(EventBusAddresses.Dao.Car.retrieve,
+      CarId(model = model, maker = make)
+    )
       .map(::sentMessage)
       .onErrorReturn(::handleError)
   }
@@ -77,17 +78,17 @@ class CarController(val vertx: Vertx) {
     fun lbCar(lb: String) = "${Car.CAR}.$lb"
 
     val car = Car(
-      model = body.getString(Car.MODEL).nullIfEmpty() ?: throw RequiredException(lbCar(Car.MODEL)),
+      model = body.getString(Car.MODEL).nullIfEmpty()
+        ?: throw RequiredException(lbCar(Car.MODEL)),
       make = body.getString(Car.MAKE).nullIfEmpty()
         .let { it ?: throw RequiredException(lbCar(Car.MAKE)) }
         .let { strMake ->
           val make = strMake toEnum CarMake::class.java
           make ?: throw InvalidEntryException(strMake, lbCar(Car.MAKE))
         },
-      price = body.getInteger(Car.PRICE) ?: throw RequiredException(lbCar(Car.PRICE)),
-      maturityDate = body.getString(Car.MATURITY_DATE).nullIfEmpty()
-        .let { it ?: throw RequiredException(lbCar(Car.MATURITY_DATE)) }
-        .let { Instant.parse(it) }
+      price = body.getInteger(Car.PRICE)
+        ?: throw RequiredException(lbCar(Car.PRICE)),
+      maturityDate = body.getLong(Car.MATURITY_DATE).let { Instant.ofEpochMilli(it) }
     )
 
     val ebAddress = if (createAction) EventBusAddresses.Dao.Car.create
@@ -112,7 +113,8 @@ class CarController(val vertx: Vertx) {
   fun deleteCar(rc: RoutingContext): Single<RestResponse> {
     val request = rc.request()
     val carId = CarId(
-      model = request.getParam(Car.MODEL).nullIfEmpty() ?: throw RequiredException(Car.MODEL),
+      model = request.getParam(Car.MODEL).nullIfEmpty()
+        ?: throw RequiredException(Car.MODEL),
       maker = request.getParam(Car.MAKE).nullIfEmpty()
         .let { it ?: throw RequiredException(Car.MAKE) }
         .let { strMake ->

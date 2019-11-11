@@ -1,8 +1,8 @@
 package pt.fabm.template.dao
 
 import io.vertx.reactivex.core.eventbus.Message
-import pt.fabm.template.models.Car
-import pt.fabm.template.models.CarId
+import pt.fabm.template.models.type.Car
+import pt.fabm.template.models.type.CarId
 
 interface CarDao {
 

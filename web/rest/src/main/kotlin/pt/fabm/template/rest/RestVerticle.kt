@@ -7,19 +7,18 @@ import io.vertx.core.logging.Logger
 import io.vertx.core.logging.LoggerFactory
 import io.vertx.kotlin.core.json.jsonObjectOf
 import io.vertx.reactivex.core.AbstractVerticle
+import io.vertx.reactivex.core.buffer.Buffer
 import io.vertx.reactivex.ext.web.Router
 import io.vertx.reactivex.ext.web.handler.StaticHandler
 import pt.fabm.template.EventBusAddresses
 import pt.fabm.template.extensions.*
-import pt.fabm.template.models.Car
-import pt.fabm.template.models.CarMake
+import pt.fabm.template.models.type.Car
 import pt.fabm.template.rest.controllers.CarController
 import pt.fabm.template.rest.controllers.UserController
 import pt.fabm.template.validation.RequiredException
 import pt.fabm.tpl.component.app.AppServer
 import pt.fabm.tpl.component.app.CarFields
 import java.io.File
-import java.time.Instant
 
 class RestVerticle : AbstractVerticle() {
 
@@ -74,7 +73,7 @@ class RestVerticle : AbstractVerticle() {
                 <div id="root">${content}</div>
             </div>
             <script type="text/javascript">var __state = $appInitData;</script>
-            <script type="text/javascript" src="bundle.js?2"></script>
+            <script type="text/javascript" src="bundle.js"></script>
           </body>
         </html>
         """.trimIndent()
@@ -83,30 +82,11 @@ class RestVerticle : AbstractVerticle() {
     val username = "Xico"
     val edit = true
     val auth = true
-    router.get("/").handler { routingContext ->
+    router.get("/").authHandler(userTimeout) { ac ->
 
       fun renderHtml(carList: List<Car>): String {
 
-        val cars = listOf(
-          Car(
-            make = CarMake.VOLKSWAGEN,
-            maturityDate = Instant.ofEpochMilli(1567594959104L),
-            model = "golf v",
-            price = 3_000
-          ), Car(
-            make = CarMake.AUDI,
-            maturityDate = Instant.ofEpochMilli(1567594959104L),
-            model = "A6",
-            price = 30_000
-          ), Car(
-            make = CarMake.PEUGEOT,
-            maturityDate = Instant.ofEpochMilli(1567594959104L),
-            model = "308",
-            price = 30_000
-          )
-        )
-
-        var content = StringBuilder().let { sb ->
+        val content = StringBuilder().let { sb ->
           AppServer(appendable = sb, auth = true, cars = carList.map {
             CarFields(
               maker = it.make.name,
@@ -120,7 +100,14 @@ class RestVerticle : AbstractVerticle() {
 
         val appInitData = jsonObjectOf(
           "page" to "init",
-          "cars" to cars.map { car -> car.toJson() },
+          "cars" to carList.map {
+            CarFields(
+              maker = it.make.name,
+              model = it.model,
+              matDate = it.maturityDate.toString(),
+              price = it.price.toString()
+            )
+          },
           "username" to username,
           "edit" to edit,
           "auth" to auth
@@ -129,13 +116,13 @@ class RestVerticle : AbstractVerticle() {
         return renderContent(content, appInitData)
       }
 
-
-      val response = routingContext.response()
       vertx.eventBus().rxSend<List<Car>>(
         EventBusAddresses.Dao.Car.list, null, DeliveryOptions().setCodecName("List")
       ).map { message ->
-        response.end(renderHtml(message.body()))
-      }.subscribe()
+        renderHtml(message.body())
+      }.map {
+        RestResponse(Buffer.buffer(it))
+      }
     }
 
     router.route().handler {

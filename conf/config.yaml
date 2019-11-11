@@ -4,6 +4,10 @@ verticles:
 confs:
   rest:
     host: 0.0.0.0
+    port: 8888
     pdir: ./frontend/dist
     #user token timeout in milliseconds 30 minutes = 30*60*1000
     user_timeout: 1800000
+  dao:
+    host: 0.0.0.0
+    port: 8081

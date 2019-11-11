@@ -9,7 +9,7 @@ import io.vertx.core.logging.Logger
 import io.vertx.core.logging.LoggerFactory
 import io.vertx.reactivex.config.ConfigRetriever
 import io.vertx.reactivex.core.AbstractVerticle
-import pt.fabm.template.models.*
+import pt.fabm.template.models.type.*
 
 
 class MainVerticle : AbstractVerticle() {
@@ -35,14 +35,15 @@ class MainVerticle : AbstractVerticle() {
   override fun rxStart(): Completable {
     registerCodecs()
 
-    LOGGER.info("${System.getProperty("conf")}/config.yaml")
+    val yamlPath = "${System.getProperty("conf")}/config.yaml"
+    LOGGER.info("config.yaml path: $yamlPath")
 
     val store = ConfigStoreOptions()
       .setType("file")
       .setFormat("yaml")
       .setConfig(
         JsonObject()
-          .put("path", "${System.getProperty("conf")}/config.yaml")
+          .put("path", yamlPath)
       )
 
     val retriever = ConfigRetriever.create(

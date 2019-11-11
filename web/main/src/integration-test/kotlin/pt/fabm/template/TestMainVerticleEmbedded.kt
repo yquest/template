@@ -26,9 +26,9 @@ import org.yaml.snakeyaml.Yaml
 import pt.fabm.template.dao.DaoMemoryShared
 import pt.fabm.template.extensions.toHash
 import pt.fabm.template.extensions.toJson
-import pt.fabm.template.models.Car
-import pt.fabm.template.models.CarMake
-import pt.fabm.template.models.UserRegisterIn
+import pt.fabm.template.models.type.Car
+import pt.fabm.template.models.type.CarMake
+import pt.fabm.template.models.type.UserRegisterIn
 import pt.fabm.template.validation.AuthException
 import java.io.FileReader
 import java.nio.file.Paths
@@ -186,7 +186,12 @@ class TestMainVerticle {
     val client = WebClient.create(vertx)
     val date = LocalDateTime.of(2019, 5, 1, 3, 6)
 
-    val car = Car("Golf V", CarMake.VOLKSWAGEN, 25000, date.toInstant(ZoneOffset.UTC))
+    val car = Car(
+      "Golf V",
+      CarMake.VOLKSWAGEN,
+      25000,
+      date.toInstant(ZoneOffset.UTC)
+    )
     DaoMemoryShared.cars.add(car)
 
     client.get(port!!, host, "/api/car")
@@ -201,7 +206,7 @@ class TestMainVerticle {
               """{
                   |"make":"VOLKSWAGEN",
                   |"model":"Golf V",
-                  |"maturityDate":"2019-05-01T03:06:00",
+                  |"maturityDate":1556679960000,
                   |"price":25000}"""
                 .trimMargin()
             ),
@@ -221,8 +226,18 @@ class TestMainVerticle {
     val date1 = LocalDateTime.of(2019, 5, 1, 8, 9)
     val date2 = LocalDateTime.of(2019, 5, 1, 8, 10)
 
-    val car1 = Car("Golf V", CarMake.VOLKSWAGEN, 25000, date1.toInstant(ZoneOffset.UTC))
-    val car2 = Car("Golf V", CarMake.VOLKSWAGEN, 2000, date2.toInstant(ZoneOffset.UTC))
+    val car1 = Car(
+      "Golf V",
+      CarMake.VOLKSWAGEN,
+      25000,
+      date1.toInstant(ZoneOffset.UTC)
+    )
+    val car2 = Car(
+      "Golf V",
+      CarMake.VOLKSWAGEN,
+      2000,
+      date2.toInstant(ZoneOffset.UTC)
+    )
 
     DaoMemoryShared.cars.add(car1)
 
@@ -249,7 +264,12 @@ class TestMainVerticle {
     val client = WebClient.create(vertx)
     val date = LocalDateTime.of(2019, 5, 1, 8, 9)
 
-    val car = Car("Golf V", CarMake.VOLKSWAGEN, 25000, date.toInstant(ZoneOffset.UTC))
+    val car = Car(
+      "Golf V",
+      CarMake.VOLKSWAGEN,
+      25000,
+      date.toInstant(ZoneOffset.UTC)
+    )
 
     client.get(port!!, host, "/api/car")
       .addQueryParam(Car.MAKE, car.make.name)
@@ -271,7 +291,12 @@ class TestMainVerticle {
     val client = WebClient.create(vertx)
     val before1Month = LocalDateTime.now().minusMonths(1)
 
-    val car = Car("Golf V", CarMake.VOLKSWAGEN, 25000, before1Month.toInstant(ZoneOffset.UTC))
+    val car = Car(
+      "Golf V",
+      CarMake.VOLKSWAGEN,
+      25000,
+      before1Month.toInstant(ZoneOffset.UTC)
+    )
 
 
     login(client) { clientResp ->
@@ -297,7 +322,12 @@ class TestMainVerticle {
     val client = WebClient.create(vertx)
     val before1Month = LocalDateTime.now().minusMonths(1)
 
-    val car = Car("Golf V", CarMake.VOLKSWAGEN, 25000, before1Month.toInstant(ZoneOffset.UTC))
+    val car = Car(
+      "Golf V",
+      CarMake.VOLKSWAGEN,
+      25000,
+      before1Month.toInstant(ZoneOffset.UTC)
+    )
 
     fun createCar(clientResponse: HttpResponse<*>) {
       client.post(port!!, host, "/api/car")
@@ -342,7 +372,7 @@ class TestMainVerticle {
                   | {
                   |           "make":"VOLKSWAGEN",
                   |          "model":"Golf V",
-                  |   "maturityDate":"2019-01-01T07:08:00",
+                  |   "maturityDate":1546326480000,
                   |          "price":2000
                   | }
                   |]""".trimMargin()

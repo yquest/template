@@ -11,10 +11,9 @@ import pt.fabm.template.EventBusAddresses
 import pt.fabm.template.extensions.LOGGER
 import pt.fabm.template.extensions.checkedString
 import pt.fabm.template.extensions.toHash
-import pt.fabm.template.models.Login
-import pt.fabm.template.models.UserRegisterIn
+import pt.fabm.template.models.type.Login
+import pt.fabm.template.models.type.UserRegisterIn
 import pt.fabm.template.rest.RestResponse
-import java.time.Instant
 import java.time.LocalDateTime
 import java.time.ZoneId
 import java.time.temporal.ChronoUnit

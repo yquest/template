@@ -1,4 +1,4 @@
-package pt.fabm.template.models
+package pt.fabm.template.models.type
 
 import java.time.Instant
 

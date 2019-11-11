@@ -1,4 +1,4 @@
-package pt.fabm.template.models
+package pt.fabm.template.models.type
 
 class Login (
   val username:String,
