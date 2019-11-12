@@ -1,6 +1,8 @@
 package pt.fabm.tpl.component
 
-abstract class DropDownInput(appendable: Appendable) : Element(appendable), MultiEnvTemplate {
+import io.vertx.core.buffer.Buffer
+
+abstract class DropDownInput(buffer: Buffer) : Element(buffer), MultiEnvTemplate {
 
   internal fun render(
     label: String,
@@ -60,7 +62,7 @@ abstract class DropDownInput(appendable: Appendable) : Element(appendable), Mult
   abstract fun showIfError(block: DropDownInput.() -> Unit)
 
   fun div(attr:String, block: DropDownInput.() -> Unit){
-    val div = TagElement(appendable, "div")
+    val div = TagElement(buffer, "div")
     div.startStarterTag()
     appendBody(attr)
     div.endStarterTag()
@@ -73,7 +75,7 @@ abstract class DropDownInput(appendable: Appendable) : Element(appendable), Mult
     onKeyDown: String? = null,
     block: DropDownInput.() -> Unit
   ) {
-    val div = TagElement(appendable, "div")
+    val div = TagElement(buffer, "div")
     div.startStarterTag()
     if (className != null) {
       appendClient(""" className="$className"""")
@@ -94,7 +96,7 @@ abstract class DropDownInput(appendable: Appendable) : Element(appendable), Mult
     className: TemplateTuple,
     block: DropDownInput.() -> Unit
   ) {
-    val a = TagElement(appendable, "a").startStarterTag()
+    val a = TagElement(buffer, "a").startStarterTag()
     emptyHref()
     appendClient(""" key={$key} onMouseDown={$mouseDown} onClick={$onClick} className={${className.client}}""")
     appendServer(""" class="${className.server}"""")
@@ -105,7 +107,7 @@ abstract class DropDownInput(appendable: Appendable) : Element(appendable), Mult
   }
 
   internal fun label(block: DropDownInput.() -> Unit) {
-    val label = TagElement(appendable, "label").noAttributesStarterTag()
+    val label = TagElement(buffer, "label").noAttributesStarterTag()
     this.block()
     label.endTag()
   }
@@ -118,7 +120,7 @@ abstract class DropDownInput(appendable: Appendable) : Element(appendable), Mult
     type: String,
     block: DropDownInput.() -> Unit
   ) {
-    val button = TagElement(appendable, "button").startStarterTag()
+    val button = TagElement(buffer, "button").startStarterTag()
     appendBody(disabledButton)
     appendClient(""" onBlur={$onBlur} tabIndex={$tabIndex} type="$type" onClick={$onClick} className="$className" """)
     appendServer(""" tabindex="$tabIndex" type="$type" class="$className"""")
@@ -132,7 +134,7 @@ abstract class DropDownInput(appendable: Appendable) : Element(appendable), Mult
     type: AppInput.Type,
     value: String
   ) {
-    val input = TagElement(appendable, "input")
+    val input = TagElement(buffer, "input")
       .startStarterTag()
     appendBody(""" type="${type.label}" name=$name value=$value""")
     input.endStarterTag()

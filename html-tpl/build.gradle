@@ -8,6 +8,7 @@ repositories {
 }
 dependencies {
   implementation project(':web:shared')
+  implementation "io.vertx:vertx-core:$vertxVersion"
   implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8:$kotlinVersion"
   testImplementation "org.junit.jupiter:junit-jupiter-api:$junitJupiterEngineVersion"
   testImplementation group: 'com.datastax.dse', name: 'dse-java-driver-core', version: '2.2.0-cloud-01'

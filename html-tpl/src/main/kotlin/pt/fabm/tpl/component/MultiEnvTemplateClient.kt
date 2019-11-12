@@ -3,7 +3,7 @@ package pt.fabm.tpl.component
 interface MultiEnvTemplateClient: MultiEnvTemplate {
 
   override fun appendClient(text:String){
-    appendable.append(text)
+    buffer.appendString(text)
   }
   override fun appendServer(text:String){
     //ignore append

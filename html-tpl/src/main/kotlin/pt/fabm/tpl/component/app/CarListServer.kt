@@ -1,8 +1,9 @@
 package pt.fabm.tpl.component.app
 
+import io.vertx.core.buffer.Buffer
 import pt.fabm.tpl.component.MultiEnvTemplateServer
 
-class CarListServer(appendable: Appendable, private val auth: Boolean, private val cars: List<CarFields>) :
+class CarListServer(appendable: Buffer, private val auth: Boolean, private val cars: List<CarFields>) :
   CarList(appendable), MultiEnvTemplateServer {
 
   override fun ifHasCars(block: CarList.() -> Unit) {
@@ -15,7 +16,7 @@ class CarListServer(appendable: Appendable, private val auth: Boolean, private v
   override fun colspanTr(colspan: Int): String = """ colspan="$colspan""""
 
   override fun carLines() {
-    CarViewServer(auth, appendable).renderServer(cars)
+    CarViewServer(auth, buffer).renderServer(cars)
   }
   override fun showIfAuthenticated(block: CarList.() -> Unit) {
     if (auth) block()

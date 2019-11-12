@@ -1,10 +1,11 @@
 package pt.fabm.tpl.component.app
 
+import io.vertx.core.buffer.Buffer
 import pt.fabm.tpl.component.Element
 import pt.fabm.tpl.component.MultiEnvTemplate
 import pt.fabm.tpl.component.TagElement
 
-abstract class App(appendable: Appendable) : Element(appendable), MultiEnvTemplate {
+abstract class App(appendable: Buffer) : Element(appendable), MultiEnvTemplate {
 
   fun render() {
     div(className = "container app") {
@@ -33,7 +34,7 @@ abstract class App(appendable: Appendable) : Element(appendable), MultiEnvTempla
   abstract fun carEditor()
   abstract fun modalBackground()
   fun div(className: String, block: App.() -> Unit) {
-    val div = TagElement(appendable,"div")
+    val div = TagElement(buffer,"div")
     div.startStarterTag()
     //attributes
     appendClassName(className)
@@ -44,7 +45,7 @@ abstract class App(appendable: Appendable) : Element(appendable), MultiEnvTempla
   }
 
   fun button(className: String, tabindex: Int, onClick: String, block: App.() -> Unit){
-    val button = TagElement(appendable, "button")
+    val button = TagElement(buffer, "button")
     button.startStarterTag()
     //attributes
     appendClassName(className)

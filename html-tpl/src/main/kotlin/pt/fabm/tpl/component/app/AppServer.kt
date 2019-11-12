@@ -1,15 +1,16 @@
 package pt.fabm.tpl.component.app
 
+import io.vertx.core.buffer.Buffer
 import pt.fabm.tpl.component.MultiEnvTemplateServer
 
-class AppServer(appendable: Appendable, private val auth: Boolean, private val cars: List<CarFields>) :
-  App(appendable), MultiEnvTemplateServer {
+class AppServer(buffer: Buffer, private val auth: Boolean, private val cars: List<CarFields>) :
+  App(buffer), MultiEnvTemplateServer {
   override fun modal() {
     //ignore
   }
 
   override fun navBar() {
-    NavBarServer(appendable, auth).render()
+    NavBarServer(buffer, auth).render()
   }
 
   override fun notifications() {
@@ -17,7 +18,7 @@ class AppServer(appendable: Appendable, private val auth: Boolean, private val c
   }
 
   override fun carList() {
-    CarListServer(appendable, auth, cars).render()
+    CarListServer(buffer, auth, cars).render()
   }
 
   override fun showIfAuthenticated(block: App.() -> Unit) {

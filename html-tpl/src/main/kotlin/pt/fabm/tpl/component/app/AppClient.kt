@@ -1,10 +1,11 @@
 package pt.fabm.tpl.component.app
 
+import io.vertx.core.buffer.Buffer
 import pt.fabm.tpl.component.ClientElement
 import pt.fabm.tpl.component.MultiEnvTemplateClient
 import pt.fabm.tpl.component.TagElement
 
-class AppClient(appendable: Appendable) : App(appendable), ClientElement, MultiEnvTemplateClient {
+class AppClient(buffer: Buffer) : App(buffer), ClientElement, MultiEnvTemplateClient {
 
   override fun renderImplementation(){
     appendBody(
@@ -27,7 +28,7 @@ class AppClient(appendable: Appendable) : App(appendable), ClientElement, MultiE
   }
 
   override fun modal() {
-    TagElement(appendable, "Modal").createSingleTag()
+    TagElement(buffer, "Modal").createSingleTag()
   }
 
   override fun navBar() {
@@ -35,11 +36,11 @@ class AppClient(appendable: Appendable) : App(appendable), ClientElement, MultiE
   }
 
   override fun notifications() {
-    TagElement(appendable, "Notifications").createSingleTag()
+    TagElement(buffer, "Notifications").createSingleTag()
   }
 
   override fun carList() {
-    TagElement(appendable, "CarList").createSingleTag()
+    TagElement(buffer, "CarList").createSingleTag()
   }
 
   override fun showIfAuthenticated(block: App.() -> Unit) {
@@ -55,7 +56,7 @@ class AppClient(appendable: Appendable) : App(appendable), ClientElement, MultiE
   }
 
   override fun carEditor() {
-    TagElement(appendable, "CarEditor")
+    TagElement(buffer, "CarEditor")
       .createSingleTag()
   }
 

@@ -1,10 +1,11 @@
 package pt.fabm.tpl.component.app
 
+import io.vertx.core.buffer.Buffer
 import pt.fabm.tpl.component.Element
 import pt.fabm.tpl.component.MultiEnvTemplate
 import pt.fabm.tpl.component.TagElement
 
-abstract class NavBar(appendable: Appendable) : Element(appendable), MultiEnvTemplate {
+abstract class NavBar(buffer: Buffer) : Element(buffer), MultiEnvTemplate {
 
   fun render() {
     div(className = "d-flex flex-column flex-md-row align-items-center p-3 px-md-4 mb-3 bg-white border-bottom") {
@@ -27,7 +28,7 @@ abstract class NavBar(appendable: Appendable) : Element(appendable), MultiEnvTem
   }
 
   fun i(className: String) {
-    val i = TagElement(appendable, "i")
+    val i = TagElement(buffer, "i")
     i.startStarterTag()
     //attributes
     appendClassName(className)
@@ -36,7 +37,7 @@ abstract class NavBar(appendable: Appendable) : Element(appendable), MultiEnvTem
   }
 
   fun h5(className: String, onClick: String, block: NavBar.() -> Unit) {
-    val h5 = TagElement(appendable, "h5")
+    val h5 = TagElement(buffer, "h5")
     h5.startStarterTag()
     //attributes
     appendClassName(className)
@@ -50,7 +51,7 @@ abstract class NavBar(appendable: Appendable) : Element(appendable), MultiEnvTem
 
   abstract fun showIfNotAuthenticated(block: NavBar.() -> Unit)
   fun div(className: String, block: NavBar.() -> Unit) {
-    val div = TagElement(appendable, "div")
+    val div = TagElement(buffer, "div")
       .startStarterTag()
     appendClassName(className)
     this.block()
@@ -59,7 +60,7 @@ abstract class NavBar(appendable: Appendable) : Element(appendable), MultiEnvTem
 
   fun a(className: String? = null, onClick: String, block: NavBar.() -> Unit) {
 
-    val a = TagElement(appendable, "a")
+    val a = TagElement(buffer, "a")
       .startStarterTag()
     //attributes
     emptyHref()

@@ -1,6 +1,8 @@
 package pt.fabm.tpl.component
 
-class DropDowInputClient(appendable: Appendable) : DropDownInput(appendable),
+import io.vertx.core.buffer.Buffer
+
+class DropDowInputClient(buffer: Buffer) : DropDownInput(buffer),
   MultiEnvTemplateClient {
   override val disabledButton: String = " disabled={props.disabled}"
   override val nameInput: String = "{props.inputName}"

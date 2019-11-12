@@ -1,7 +1,9 @@
 package pt.fabm.tpl.component
 
+import io.vertx.core.buffer.Buffer
+
 class AppInputServer(
-  appendable: Appendable,
+  appendable: Buffer,
   private val type: Type,
   private val tabIndex: Int? = null,
   private val placeHolder: String? = null,
@@ -9,7 +11,7 @@ class AppInputServer(
   private val value: String
 ) : AppInput(appendable), MultiEnvTemplateServer {
   override fun input() {
-    val input = TagElement(appendable, "input")
+    val input = TagElement(buffer, "input")
       .startStarterTag()
     //attributes
     appendServer(""" tabindex="$tabIndex"""")

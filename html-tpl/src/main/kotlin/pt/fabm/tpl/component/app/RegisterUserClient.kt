@@ -1,15 +1,16 @@
 package pt.fabm.tpl.component.app
 
+import io.vertx.core.buffer.Buffer
 import pt.fabm.tpl.component.AppInput
 import pt.fabm.tpl.component.ClientElement
 import pt.fabm.tpl.component.MultiEnvTemplateClient
 import pt.fabm.tpl.component.TagElement
 
-class RegisterUserClient(appendable: Appendable) : RegisterUser(appendable), ClientElement,
+class RegisterUserClient(buffer: Buffer) : RegisterUser(buffer), ClientElement,
   MultiEnvTemplateClient {
 
   override fun modal() {
-    TagElement(appendable,"Modal").startStarterTag().endTag()
+    TagElement(buffer,"Modal").startStarterTag().endTag()
   }
 
   override fun navbar() {
@@ -17,7 +18,7 @@ class RegisterUserClient(appendable: Appendable) : RegisterUser(appendable), Cli
   }
 
   override fun notifications() {
-    TagElement(appendable,"Notifications").startStarterTag().endTag()
+    TagElement(buffer,"Notifications").startStarterTag().endTag()
   }
 
   override fun appInput(label: String, tabIndex: Int, type: AppInput.Type) {
@@ -34,7 +35,7 @@ class RegisterUserClient(appendable: Appendable) : RegisterUser(appendable), Cli
   }
 
   override fun renderImplementation() {
-    appendable.append("""
+    buffer.appendString("""
     import { observer } from "mobx-react";
     import * as React from "react";
     import { Notifications } from "../tpl/Notifications";
@@ -47,7 +48,7 @@ class RegisterUserClient(appendable: Appendable) : RegisterUser(appendable), Cli
     export const Register = observer((props: registerPage.Props) => ( 
     """.trimIndent())
     render()
-    appendable.append("));")
+    buffer.appendString("));")
   }
 
 

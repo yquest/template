@@ -1,8 +1,9 @@
 package pt.fabm.tpl.component.app
 
+import io.vertx.core.buffer.Buffer
 import pt.fabm.tpl.component.MultiEnvTemplateServer
 
-class CarViewServer(private val auth: Boolean, appendable: Appendable) : CarView(appendable),
+class CarViewServer(private val auth: Boolean, buffer: Buffer) : CarView(buffer),
   MultiEnvTemplateServer {
 
   fun renderServer(cars: List<CarFields>) {
@@ -27,6 +28,6 @@ class CarViewServer(private val auth: Boolean, appendable: Appendable) : CarView
   }
 
   override fun appendServer(text: String) {
-    appendable.append(text)
+    buffer.appendString(text)
   }
 }

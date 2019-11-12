@@ -1,7 +1,9 @@
 package pt.fabm.tpl.component
 
+import io.vertx.core.buffer.Buffer
+
 class DropDowInputServer(
-  appendable: Appendable,
+  appendable: Buffer,
   override val nameInput: String,
   val isDisabledButton: Boolean,
   override val list: List<String>

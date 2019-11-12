@@ -1,8 +1,10 @@
 package pt.fabm.tpl.component
 
-open class Element(val appendable: Appendable) {
+import io.vertx.core.buffer.Buffer
+
+open class Element(val buffer: Buffer) {
   fun appendBody(body: String): Element {
-    appendable.append(body)
+    buffer.appendString(body)
     return this
   }
 
@@ -11,6 +13,6 @@ open class Element(val appendable: Appendable) {
   }
 
   fun emptyHref(){
-    appendable.append(""" href=""""")
+    buffer.appendString(""" href=""""")
   }
 }

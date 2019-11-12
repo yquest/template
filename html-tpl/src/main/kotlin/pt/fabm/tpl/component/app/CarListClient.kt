@@ -1,19 +1,20 @@
 package pt.fabm.tpl.component.app
 
+import io.vertx.core.buffer.Buffer
 import pt.fabm.tpl.component.ClientElement
 import pt.fabm.tpl.component.MultiEnvTemplateClient
 
-class CarListClient(appendable: Appendable) : CarList(appendable), ClientElement,
+class CarListClient(buffer: Buffer) : CarList(buffer), ClientElement,
   MultiEnvTemplateClient {
   override fun renderImplementation() {
-    appendable.append("""
+    buffer.appendString("""
     import * as React from "react";
     import { observer } from "mobx-react";
     import { carView } from "../app/controllers/CarViewController";
     import { stores } from "../../stores/Stores";
     """.trimIndent())
     render()
-    appendable.append("""
+    buffer.appendString("""
     export const CarList = observer(() =>
       stores.carList.cars.length === 0 ? noContent() : content()
     );
@@ -21,26 +22,26 @@ class CarListClient(appendable: Appendable) : CarList(appendable), ClientElement
   }
 
   override fun ifHasCars(block: CarList.() -> Unit) {
-    appendable.append("const content = () => (")
+    buffer.appendString("const content = () => (")
     block()
-    appendable.append(");")
+    buffer.appendString(");")
   }
 
   override fun ifHasNoCars(block: CarList.() -> Unit) {
-    appendable.append("const noContent = () => (")
+    buffer.appendString("const noContent = () => (")
     block()
-    appendable.append(");")
+    buffer.appendString(");")
   }
 
   override fun colspanTr(colspan: Int): String = """ colSpan={$colspan}"""
 
   override fun carLines() {
-    appendable.append("{carView.carViewList()}")
+    buffer.appendString("{carView.carViewList()}")
   }
   override fun showIfAuthenticated(block: CarList.() -> Unit) {
-    appendable.append("{stores.user.authenticated && (")
+    buffer.appendString("{stores.user.authenticated && (")
     block()
-    appendable.append(")}")
+    buffer.appendString(")}")
   }
 
 }

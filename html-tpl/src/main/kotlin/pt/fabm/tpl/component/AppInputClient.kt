@@ -1,9 +1,11 @@
 package pt.fabm.tpl.component
 
-class AppInputClient(appendable: Appendable) : AppInput(appendable), MultiEnvTemplateClient{
+import io.vertx.core.buffer.Buffer
+
+class AppInputClient(buffer: Buffer) : AppInput(buffer), MultiEnvTemplateClient{
 
   override fun input(){
-    val input = TagElement(appendable, "input")
+    val input = TagElement(buffer, "input")
       .startStarterTag()
     //attributes
     appendClient(" tabIndex={props.tabIndex} disabled={props.disabled || false} className={props.errorClasses}")

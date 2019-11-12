@@ -6,7 +6,7 @@ interface MultiEnvTemplateServer: MultiEnvTemplate {
     //ignore append
   }
   override fun appendServer(text:String){
-    appendable.append(text)
+    buffer.appendString(text)
   }
 
 }

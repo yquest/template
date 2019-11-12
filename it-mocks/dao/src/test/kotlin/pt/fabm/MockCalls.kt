@@ -9,29 +9,6 @@ import java.time.Instant
 
 val conf = Conf()
 
-fun carCreated(response: HttpResponse<Buffer>) {
-  println("car created (status code=${response.statusCode()})")
-}
-
-fun authenticated(response: HttpResponse<Buffer>) {
-  println("authenticated user (status code=${response.statusCode()})")
-
-  val authCookie = response.cookies().find { it.startsWith("access_token") }.toString()
-  conf.client.createCar(authCookie) {
-    maker = CarMake.NISSAN
-    matDate = Instant.now()
-    model = "Ferrari"
-    price = 20000
-  }.subscribe(::carCreated)
-}
-
-
-fun getAccessTokenCookie(response: HttpResponse<Buffer>) =
-  response.cookies().find { it.startsWith("access_token") }.toString()
-
-fun listUsers(response: HttpResponse<Buffer>) {
-  println(response.bodyAsJsonArray().encodePrettily())
-}
 
 fun main() {
 
@@ -61,6 +38,15 @@ fun main() {
     println("cookie:$it")
   }
 
-  loginXico.subscribe(onDone,onError)
+  //loginXico.subscribe(onDone,onError)
+  val buffer =Buffer.buffer()
+  buffer.appendString("enum CarMaker{")
+  val iterator = CarMake.values().iterator()
+  buffer.appendString(iterator.next().name)
+  iterator.forEachRemaining { buffer.appendString(", ${it.name}") }
+  buffer.appendString("}")
 
+  conf.vertx.fileSystem().writeFile("x.txt",buffer,{
+    println("printed")
+  })
 }

@@ -1,9 +1,10 @@
 package pt.fabm.tpl.component.app
 
+import io.vertx.core.buffer.Buffer
 import pt.fabm.tpl.component.ClientElement
 import pt.fabm.tpl.component.MultiEnvTemplateClient
 
-class NavBarClient(appendable: Appendable) : NavBar(appendable), ClientElement,
+class NavBarClient(appendable: Buffer) : NavBar(appendable), ClientElement,
   MultiEnvTemplateClient {
 
   override fun renderImplementation() {
@@ -22,15 +23,15 @@ class NavBarClient(appendable: Appendable) : NavBar(appendable), ClientElement,
   }
 
   override fun showIfAuthenticated(block: NavBar.() -> Unit) {
-    appendable.append("""{stores.user.authenticated && (""")
+    buffer.appendString("""{stores.user.authenticated && (""")
     block()
-    appendable.append(""")}""")
+    buffer.appendString(""")}""")
   }
 
   override fun showIfNotAuthenticated(block: NavBar.() -> Unit) {
-    appendable.append("""{!stores.user.authenticated && (""")
+    buffer.appendString("""{!stores.user.authenticated && (""")
     block()
-    appendable.append(""")}""")
+    buffer.appendString(""")}""")
   }
 
   override fun appendClient(text: String) {

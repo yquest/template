@@ -1,6 +1,8 @@
 package pt.fabm.tpl.component
 
-abstract class AppInput(appendable: Appendable) : Element(appendable), MultiEnvTemplate {
+import io.vertx.core.buffer.Buffer
+
+abstract class AppInput(buffer: Buffer) : Element(buffer), MultiEnvTemplate {
   enum class Type(val label: String) {
     TEXT("text"),
     PASSWORD("password")
@@ -14,7 +16,7 @@ abstract class AppInput(appendable: Appendable) : Element(appendable), MultiEnvT
   }
 
   fun div(className: String, block: AppInput.() -> Unit) {
-    val div = TagElement(appendable, "div").startStarterTag()
+    val div = TagElement(buffer, "div").startStarterTag()
     //attributes
     appendClassName(className)
     div.endStarterTag()
@@ -23,7 +25,7 @@ abstract class AppInput(appendable: Appendable) : Element(appendable), MultiEnvT
   }
 
   private fun label(block: AppInput.() -> Unit) {
-    val label = TagElement(appendable, "label").noAttributesStarterTag()
+    val label = TagElement(buffer, "label").noAttributesStarterTag()
     this.block()
     label.endTag()
   }

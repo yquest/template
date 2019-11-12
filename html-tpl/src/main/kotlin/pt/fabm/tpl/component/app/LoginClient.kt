@@ -1,17 +1,18 @@
 package pt.fabm.tpl.component.app
 
+import io.vertx.core.buffer.Buffer
 import pt.fabm.tpl.component.AppInput
 import pt.fabm.tpl.component.ClientElement
 import pt.fabm.tpl.component.MultiEnvTemplateClient
 import pt.fabm.tpl.component.TagElement
 
-class LoginClient(appendable: Appendable) : Login(appendable), ClientElement,
+class LoginClient(buffer: Buffer) : Login(buffer), ClientElement,
   MultiEnvTemplateClient {
   override fun literalClassName(value: String): String = " className={$value}"
 
   override fun asClientText(text: String): String? = text
   override fun modal() {
-    TagElement(appendable,"Modal").startStarterTag().endTag()
+    TagElement(buffer,"Modal").startStarterTag().endTag()
   }
   override fun navbar() {
     appendBody("{navbar.createComponent()}")
@@ -35,7 +36,7 @@ class LoginClient(appendable: Appendable) : Login(appendable), ClientElement,
   }
 
   override fun notifications() {
-    TagElement(appendable,"Notifications").startStarterTag().endTag()
+    TagElement(buffer,"Notifications").startStarterTag().endTag()
   }
 
   override fun appInput(label: String, tabIndex: Int, type: AppInput.Type) {

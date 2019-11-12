@@ -1,17 +1,18 @@
 package pt.fabm.tpl.component.app
 
+import io.vertx.core.buffer.Buffer
 import pt.fabm.tpl.component.AppInput
 import pt.fabm.tpl.component.AppInputServer
 import pt.fabm.tpl.component.MultiEnvTemplateServer
 
-class RegisterUserServer(appendable: Appendable, private val auth: Boolean) : RegisterUser(appendable),
+class RegisterUserServer(buffer: Buffer, private val auth: Boolean) : RegisterUser(buffer),
   MultiEnvTemplateServer {
   override fun modal() {
     //ignore
   }
 
   override fun navbar() {
-    NavBarServer(appendable, auth).render()
+    NavBarServer(buffer, auth).render()
   }
 
   override fun notifications() {
@@ -20,7 +21,7 @@ class RegisterUserServer(appendable: Appendable, private val auth: Boolean) : Re
 
   override fun appInput(label: String, tabIndex: Int, type: AppInput.Type) {
     val appInput = AppInputServer(
-      appendable = appendable,
+      appendable = buffer,
       type = type,
       tabIndex = tabIndex,
       value = ""

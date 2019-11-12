@@ -87,7 +87,7 @@ class RestVerticle : AbstractVerticle() {
       fun renderHtml(carList: List<Car>): String {
 
         val content = StringBuilder().let { sb ->
-          AppServer(appendable = sb, auth = true, cars = carList.map {
+          AppServer(buffer = sb, auth = true, cars = carList.map {
             CarFields(
               maker = it.make.name,
               model = it.model,

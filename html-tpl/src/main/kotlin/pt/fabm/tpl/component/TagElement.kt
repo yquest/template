@@ -1,28 +1,30 @@
 package pt.fabm.tpl.component
 
+import io.vertx.core.buffer.Buffer
+
 open class TagElement(
-  appendable: Appendable,
+  appendable: Buffer,
   private val name: String
 ) :
   Element(appendable) {
 
   fun createSingleTag():TagElement{
-    appendable.append("<$name></$name>")
+    buffer.appendString("<$name></$name>")
     return this
   }
 
   fun noAttributesStarterTag(): TagElement {
-    appendable.append("<$name>")
+    buffer.appendString("<$name>")
     return this
   }
 
   fun startStarterTag(): TagElement {
-    appendable.append("<$name")
+    buffer.appendString("<$name")
     return this
   }
 
   fun endStarterTag():TagElement{
-    appendable.append(">")
+    buffer.appendString(">")
     return this
   }
 
@@ -32,7 +34,7 @@ open class TagElement(
   }
 
   fun endTag(): TagElement {
-    appendable.append("</$name>")
+    buffer.appendString("</$name>")
     return this
   }
 }

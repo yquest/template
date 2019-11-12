@@ -1,10 +1,11 @@
 package pt.fabm.tpl.component.app
 
+import io.vertx.core.buffer.Buffer
 import pt.fabm.tpl.component.Element
 import pt.fabm.tpl.component.MultiEnvTemplate
 import pt.fabm.tpl.component.TagElement
 
-abstract class CarList(appendable: Appendable) : Element(appendable),
+abstract class CarList(buffer: Buffer) : Element(buffer),
   MultiEnvTemplate {
 
   abstract fun ifHasCars(block: CarList.() -> Unit)
@@ -39,7 +40,7 @@ abstract class CarList(appendable: Appendable) : Element(appendable),
   protected abstract fun colspanTr(colspan: Int): String
 
   fun div(className: String? = null, block: CarList.() -> Unit) {
-    val div = TagElement(appendable, "div").startStarterTag()
+    val div = TagElement(buffer, "div").startStarterTag()
     //attributes
     if (className != null) appendClassName(className)
     div.endStarterTag()
@@ -48,7 +49,7 @@ abstract class CarList(appendable: Appendable) : Element(appendable),
   }
 
   private fun appendElement(name: String, block: CarList.() -> Unit) {
-    TagElement(appendable, name)
+    TagElement(buffer, name)
       .noAttributesStarterTag()
       .doContainedBlock(this, block)
       .endTag()
@@ -59,10 +60,10 @@ abstract class CarList(appendable: Appendable) : Element(appendable),
   fun thead(block: CarList.() -> Unit) = appendElement(name = "thead", block = block)
   fun tbody(block: CarList.() -> Unit) = appendElement(name = "tbody", block = block)
   fun th(colspan: Int? = null, block: CarList.() -> Unit) {
-    val th = TagElement(appendable, "th")
+    val th = TagElement(buffer, "th")
       .startStarterTag()
     //attributes
-    if(colspan != null) appendable.append(colspanTr(colspan))
+    if(colspan != null) buffer.appendString(colspanTr(colspan))
 
     th.endStarterTag()
     block()

@@ -1,9 +1,10 @@
 package pt.fabm.tpl.component.app
 
+import io.vertx.core.buffer.Buffer
 import pt.fabm.tpl.component.ClientElement
 import pt.fabm.tpl.component.MultiEnvTemplateClient
 
-class CarViewClient(appendable: Appendable) : CarView(appendable), ClientElement,
+class CarViewClient(buffer: Buffer) : CarView(buffer), ClientElement,
   MultiEnvTemplateClient {
 
   fun render() {
@@ -20,36 +21,36 @@ class CarViewClient(appendable: Appendable) : CarView(appendable), ClientElement
   }
 
   override fun showIfAuthenticated(block: CarView.() -> Unit) {
-    appendable.append("""{props.authenticated && (""")
+    buffer.appendString("""{props.authenticated && (""")
     block()
-    appendable.append(")}")
+    buffer.appendString(")}")
   }
 
   override fun showIfBlockedRemove(block: CarView.() -> Unit) {
-    appendable.append("""{props.blockedRemove &&(""")
+    buffer.appendString("""{props.blockedRemove &&(""")
     block()
-    appendable.append(")}")
+    buffer.appendString(")}")
   }
 
   override fun showIfBlockedNotRemove(block: CarView.() -> Unit) {
-    appendable.append("""{!props.blockedRemove &&(""")
+    buffer.appendString("""{!props.blockedRemove &&(""")
     block()
-    appendable.append(")}")
+    buffer.appendString(")}")
   }
 
   override fun renderImplementation() {
-    appendable.append("""
+    buffer.appendString("""
     import * as React from "react";
     import { carView } from "../app/controllers/CarViewController";
     
     export const CarView = (props: carView.Props) => (
     """.trimIndent())
     render()
-    appendable.append(");")
+    buffer.appendString(");")
   }
 
   override fun appendClient(text: String) {
-    appendable.append(text)
+    buffer.appendString(text)
   }
 
   override fun appendServer(text: String) {

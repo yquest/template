@@ -1,11 +1,12 @@
 package pt.fabm.tpl.component.app
 
+import io.vertx.core.buffer.Buffer
 import pt.fabm.tpl.component.AppInput
 import pt.fabm.tpl.component.Element
 import pt.fabm.tpl.component.MultiEnvTemplate
 import pt.fabm.tpl.component.TagElement
 
-abstract class Login(appendable: Appendable) : Element(appendable), MultiEnvTemplate {
+abstract class Login(buffer: Buffer) : Element(buffer), MultiEnvTemplate {
   companion object Fields {
     const val LOGIN = "Login"
     const val PASSWORD = "Password"
@@ -45,7 +46,7 @@ abstract class Login(appendable: Appendable) : Element(appendable), MultiEnvTemp
   abstract fun literalClassName(value: String): String
 
   fun a(onClick: String, block: Login.() -> Unit) {
-    val a = TagElement(appendable, "a")
+    val a = TagElement(buffer, "a")
       .startStarterTag()
     //attributes
     appendClient(" onClick={$onClick}")
@@ -57,7 +58,7 @@ abstract class Login(appendable: Appendable) : Element(appendable), MultiEnvTemp
 
   fun div(clientClass: String? = null, className: String? = null, block: Login.() -> Unit) {
 
-    val a = TagElement(appendable, "div")
+    val a = TagElement(buffer, "div")
       .startStarterTag()
 
     //attributes
@@ -70,7 +71,7 @@ abstract class Login(appendable: Appendable) : Element(appendable), MultiEnvTemp
   }
 
   fun button(className: String, tabIndex: Int, block: Login.() -> Unit) {
-    val button = TagElement(appendable, "button")
+    val button = TagElement(buffer, "button")
       .startStarterTag()
     //attributes
     appendClassName(className)
@@ -82,7 +83,7 @@ abstract class Login(appendable: Appendable) : Element(appendable), MultiEnvTemp
     button.endTag()
   }
   fun form(onSubmit: String, block: Login.() -> Unit) {
-    val form = TagElement(appendable,"form")
+    val form = TagElement(buffer,"form")
     appendClient(" onSubmit={$onSubmit}")
     this.block()
     form.endTag()

@@ -1,11 +1,12 @@
 package pt.fabm.tpl.component.app
 
+import io.vertx.core.buffer.Buffer
 import pt.fabm.tpl.component.AppInput
 import pt.fabm.tpl.component.Element
 import pt.fabm.tpl.component.MultiEnvTemplate
 import pt.fabm.tpl.component.TagElement
 
-abstract class RegisterUser(appendable: Appendable) : Element(appendable), MultiEnvTemplate {
+abstract class RegisterUser(buffer: Buffer) : Element(buffer), MultiEnvTemplate {
 
   companion object Fields {
     const val USERNAME = "Username"
@@ -43,7 +44,7 @@ abstract class RegisterUser(appendable: Appendable) : Element(appendable), Multi
   abstract fun appInput(label: String, tabIndex: Int, type: AppInput.Type = AppInput.Type.TEXT)
 
   fun div(className: String? = null, block: RegisterUser.() -> Unit) {
-    val a = TagElement(appendable, "div")
+    val a = TagElement(buffer, "div")
       .startStarterTag()
     //attributes
     if(className != null) appendClassName(className)
@@ -54,7 +55,7 @@ abstract class RegisterUser(appendable: Appendable) : Element(appendable), Multi
   }
 
   fun button(className: String, tabIndex: Int, block: RegisterUser.() -> Unit) {
-    val button = TagElement(appendable, "button")
+    val button = TagElement(buffer, "button")
       .startStarterTag()
     //attributes
     appendClassName(className)
@@ -67,7 +68,7 @@ abstract class RegisterUser(appendable: Appendable) : Element(appendable), Multi
   }
 
   fun form(onSubmit: String, block: RegisterUser.() -> Unit) {
-    val form = TagElement(appendable,"form")
+    val form = TagElement(buffer,"form")
     form.startStarterTag()
     //attributes
     appendClient(" onSubmit={$onSubmit}")

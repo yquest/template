@@ -1,10 +1,11 @@
 package pt.fabm.tpl.component.app
 
+import io.vertx.core.buffer.Buffer
 import pt.fabm.tpl.component.Element
 import pt.fabm.tpl.component.MultiEnvTemplate
 import pt.fabm.tpl.component.TagElement
 
-abstract class CarView(appendable: Appendable) : Element(appendable), MultiEnvTemplate {
+abstract class CarView(buffer: Buffer) : Element(buffer), MultiEnvTemplate {
 
   protected fun render(cars: List<CarFields>) {
     cars.forEach { carFields ->
@@ -41,7 +42,7 @@ abstract class CarView(appendable: Appendable) : Element(appendable), MultiEnvTe
   abstract fun showIfBlockedNotRemove(block: CarView.() -> Unit)
 
   fun tr(classClientVar: String, block: CarView.() -> Unit) {
-    val tr = TagElement(appendable, "tr")
+    val tr = TagElement(buffer, "tr")
       .startStarterTag()
     appendClient(" className={$classClientVar}")
     tr.endStarterTag()
@@ -50,7 +51,7 @@ abstract class CarView(appendable: Appendable) : Element(appendable), MultiEnvTe
   }
 
   fun i(className: String) {
-    val i = TagElement(appendable, "i")
+    val i = TagElement(buffer, "i")
       .startStarterTag()
     //attributes
     appendClassName(className)
@@ -59,7 +60,7 @@ abstract class CarView(appendable: Appendable) : Element(appendable), MultiEnvTe
   }
 
   fun a(className: String, onClick: String, block: CarView.() -> Unit) {
-    val a = TagElement(appendable,  "a")
+    val a = TagElement(buffer,  "a")
       .startStarterTag()
     //attributes
     emptyHref()
@@ -72,7 +73,7 @@ abstract class CarView(appendable: Appendable) : Element(appendable), MultiEnvTe
   }
 
   fun td(block: CarView.() -> Unit) {
-    val td = TagElement(appendable,  "td").noAttributesStarterTag()
+    val td = TagElement(buffer,  "td").noAttributesStarterTag()
     this.block()
     td.endTag()
   }
