@@ -71,9 +71,9 @@ class UserController(val vertx: Vertx, private val userTimeout: Long) {
 
   fun createUser(rc: RoutingContext): Single<RestResponse> {
     val bodyAsJson = rc.bodyAsJson
-    val name: String = bodyAsJson.checkedString("name")
-    val email: String = bodyAsJson.checkedString("email")
-    val password: String = bodyAsJson.checkedString("password")
+    val name: String = bodyAsJson.checkedString(UserRegisterIn.NAME)
+    val email: String = bodyAsJson.checkedString(UserRegisterIn.EMAIL)
+    val password: String = bodyAsJson.checkedString(UserRegisterIn.PASS)
 
     val userRegister = UserRegisterIn(
       name,

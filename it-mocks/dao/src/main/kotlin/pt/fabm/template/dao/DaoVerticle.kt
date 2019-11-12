@@ -171,8 +171,8 @@ class DaoVerticle : AbstractVerticle() {
   }
 
   companion object {
-    private const val USER_LIST = "dao.user.list"
-    private const val USER_TRUNCATE = "dao.user.truncate"
-    private const val CAR_TRUNCATE = "dao.car.truncate"
+    public const val USER_LIST = "dao.user.list"
+    public const val USER_TRUNCATE = "dao.user.truncate"
+    public const val CAR_TRUNCATE = "dao.car.truncate"
   }
 }

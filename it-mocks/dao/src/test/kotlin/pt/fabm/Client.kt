@@ -2,6 +2,7 @@ package pt.fabm
 
 import io.reactivex.Single
 import io.vertx.core.http.HttpHeaders
+import io.vertx.core.json.JsonArray
 import io.vertx.core.json.JsonObject
 import io.vertx.reactivex.core.Vertx
 import io.vertx.reactivex.core.buffer.Buffer
@@ -27,7 +28,7 @@ class Client(vertx: Vertx) {
       )
   }
 
-  fun login(init: User.() -> Unit): Single<HttpResponse<Buffer>> {
+  fun login(init: User.() -> Unit): Single<String> {
     val user = User()
     user.init()
     return client.post(port, host, "/api/user/login")
@@ -38,7 +39,9 @@ class Client(vertx: Vertx) {
             UserRegisterIn.PASS, (user.pass ?: error("no pass"))
               .toByteArray()
           )
-      )
+      ).map {
+          response-> response.cookies().find { it.startsWith("access_token") }.toString()
+      }
   }
   fun createCar( cookie:String, init:CarEntry.()->Unit):Single<HttpResponse<Buffer>>{
     val carEntry = CarEntry()
@@ -54,8 +57,8 @@ class Client(vertx: Vertx) {
       )
   }
 
-  fun listCars():Single<HttpResponse<Buffer>> =
+  fun listCars():Single<JsonArray> =
     client.get(port, host, "/api/car/list")
-      .rxSend()
+      .rxSend().map { it.bodyAsJsonArray() }
 
 }

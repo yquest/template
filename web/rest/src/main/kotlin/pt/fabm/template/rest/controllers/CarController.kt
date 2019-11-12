@@ -80,12 +80,7 @@ class CarController(val vertx: Vertx) {
     val car = Car(
       model = body.getString(Car.MODEL).nullIfEmpty()
         ?: throw RequiredException(lbCar(Car.MODEL)),
-      make = body.getString(Car.MAKE).nullIfEmpty()
-        .let { it ?: throw RequiredException(lbCar(Car.MAKE)) }
-        .let { strMake ->
-          val make = strMake toEnum CarMake::class.java
-          make ?: throw InvalidEntryException(strMake, lbCar(Car.MAKE))
-        },
+      make = CarMake.values()[body.getInteger(Car.MAKE)],
       price = body.getInteger(Car.PRICE)
         ?: throw RequiredException(lbCar(Car.PRICE)),
       maturityDate = body.getLong(Car.MATURITY_DATE).let { Instant.ofEpochMilli(it) }
