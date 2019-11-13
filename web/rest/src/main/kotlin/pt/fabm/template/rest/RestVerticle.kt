@@ -37,12 +37,6 @@ class RestVerticle : AbstractVerticle() {
     )
 
     val router = Router.router(vertx)
-    val webRoot = StaticHandler
-      .create()
-      .setAllowRootFileSystemAccess(true)
-      .setWebRoot(staticPath)
-
-    router.route().handler(webRoot)
 
     val userTimeout = config().getLong("user_timeout") ?: throw
     RequiredException("user cache timeout")
@@ -58,44 +52,54 @@ class RestVerticle : AbstractVerticle() {
     router.put("/api/car").withBody().authHandler(userTimeout) { carController.createOrUpdateCar(false, it.rc) }
     router.delete("/api/car").handlerSRR(carController::deleteCar)
 
-    val renderContent = { content: String, appInitData: JsonObject ->
-      """
+    val renderContent = { buffer: Buffer, appInitData: JsonObject ->
+      val bufferWrapper = Buffer.buffer()
+      bufferWrapper.appendString(
+        """
         <html>
           <head>
-            <meta charset="utf-8">
-            <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+            <meta charset="utf-8"/>
+            <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no"/>
             <title>Car app</title>
-            <link href="favicon.ico" rel="shortcut icon">
-            <link href="main.css" rel="stylesheet">
+            <link href="favicon.ico" rel="shortcut icon"/>
+            <link href="main.css" rel="stylesheet"/>
           </head>
           <body>
             <div class="well">
-                <div id="root">${content}</div>
+                <div id="root">""")
+      bufferWrapper.appendBuffer(buffer)
+      bufferWrapper.appendString(
+        """</div>
             </div>
-            <script type="text/javascript">var __state = $appInitData;</script>
+            <script type="text/javascript">var __state = """
+      )
+      bufferWrapper.appendBuffer(Buffer(appInitData.toBuffer()))
+      bufferWrapper.appendString(
+        """.trimMargin();</script>
             <script type="text/javascript" src="bundle.js"></script>
           </body>
         </html>
-        """.trimIndent()
+        """
+      )
     }
 
     val username = "Xico"
     val edit = true
     val auth = true
     router.get("/").authHandler(userTimeout) { ac ->
+      LOGGER.info("entering in root...")
+      fun renderHtml(carList: List<Car>): Buffer {
 
-      fun renderHtml(carList: List<Car>): String {
-
-        val content = StringBuilder().let { sb ->
-          AppServer(buffer = sb, auth = true, cars = carList.map {
+        val content = Buffer.buffer().delegate.let { buffer ->
+          AppServer(buffer = buffer, auth = true, cars = carList.map {
             CarFields(
               maker = it.make.name,
               model = it.model,
               matDate = it.maturityDate.toString(),
               price = it.price.toString()
             )
-          })
-          sb.toString()
+          }).render()
+          buffer
         }
 
         val appInitData = jsonObjectOf(
@@ -113,7 +117,7 @@ class RestVerticle : AbstractVerticle() {
           "auth" to auth
         )
 
-        return renderContent(content, appInitData)
+        return renderContent(Buffer(content), appInitData)
       }
 
       vertx.eventBus().rxSend<List<Car>>(
@@ -121,7 +125,7 @@ class RestVerticle : AbstractVerticle() {
       ).map { message ->
         renderHtml(message.body())
       }.map {
-        RestResponse(Buffer.buffer(it))
+        RestResponse(buffer = it)
       }
     }
 
@@ -136,6 +140,13 @@ class RestVerticle : AbstractVerticle() {
       LOGGER.error("failure", it.failure())
       it.response().end("oh no!")
     }
+
+    val webRoot = StaticHandler
+      .create()
+      .setAllowRootFileSystemAccess(true)
+      .setWebRoot(staticPath)
+
+    router.route().handler(webRoot)
 
     return vertx
       .createHttpServer()

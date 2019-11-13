@@ -1,10 +1,12 @@
 package pt.fabm.tpl
 
+import io.vertx.core.buffer.Buffer
 import org.junit.jupiter.api.Test
-import pt.fabm.tpl.component.*
+import pt.fabm.tpl.component.AppInput
+import pt.fabm.tpl.component.AppInputServer
+import pt.fabm.tpl.component.DropDowInputClient
+import pt.fabm.tpl.component.DropDowInputServer
 import pt.fabm.tpl.component.app.*
-import java.io.FileWriter
-import kotlin.text.Appendable
 
 class RenderTestElements {
 
@@ -19,93 +21,95 @@ class RenderTestElements {
 
   @Test
   fun testLoginClient() {
-    LoginClient(System.out).renderImplementation()
+    Buffer.buffer().let { LoginClient(it).renderImplementation();println(it.toString()) }
   }
 
   @Test
   fun testLoginServer() {
-    LoginServer(System.out, true).render()
+    Buffer.buffer().let { LoginServer(it, true).render();println(it.toString()) }
   }
 
   @Test
   fun testAppInputServer() {
-    AppInputServer(appendable = System.out,type = AppInput.Type.TEXT, value = "")
-      .render("myLabel")
+    Buffer.buffer().let {
+      AppInputServer(appendable = it, type = AppInput.Type.TEXT, value = "")
+        .render("myLabel");println(it.toString())
+    }
   }
 
   @Test
   fun testAppServer() {
-    AppServer(System.out, false, carListServer).render()
+    Buffer.buffer().let {  AppServer(it, false, carListServer).render();println(it.toString())}
   }
 
   @Test
   fun testAppClient() {
-    AppClient(System.out).render()
+    Buffer.buffer().let {  AppClient(it).render();println(it.toString())}
   }
 
   @Test
   fun testNabBarServer() {
-    NavBarServer(System.out, true).render()
+    Buffer.buffer().let {  NavBarServer(it, true).render();println(it.toString())}
   }
 
   @Test
   fun testNabBarClient() {
-    NavBarClient(System.out).render()
+    Buffer.buffer().let {  NavBarClient(it).render();println(it.toString())}
   }
 
   @Test
   fun testCarListServer() {
-    CarListServer(System.out, true, carListServer).render()
+    Buffer.buffer().let {  CarListServer(it, true, carListServer).render()}
   }
 
   @Test
   fun testCarListClient() {
-    CarListClient(System.out).render()
+    Buffer.buffer().let {  CarListClient(it).render();println(it.toString())}
   }
 
   @Test
   fun testCarListClientImplementation() {
-    CarListClient(System.out).renderImplementation()
+    Buffer.buffer().let {  CarListClient(it).renderImplementation();println(it.toString())}
   }
 
   @Test
   fun testCarViewServer() {
-    CarViewServer(true, System.out).renderServer(carListServer)
+    Buffer.buffer().let {  CarViewServer(true, it).renderServer(carListServer);println(it.toString())}
   }
 
   @Test
   fun testCarViewClient() {
-    CarViewClient(System.out).render()
+    Buffer.buffer().let {  CarViewClient(it).render();println(it.toString())}
   }
 
   @Test
   fun testRegisterUser() {
-    RegisterUserClient(System.out).render()
+    Buffer.buffer().let {  RegisterUserClient(it).render();println(it.toString())}
   }
 
   @Test
-  fun testDropDown(){
-    DropDowInputServer(System.out, "dd1", false, listOf("element 1", "element 2"))
+  fun testDropDown() {
+    Buffer.buffer().let {  DropDowInputServer(it, "dd1", false, listOf("element 1", "element 2"))
       .render(
         label = "drop down 1",
         tabIndex = 0,
         btnLabel = "btl lb",
         value = 0
-      )
+      );println(it.toString())}
 
     println()
 
-    DropDowInputClient(System.out).render(
+      Buffer.buffer().let {  DropDowInputClient(it).render(
       label = "{props.label}",
       tabIndex = "props.tabIndex",
       btnLabel = "{props.btnLabel}",
       value = "{props.inputValue}"
-    )
+    );println(it.toString())}
   }
 
   @Test
   fun testCarviewClient() {
-    CarViewClient(System.out).renderImplementation()
+    Buffer.buffer().let {  CarViewClient(it).renderImplementation();println(it.toString())}
   }
 
 }

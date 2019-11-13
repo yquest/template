@@ -1,7 +1,6 @@
 package pt.fabm
 
 import io.reactivex.Single
-import io.vertx.core.json.Json
 import io.vertx.reactivex.core.buffer.Buffer
 import io.vertx.reactivex.ext.web.client.HttpResponse
 import pt.fabm.template.models.type.CarMake
@@ -34,19 +33,11 @@ fun main() {
     }
   }
 
-  val onDone:(String)->Unit ={
+  val onDone: (String) -> Unit = {
     println("cookie:$it")
   }
 
-  //loginXico.subscribe(onDone,onError)
-  val buffer =Buffer.buffer()
-  buffer.appendString("enum CarMaker{")
-  val iterator = CarMake.values().iterator()
-  buffer.appendString(iterator.next().name)
-  iterator.forEachRemaining { buffer.appendString(", ${it.name}") }
-  buffer.appendString("}")
-
-  conf.vertx.fileSystem().writeFile("x.txt",buffer,{
-    println("printed")
-  })
+  loginXico
+    .flatMap { conf.client.mainPage(it) }
+    .subscribe({ println(it.bodyAsString()) }, onError)
 }

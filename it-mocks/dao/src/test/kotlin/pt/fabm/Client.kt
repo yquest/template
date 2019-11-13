@@ -6,6 +6,7 @@ import io.vertx.core.json.JsonArray
 import io.vertx.core.json.JsonObject
 import io.vertx.reactivex.core.Vertx
 import io.vertx.reactivex.core.buffer.Buffer
+import io.vertx.reactivex.ext.web.client.HttpRequest
 import io.vertx.reactivex.ext.web.client.HttpResponse
 import io.vertx.reactivex.ext.web.client.WebClient
 import pt.fabm.template.models.type.Car
@@ -60,5 +61,14 @@ class Client(vertx: Vertx) {
   fun listCars():Single<JsonArray> =
     client.get(port, host, "/api/car/list")
       .rxSend().map { it.bodyAsJsonArray() }
+
+  fun mainPage(token:String?=null):Single<HttpResponse<Buffer>>{
+    val http:HttpRequest<Buffer> = client.get(port, host, "/").let { req->
+      if(token == null) req
+      else req.putHeader(HttpHeaders.COOKIE.toString(),token)
+    }
+
+    return http.rxSend()
+  }
 
 }

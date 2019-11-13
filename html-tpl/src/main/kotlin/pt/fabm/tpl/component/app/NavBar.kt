@@ -54,6 +54,7 @@ abstract class NavBar(buffer: Buffer) : Element(buffer), MultiEnvTemplate {
     val div = TagElement(buffer, "div")
       .startStarterTag()
     appendClassName(className)
+    div.endStarterTag()
     this.block()
     div.endTag()
   }
