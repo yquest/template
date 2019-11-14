@@ -52,7 +52,7 @@ class RestVerticle : AbstractVerticle() {
     router.put("/api/car").withBody().authHandler(userTimeout) { carController.createOrUpdateCar(false, it.rc) }
     router.delete("/api/car").handlerSRR(carController::deleteCar)
 
-    val renderContent = { buffer: Buffer, appInitData: JsonObject ->
+    val renderContent = { buffer: Buffer, appInitData: Buffer ->
       val bufferWrapper = Buffer.buffer()
       bufferWrapper.appendString(
         """
@@ -67,20 +67,20 @@ class RestVerticle : AbstractVerticle() {
           <body>
             <div class="well">
                 <div id="root">""")
-      bufferWrapper.appendBuffer(buffer)
-      bufferWrapper.appendString(
-        """</div>
+        .appendBuffer(buffer)
+        .appendString(
+          """</div>
             </div>
             <script type="text/javascript">var __state = """
-      )
-      bufferWrapper.appendBuffer(Buffer(appInitData.toBuffer()))
-      bufferWrapper.appendString(
-        """.trimMargin();</script>
+        )
+        .appendBuffer(appInitData)
+        .appendString(
+          """.trimMargin();</script>
             <script type="text/javascript" src="bundle.js"></script>
           </body>
         </html>
         """
-      )
+        )
     }
 
     val username = "Xico"
@@ -117,7 +117,7 @@ class RestVerticle : AbstractVerticle() {
           "auth" to auth
         )
 
-        return renderContent(Buffer(content), appInitData)
+        return renderContent(Buffer(content), Buffer(appInitData.toBuffer()))
       }
 
       vertx.eventBus().rxSend<List<Car>>(
