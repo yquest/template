@@ -129,6 +129,14 @@ class RestVerticle : AbstractVerticle() {
       }
     }
 
+
+    val webRoot = StaticHandler
+      .create()
+      .setAllowRootFileSystemAccess(true)
+      .setWebRoot(staticPath)
+
+    router.route().handler(webRoot)
+
     router.route().handler {
       if (!it.response().ended()) {
         it.response().statusCode = 404
@@ -141,12 +149,6 @@ class RestVerticle : AbstractVerticle() {
       it.response().end("oh no!")
     }
 
-    val webRoot = StaticHandler
-      .create()
-      .setAllowRootFileSystemAccess(true)
-      .setWebRoot(staticPath)
-
-    router.route().handler(webRoot)
 
     return vertx
       .createHttpServer()
