@@ -1,0 +1,13 @@
+---
+#user entry
+user:
+  name  : myuser
+  pass  : "other pass"
+  email : xico@email.com
+#car entry
+car:
+  model : A4
+  maker : AUDI
+  price : 30000
+  date  : 2011-11-10 12:01:58.000
+---

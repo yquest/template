@@ -1,10 +1,19 @@
 package pt.fabm.tpl.component.app
 
 import io.vertx.core.buffer.Buffer
+import io.vertx.core.json.JsonObject
 import pt.fabm.tpl.component.MultiEnvTemplateServer
+import pt.fabm.tpl.component.page.PageInit
 
-class AppServer(buffer: Buffer, private val auth: Boolean, private val cars: List<CarFields>) :
-  App(buffer), MultiEnvTemplateServer {
+class AppServer(
+  buffer: Buffer = Buffer.buffer(),
+  override val auth: Boolean,
+  private val cars: List<CarFields>,
+  override val pageInitData: JsonObject
+) :
+  App(buffer), MultiEnvTemplateServer, PageInit {
+  override val page: Buffer get() = buffer
+
   override fun modal() {
     //ignore
   }

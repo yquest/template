@@ -17,9 +17,7 @@ class Client(vertx: Vertx) {
   private val port = 8888
   private val host = "localhost"
 
-  fun createUser(init: User.() -> Unit): Single<HttpResponse<Buffer>> {
-    val user = User()
-    user.init()
+  fun createUser(user: User): Single<HttpResponse<Buffer>> {
     return client.post(port, host, "/api/user")
       .rxSendJsonObject(
         JsonObject()
@@ -29,9 +27,13 @@ class Client(vertx: Vertx) {
       )
   }
 
-  fun login(init: User.() -> Unit): Single<String> {
+  fun createUser(init: User.() -> Unit): Single<HttpResponse<Buffer>> {
     val user = User()
     user.init()
+    return createUser(user)
+  }
+
+  fun login(user: User): Single<String> {
     return client.post(port, host, "/api/user/login")
       .rxSendJsonObject(
         JsonObject()
@@ -40,15 +42,21 @@ class Client(vertx: Vertx) {
             UserRegisterIn.PASS, (user.pass ?: error("no pass"))
               .toByteArray()
           )
-      ).map {
-          response-> response.cookies().find { it.startsWith("access_token") }.toString()
+      ).map { response ->
+        response.cookies().find { it.startsWith("access_token") }.toString()
       }
   }
-  fun createCar( cookie:String, init:CarEntry.()->Unit):Single<HttpResponse<Buffer>>{
-    val carEntry = CarEntry()
-    carEntry.init()
+
+
+  fun login(init: User.() -> Unit): Single<String> {
+    val user = User()
+    user.init()
+    return login(user)
+  }
+
+  fun createCar(token: String, carEntry: CarEntry): Single<HttpResponse<Buffer>> {
     return client.post(port, host, "/api/car")
-      .putHeader(HttpHeaders.COOKIE.toString(),cookie)
+      .putHeader(HttpHeaders.COOKIE.toString(), token)
       .rxSendJsonObject(
         JsonObject()
           .put(Car.MAKE, (carEntry.maker ?: error("no make")).ordinal)
@@ -58,14 +66,20 @@ class Client(vertx: Vertx) {
       )
   }
 
-  fun listCars():Single<JsonArray> =
+  fun createCar(token: String, init: CarEntry.() -> Unit): Single<HttpResponse<Buffer>> {
+    val carEntry = CarEntry()
+    carEntry.init()
+    return createCar(token, carEntry)
+  }
+
+  fun listCars(): Single<JsonArray> =
     client.get(port, host, "/api/car/list")
       .rxSend().map { it.bodyAsJsonArray() }
 
-  fun mainPage(token:String?=null):Single<HttpResponse<Buffer>>{
-    val http:HttpRequest<Buffer> = client.get(port, host, "/").let { req->
-      if(token == null) req
-      else req.putHeader(HttpHeaders.COOKIE.toString(),token)
+  fun mainPage(token: String? = null): Single<HttpResponse<Buffer>> {
+    val http: HttpRequest<Buffer> = client.get(port, host, "/").let { req ->
+      if (token == null) req
+      else req.putHeader(HttpHeaders.COOKIE.toString(), token)
     }
 
     return http.rxSend()

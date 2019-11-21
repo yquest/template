@@ -2,13 +2,14 @@ package pt.fabm.template.rest
 
 import io.reactivex.Completable
 import io.vertx.core.eventbus.DeliveryOptions
-import io.vertx.core.json.JsonObject
 import io.vertx.core.logging.Logger
 import io.vertx.core.logging.LoggerFactory
 import io.vertx.kotlin.core.json.jsonObjectOf
 import io.vertx.reactivex.core.AbstractVerticle
 import io.vertx.reactivex.core.buffer.Buffer
+import io.vertx.reactivex.ext.auth.User
 import io.vertx.reactivex.ext.web.Router
+import io.vertx.reactivex.ext.web.RoutingContext
 import io.vertx.reactivex.ext.web.handler.StaticHandler
 import pt.fabm.template.EventBusAddresses
 import pt.fabm.template.extensions.*
@@ -16,7 +17,6 @@ import pt.fabm.template.models.type.Car
 import pt.fabm.template.rest.controllers.CarController
 import pt.fabm.template.rest.controllers.UserController
 import pt.fabm.template.validation.RequiredException
-import pt.fabm.tpl.component.app.AppServer
 import pt.fabm.tpl.component.app.CarFields
 import java.io.File
 
@@ -43,14 +43,37 @@ class RestVerticle : AbstractVerticle() {
     val userController = UserController(vertx, userTimeout)
     val carController = CarController(vertx)
 
-    router.post("/api/user").withBody().handlerSRR(userController::createUser)
-    router.post("/api/user/login").withCookies().withBody().handlerSRR(userController::userLogin)
-    router.get("/api/user/logout").withCookies().handlerSRR(userController::userLogout)
-    router.get("/api/car").handlerSRR(carController::getCar)
+    router.get().handler {
+      it.response().toObserver()
+    }
+    router.post("/api/user").withBody().handler(userController::createUser)
+    router.post("/api/user/login").withCookies().withBody().handler(userController::userLogin)
+    router.get("/api/user/logout").withCookies().handler(userController::userLogout)
+    router.get("/api/car").handler(carController::getCar)
     router.get("/api/car/list").handlerSRR { carController.carList() }
-    router.post("/api/car").withBody().authHandler(userTimeout) { carController.createOrUpdateCar(true, it.rc) }
-    router.put("/api/car").withBody().authHandler(userTimeout) { carController.createOrUpdateCar(false, it.rc) }
-    router.delete("/api/car").handlerSRR(carController::deleteCar)
+    router.post("/api/car").withBody().handler(carController::createCar)
+    router.put("/api/car").withBody().handler(carController::updateCar)
+    router.delete("/api/car").handler(carController::dele)
+
+    class AfterAuth(private val user: User) {
+      fun renderIfLogged(rc: RoutingContext) {
+        user.isAuthorized("global") { auth ->
+
+        }
+      }
+    }
+
+    router.get("/aaa").authEval(userTimeout).handler {
+      AfterAuth(it.user()).renderIfLogged(it)
+    }
+    router.get("/").authEval(userTimeout).handler { rc ->
+      fun resX(auth: Boolean) {
+        if (auth) rc.response().end("auth")
+        else rc.response().end("not auth")
+      }
+
+      rc.user().rxIsAuthorized("global").map(::resX).subscribe()
+    }
 
     val renderContent = { buffer: Buffer, appInitData: Buffer ->
       val bufferWrapper = Buffer.buffer()
@@ -66,7 +89,8 @@ class RestVerticle : AbstractVerticle() {
           </head>
           <body>
             <div class="well">
-                <div id="root">""")
+                <div id="root">"""
+      )
         .appendBuffer(buffer)
         .appendString(
           """</div>
@@ -86,19 +110,12 @@ class RestVerticle : AbstractVerticle() {
     val username = "Xico"
     val edit = true
     val auth = true
-    router.get("/").authHandler(userTimeout) { ac ->
+    router.get("/xxxx").authHandler(userTimeout) { ac ->
       LOGGER.info("entering in root...")
       fun renderHtml(carList: List<Car>): Buffer {
 
         val content = Buffer.buffer().delegate.let { buffer ->
-          AppServer(buffer = buffer, auth = true, cars = carList.map {
-            CarFields(
-              maker = it.make.name,
-              model = it.model,
-              matDate = it.maturityDate.toString(),
-              price = it.price.toString()
-            )
-          }).render()
+
           buffer
         }
 

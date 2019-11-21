@@ -1,8 +1,16 @@
 package pt.fabm.shell
 
+import io.vertx.reactivex.ext.shell.command.CommandBuilder
+
 interface LevelArgument {
-  val isString:Boolean
-  val isList:Boolean
-  val level:Int
-  fun addRoot(node:String):ValuesLevelArgument = ValuesLevelArgument(node,0)
+  companion object {
+    fun root(node: String, init: ParentArgument.() -> Unit):CommandBuilder {
+      val parentArgument = ParentArgument(node)
+      parentArgument.init()
+      return parentArgument.createCommandBuilder()
+    }
+  }
+
+  val isTerminal: Boolean
+  val node: String
 }

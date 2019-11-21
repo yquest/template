@@ -39,7 +39,6 @@ abstract class App(appendable: Buffer) : Element(appendable), MultiEnvTemplate {
     //attributes
     appendClassName(className)
     div.endStarterTag()
-
     block()
     div.endTag()
   }

@@ -20,12 +20,12 @@ import java.time.temporal.ChronoUnit
 import java.util.*
 
 class UserController(val vertx: Vertx, private val userTimeout: Long) {
-  fun userLogout(rc: RoutingContext): Single<RestResponse> {
+  fun userLogout(rc: RoutingContext){
     rc.getCookie(Consts.ACCESS_TOKEN_COOKIE)?.setPath("/api/")?.setMaxAge(0L)
     return Single.just(RestResponse())
   }
 
-  fun userLogin(rc: RoutingContext): Single<RestResponse> {
+  fun userLogin(rc: RoutingContext){
     val body = rc.bodyAsJson
     val login = Login(
       username = body.getString("user"),
@@ -69,7 +69,7 @@ class UserController(val vertx: Vertx, private val userTimeout: Long) {
       .map(::messageSent)
   }
 
-  fun createUser(rc: RoutingContext): Single<RestResponse> {
+  fun createUser(rc: RoutingContext) {
     val bodyAsJson = rc.bodyAsJson
     val name: String = bodyAsJson.checkedString(UserRegisterIn.NAME)
     val email: String = bodyAsJson.checkedString(UserRegisterIn.EMAIL)
