@@ -11,7 +11,6 @@ import io.vertx.reactivex.core.eventbus.Message
 import io.vertx.reactivex.ext.web.RoutingContext
 import pt.fabm.template.EventBusAddresses
 import pt.fabm.template.extensions.nullIfEmpty
-import pt.fabm.template.extensions.toEnum
 import pt.fabm.template.extensions.toJson
 import pt.fabm.template.models.type.Car
 import pt.fabm.template.models.type.CarId
@@ -51,21 +50,26 @@ class CarController(val vertx: Vertx) {
   }
 
   fun getCar(rc: RoutingContext) {
-    val request = rc.request()
 
-    val carId = Single.just(CarId)
+    fun createCarId(): CarId {
+      val request = rc.request()
+      val make = request.getParam(CarId.MAKE)
+      val model = request.getParam(CarId.MODEL)
 
-    val make = request.getParam(Car.MAKE).nullIfEmpty()
-      .let { it ?: throw RequiredException(Car.MAKE) }
-      .let { (it toEnum CarMake::class.java) ?: throw InvalidEntryException(it, Car.MAKE) }
+      if(make.isNullOrEmpty()) throw RequiredException(CarId.MAKE)
+      if(model.isNullOrEmpty()) throw RequiredException(CarId.MODEL)
 
-    val model = request.getParam(Car.MODEL).nullIfEmpty() ?: throw RequiredException(Car.MODEL)
-
-    fun sentMessage(message: Message<Car>): RestResponse {
-      val body = message.body()
-      return if (body == null) RestResponse(statusCode = 404)
-      else RestResponse(body.toJson(), statusCode = 200)
+      return CarId(
+        make = try {
+          CarMake.values()[make.toInt()]
+        } catch (e: NumberFormatException) {
+          throw InvalidEntryException(make, CarId.MAKE)
+        },
+        model = model
+      )
     }
+
+    fun receivedMessage(message:Message<Car?>):Car? = message.body()
 
     fun handleError(error: Throwable): RestResponse {
       if (error !is ReplyException || error.failureCode() != 1) {
@@ -75,12 +79,12 @@ class CarController(val vertx: Vertx) {
       return RestResponse(statusCode = 404)
     }
 
-    return vertx.eventBus().rxSend<Car>(
-      EventBusAddresses.Dao.Car.retrieve,
-      CarId(model = model, make = make)
-    )
-      .map(::sentMessage)
-      .onErrorReturn(::handleError)
+    Single.fromCallable { createCarId() }
+      .flatMap { vertx.eventBus().rxSend<Car>(EventBusAddresses.Dao.Car.retrieve,it) }
+
+    vertx.eventBus().rxSend<Car>(EventBusAddresses.Dao.Car.retrieve,createCarId())
+      .map(::receivedMessage).doOnSuccess { LOGGER.trace("receive message:$it") }
+
   }
 
   fun createCar(rc: RoutingContext) = createOrUpdateCar(true, rc)
