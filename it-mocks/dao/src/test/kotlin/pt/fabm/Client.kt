@@ -37,7 +37,7 @@ class Client(vertx: Vertx) {
     return client.post(port, host, "/api/user/login")
       .rxSendJsonObject(
         JsonObject()
-          .put("user", user.name ?: error("no name"))
+          .put(UserRegisterIn.NAME, user.name ?: error("no name"))
           .put(
             UserRegisterIn.PASS, (user.pass ?: error("no pass"))
               .toByteArray()
@@ -74,14 +74,15 @@ class Client(vertx: Vertx) {
 
   fun listCars(): Single<JsonArray> =
     client.get(port, host, "/api/car/list")
-      .rxSend().map { it.bodyAsJsonArray() }
+      .rxSend().map {
+        it.bodyAsJsonArray()
+      }
 
   fun mainPage(token: String? = null): Single<HttpResponse<Buffer>> {
     val http: HttpRequest<Buffer> = client.get(port, host, "/").let { req ->
       if (token == null) req
       else req.putHeader(HttpHeaders.COOKIE.toString(), token)
     }
-
     return http.rxSend()
   }
 

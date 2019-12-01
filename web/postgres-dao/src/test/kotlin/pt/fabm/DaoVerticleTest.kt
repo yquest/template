@@ -43,7 +43,7 @@ class DaoVerticleTest {
 
     vertx.eventBus().rxSend<Unit>(
       EventBusAddresses.Dao.Car.delete, CarId(
-        maker = CarMake.VOLKSWAGEN,
+        make = CarMake.VOLKSWAGEN,
         model = "model"
       )
     ).ignoreElement().andThen(
@@ -76,7 +76,7 @@ class DaoVerticleTest {
     )
     vertx.eventBus().rxSend<Unit>(
       EventBusAddresses.Dao.Car.delete, CarId(
-        maker = CarMake.VOLKSWAGEN,
+        make = CarMake.VOLKSWAGEN,
         model = "model"
       )
     ).ignoreElement().andThen(

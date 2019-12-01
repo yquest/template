@@ -68,22 +68,30 @@ class ShellTest(private val vertx: Vertx) {
             cmd.end()
           })
         }
+        command("login") { cmd ->
+          currentUser.flatMap { conf.client.login(it) }
+            .subscribe({
+              conf.token = it
+              cmd.write("token:${it}\n")
+              cmd.end()
+            }, {
+              cmd.write("error on login")
+              cmd.end()
+            })
+        }
       }
       node("car") {
         command("create") { cmd ->
-          currentUser.flatMap(conf.client::login)
-            .flatMap { token ->
-              currentCar.flatMap { carEntry ->
-                conf.client.createCar(token, carEntry)
-              }
-            }.subscribe({
-              cmd.write("car created successfully\n")
-              cmd.end()
-            }, {
-              it.printStackTrace()
-              cmd.write("error on create car")
-              cmd.end()
-            })
+          currentCar.flatMap { carEntry ->
+            conf.client.createCar(conf.token ?: error("no token"), carEntry)
+          }.subscribe({
+            cmd.write("car created successfully\n")
+            cmd.end()
+          }, {
+            it.printStackTrace()
+            cmd.write("error on create car")
+            cmd.end()
+          })
         }
         command("list") { cmd ->
           conf.client.listCars().subscribe({
@@ -91,7 +99,19 @@ class ShellTest(private val vertx: Vertx) {
             cmd.end()
           }, {
             it.printStackTrace()
-            cmd.write("error on list cars")
+            cmd.write("error on list cars\n")
+            cmd.end()
+          })
+        }
+      }
+      node("view") {
+        command("main") { cmd ->
+          conf.client.mainPage(conf.token).subscribe({
+            cmd.write(it.bodyAsString())
+            cmd.end()
+          }, {
+            it.printStackTrace()
+            cmd.write("error on render main page")
             cmd.end()
           })
         }

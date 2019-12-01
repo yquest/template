@@ -1,3 +1,5 @@
 package pt.fabm.template.validation
 
-class AuthException(cause:Throwable? = null) : Exception(cause = cause)
+class AuthException(cause:Throwable? = null) : Exception(
+  null, cause
+)

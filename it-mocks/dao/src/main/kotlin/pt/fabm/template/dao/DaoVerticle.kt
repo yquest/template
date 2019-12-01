@@ -77,7 +77,7 @@ class DaoVerticle : AbstractVerticle() {
         val body = getBody()
         CarId(
           model = body.getString(Car.MODEL),
-          maker = CarMake.values()[body.getInteger(Car.MAKE)]
+          make = CarMake.values()[body.getInteger(Car.MAKE)]
         )
       }
 
@@ -171,8 +171,8 @@ class DaoVerticle : AbstractVerticle() {
   }
 
   companion object {
-    public const val USER_LIST = "dao.user.list"
-    public const val USER_TRUNCATE = "dao.user.truncate"
-    public const val CAR_TRUNCATE = "dao.car.truncate"
+    const val USER_LIST = "dao.user.list"
+    const val USER_TRUNCATE = "dao.user.truncate"
+    const val CAR_TRUNCATE = "dao.car.truncate"
   }
 }

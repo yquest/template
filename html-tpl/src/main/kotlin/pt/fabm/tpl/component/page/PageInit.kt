@@ -7,4 +7,5 @@ interface PageInit {
   val pageInitData: JsonObject
   val auth: Boolean
   val page: Buffer
+  fun render()
 }

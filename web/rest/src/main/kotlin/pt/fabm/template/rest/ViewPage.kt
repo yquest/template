@@ -5,8 +5,9 @@ import pt.fabm.tpl.component.page.PageInit
 
 class ViewPage(private val page: PageInit) {
 
-  fun render(): Buffer =
-    Buffer.buffer().appendString(
+  fun render(): Buffer {
+    page.render()
+    return Buffer.buffer().appendString(
       """
         <html>
           <head>
@@ -34,4 +35,5 @@ class ViewPage(private val page: PageInit) {
         </html>
         """
       )
+  }
 }

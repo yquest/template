@@ -26,7 +26,7 @@ data class Car(
 
   constructor(carId: CarId, price: Int, maturityDate: Instant) : this(
     model = carId.model,
-    make = carId.maker,
+    make = carId.make,
     maturityDate = maturityDate,
     price = price
   )

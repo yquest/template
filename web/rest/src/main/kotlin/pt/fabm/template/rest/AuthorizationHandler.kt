@@ -9,7 +9,6 @@ import io.vertx.core.http.HttpHeaders
 import io.vertx.ext.web.impl.CookieImpl
 import io.vertx.reactivex.ext.web.Cookie
 import io.vertx.reactivex.ext.web.RoutingContext
-import pt.fabm.template.extensions.LOGGER
 import pt.fabm.template.validation.AuthException
 import java.time.Instant
 import java.time.LocalDateTime
@@ -30,13 +29,11 @@ interface AuthorizationHandler {
 
       return try {
         val cookie = allCookies.find { cookie -> cookie.name == Consts.ACCESS_TOKEN_COOKIE } ?: throw AuthException()
-        LOGGER.trace("login in ${Instant.now()} with token ${cookie.value}")
 
         Jwts.parser()
           .setSigningKey(Consts.SIGNING_KEY)
           .parseClaimsJws(cookie.value).body
       } catch (e: ExpiredJwtException) {
-        LOGGER.trace("token expired")
         val datePlusTimeout = LocalDateTime
           .now()
           .plus(timeout, ChronoUnit.MILLIS)
@@ -49,8 +46,6 @@ interface AuthorizationHandler {
           .signWith(Consts.SIGNING_KEY)
           .setExpiration(datePlusTimeout)
           .compact()
-
-        LOGGER.trace("new token $jws")
 
         val cookie = Cookie.cookie(Consts.ACCESS_TOKEN_COOKIE, jws)
         cookie.setHttpOnly(true)
@@ -65,6 +60,9 @@ interface AuthorizationHandler {
 
   companion object {
     const val DEFAULT_TIMEOUT: Long = 48/*hours*/ * 60/*minutes*/ * 60/*seconds*/ * 1000/*millis*/
+    const val USER_NAME:String = "user"
+    const val PASSWORD:String = "password"
+
     fun getClaims(rc: RoutingContext): AuthorizationHandler = object : AuthorizationHandler {
       override val rc: RoutingContext = rc
     }

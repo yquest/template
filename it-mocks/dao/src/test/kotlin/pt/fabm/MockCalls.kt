@@ -7,6 +7,7 @@ import io.vertx.core.cli.Argument
 import io.vertx.core.json.JsonObject
 import io.vertx.ext.shell.ShellServiceOptions
 import io.vertx.ext.shell.term.HttpTermOptions
+import io.vertx.ext.shell.term.TelnetTermOptions
 import io.vertx.reactivex.config.ConfigRetriever
 import io.vertx.reactivex.core.buffer.Buffer
 import io.vertx.reactivex.core.cli.CLI
@@ -52,17 +53,19 @@ fun main() {
 
   ShellTest(conf.vertx)
 
-  LocalDateTime.now()
-    .format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss.SSS")).let { println(it) }
-
   //open in http://localhost:8123/shell.html
   ShellService.create(
     conf.vertx, ShellServiceOptions()
+      .setTelnetOptions(
+        TelnetTermOptions()
+          .setHost("localhost")
+          .setPort(2222)
+      )
       .setHttpOptions(
         HttpTermOptions()
           .setHost("localhost")
           .setPort(8123)
-      )
+      ).setWelcomeMessage("hi there!\n")
   ).rxStart()
     .subscribe({ println("shell started") }, onError)
 
