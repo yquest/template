@@ -5,6 +5,8 @@ import io.vertx.config.ConfigStoreOptions
 import io.vertx.core.json.JsonObject
 import io.vertx.reactivex.config.ConfigRetriever
 import io.vertx.reactivex.core.Vertx
+import io.vertx.reactivex.core.cli.CLI
+import io.vertx.reactivex.ext.shell.command.CommandBuilder
 import io.vertx.reactivex.ext.shell.command.CommandRegistry
 import pt.fabm.shell.LevelArgument
 import pt.fabm.template.models.type.CarMake
@@ -116,6 +118,30 @@ class ShellTest(private val vertx: Vertx) {
           })
         }
       }
+
     }.let { registry.registerCommand(it.build(vertx)) }
+
+    val cli = CLI.create("cql")
+    val commandBuilder = CommandBuilder.command(cli)
+    commandBuilder.processHandler {cmd->
+      val cqlCommand = cmd.args().joinToString(" ")
+      println("executing:${cqlCommand}")
+      conf.cassandraLocalClient.executeString(cqlCommand).subscribe ({rs->
+        rs.all {
+          if(it.succeeded()){
+            for(row in it.result()){
+              cmd.write(row.toString())
+            }
+          }else{
+            cmd.write("error")
+          }
+        }
+        cmd.end()
+      },{
+        it.printStackTrace()
+        cmd.end()
+      })
+    }
+    registry.registerCommand(commandBuilder.build(vertx))
   }
 }

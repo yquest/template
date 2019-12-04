@@ -1,6 +1,8 @@
 package pt.fabm.template.dao
 
+import io.reactivex.Completable
 import io.vertx.core.eventbus.DeliveryOptions
+import io.vertx.core.eventbus.ReplyException
 import io.vertx.reactivex.core.eventbus.Message
 import pt.fabm.template.models.type.Car
 import pt.fabm.template.models.type.CarId

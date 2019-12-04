@@ -7,4 +7,5 @@ class Conf {
   val vertx: Vertx = Vertx.vertx() ?: error("creating vertx error")
   val client: Client = Client(vertx)
   val clientMock = ClientMock(vertx)
+  val cassandraLocalClient = CassandraLocalClient(vertx)
 }

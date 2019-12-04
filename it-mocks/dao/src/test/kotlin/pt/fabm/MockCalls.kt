@@ -1,24 +1,17 @@
 package pt.fabm
 
 import io.reactivex.Single
-import io.vertx.config.ConfigRetrieverOptions
-import io.vertx.config.ConfigStoreOptions
-import io.vertx.core.cli.Argument
-import io.vertx.core.json.JsonObject
+import io.reactivex.functions.Consumer
+import io.vertx.cassandra.CassandraClientOptions
 import io.vertx.ext.shell.ShellServiceOptions
 import io.vertx.ext.shell.term.HttpTermOptions
 import io.vertx.ext.shell.term.TelnetTermOptions
-import io.vertx.reactivex.config.ConfigRetriever
+import io.vertx.reactivex.cassandra.CassandraClient
 import io.vertx.reactivex.core.buffer.Buffer
-import io.vertx.reactivex.core.cli.CLI
 import io.vertx.reactivex.ext.shell.ShellService
-import io.vertx.reactivex.ext.shell.command.CommandBuilder
-import io.vertx.reactivex.ext.shell.command.CommandRegistry
 import io.vertx.reactivex.ext.web.client.HttpResponse
 import pt.fabm.template.models.type.CarMake
 import java.time.Instant
-import java.time.LocalDateTime
-import java.time.format.DateTimeFormatter
 
 val conf = Conf()
 
@@ -51,6 +44,21 @@ fun main() {
     println("cookie:$it")
   }
 
+  val client = CassandraClient.createNonShared(
+    conf.vertx,
+    CassandraClientOptions().setPort(9042)
+  )
+  client.isConnected
+
+  client.rxExecute(
+    """CREATE KEYSPACE if not exists cycling
+  WITH REPLICATION = { 
+   'class' : 'SimpleStrategy', 
+   'replication_factor' : 1 
+  };""").subscribe(Consumer{
+    println("cool")
+  })
+
   ShellTest(conf.vertx)
 
   //open in http://localhost:8123/shell.html
@@ -66,7 +74,6 @@ fun main() {
           .setHost("localhost")
           .setPort(8123)
       ).setWelcomeMessage("hi there!\n")
-  ).rxStart()
-    .subscribe({ println("shell started") }, onError)
+  ).rxStart().subscribe({ println("shell started") }, onError)
 
 }
