@@ -1,8 +1,8 @@
 package pt.fabm
 
+import com.datastax.driver.core.SimpleStatement
 import io.reactivex.Single
 import io.reactivex.functions.Consumer
-import io.vertx.cassandra.CassandraClientOptions
 import io.vertx.ext.shell.ShellServiceOptions
 import io.vertx.ext.shell.term.HttpTermOptions
 import io.vertx.ext.shell.term.TelnetTermOptions
@@ -44,21 +44,6 @@ fun main() {
     println("cookie:$it")
   }
 
-  val client = CassandraClient.createNonShared(
-    conf.vertx,
-    CassandraClientOptions().setPort(9042)
-  )
-  client.isConnected
-
-  client.rxExecute(
-    """CREATE KEYSPACE if not exists cycling
-  WITH REPLICATION = { 
-   'class' : 'SimpleStrategy', 
-   'replication_factor' : 1 
-  };""").subscribe(Consumer{
-    println("cool")
-  })
-
   ShellTest(conf.vertx)
 
   //open in http://localhost:8123/shell.html
@@ -74,6 +59,7 @@ fun main() {
           .setHost("localhost")
           .setPort(8123)
       ).setWelcomeMessage("hi there!\n")
-  ).rxStart().subscribe({ println("shell started") }, onError)
+  ).rxStart()
+    .subscribe({ println("shell started") }, onError)
 
 }

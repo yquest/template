@@ -2,11 +2,13 @@ package pt.fabm
 
 import io.vertx.config.ConfigRetrieverOptions
 import io.vertx.config.ConfigStoreOptions
+import io.vertx.core.Handler
 import io.vertx.core.json.JsonObject
 import io.vertx.reactivex.config.ConfigRetriever
 import io.vertx.reactivex.core.Vertx
 import io.vertx.reactivex.core.cli.CLI
 import io.vertx.reactivex.ext.shell.command.CommandBuilder
+import io.vertx.reactivex.ext.shell.command.CommandProcess
 import io.vertx.reactivex.ext.shell.command.CommandRegistry
 import pt.fabm.shell.LevelArgument
 import pt.fabm.template.models.type.CarMake
@@ -36,7 +38,6 @@ class ShellTest(private val vertx: Vertx) {
           }
         )
       }
-
     val currentUser = retriever
       .rxGetConfig().map { it.getJsonObject("user") }.map { jo ->
         User(
@@ -121,27 +122,90 @@ class ShellTest(private val vertx: Vertx) {
 
     }.let { registry.registerCommand(it.build(vertx)) }
 
-    val cli = CLI.create("cql")
-    val commandBuilder = CommandBuilder.command(cli)
-    commandBuilder.processHandler {cmd->
+    fun createCommand(
+      name: String,
+      cmdProcessHandler: Handler<CommandProcess>
+    ) {
+      val cli = CLI.create(name)
+      val cmdBuilder = CommandBuilder.command(cli)
+      cmdBuilder.processHandler(cmdProcessHandler)
+      registry.registerCommand(cmdBuilder.build(vertx))
+    }
+
+    createCommand("cql", Handler { cmd ->
       val cqlCommand = cmd.args().joinToString(" ")
       println("executing:${cqlCommand}")
-      conf.cassandraLocalClient.executeString(cqlCommand).subscribe ({rs->
+      conf.cassandraLocalClient.executeString(cqlCommand).subscribe({ rs ->
         rs.all {
-          if(it.succeeded()){
-            for(row in it.result()){
+          if (it.succeeded()) {
+            for (row in it.result()) {
               cmd.write(row.toString())
+              cmd.write("\n")
             }
-          }else{
+          } else {
             cmd.write("error")
           }
         }
         cmd.end()
-      },{
+      }, {
         it.printStackTrace()
         cmd.end()
       })
-    }
-    registry.registerCommand(commandBuilder.build(vertx))
+    })
+
+    createCommand("cql-metadata", Handler { cmd ->
+
+      val cqlCommand = if (cmd.args().isEmpty()) {
+        "select keyspace_name, table_name from system_schema.tables;"
+      } else if (cmd.args().size == 1) {
+        "select table_name, column_name,type from system_schema.columns where keyspace_name ='${cmd.args()[0]}';"
+      } else {
+        "select column_name,type from system_schema.columns where keyspace_name ='${cmd.args()[0]}' AND table_name='${cmd.args()[1]}';"
+      }
+
+      println("executing:${cqlCommand}")
+      conf.cassandraLocalClient.executeString(cqlCommand).subscribe({ rs ->
+        rs.all {
+          if (it.succeeded()) {
+            for (row in it.result()) {
+              cmd.write(row.toString())
+              cmd.write("\n")
+            }
+          } else {
+            cmd.write("error")
+          }
+        }
+        cmd.end()
+      }, {
+        it.printStackTrace()
+        cmd.end()
+      })
+
+    })
+
+    createCommand("cql-types", Handler { cmd ->
+
+      val cqlCommand = "select * from system_schema.types;"
+
+      println("executing:${cqlCommand}")
+      conf.cassandraLocalClient.executeString(cqlCommand).subscribe({ rs ->
+        rs.all {
+          if (it.succeeded()) {
+            for (row in it.result()) {
+              cmd.write(row.toString())
+              cmd.write("\n")
+            }
+          } else {
+            cmd.write("error")
+          }
+        }
+        cmd.end()
+      }, {
+        it.printStackTrace()
+        cmd.end()
+      })
+
+    })
+
   }
 }
