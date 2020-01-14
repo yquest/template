@@ -34,7 +34,7 @@ class CarDaoPostgres(private val connection: Connection) : Closeable, CarDao {
   private val removePS = { connection.prepareCall(DELETE_QUERY) }
 
 
-  private fun find(carId: CarId) = find(carId.maker, carId.model)
+  private fun find(carId: CarId) = find(carId.make, carId.model)
   private fun find(maker: CarMake, model: String): Car? {
     val query = findOnePS()
     query.setInt(1, maker.ordinal)
@@ -97,7 +97,7 @@ class CarDaoPostgres(private val connection: Connection) : Closeable, CarDao {
   override fun delete(message: Message<CarId>) {
     val carId = message.body()
     val ps = removePS()
-    ps.setInt(1, carId.maker.ordinal)
+    ps.setInt(1, carId.make.ordinal)
     ps.setString(2, carId.model)
     ps.execute()
     message.reply(null)

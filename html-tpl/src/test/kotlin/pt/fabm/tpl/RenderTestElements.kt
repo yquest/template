@@ -1,6 +1,7 @@
 package pt.fabm.tpl
 
 import io.vertx.core.buffer.Buffer
+import io.vertx.core.json.JsonObject
 import org.junit.jupiter.api.Test
 import pt.fabm.tpl.component.AppInput
 import pt.fabm.tpl.component.AppInputServer
@@ -39,7 +40,8 @@ class RenderTestElements {
 
   @Test
   fun testAppServer() {
-    Buffer.buffer().let {  AppServer(it, false, carListServer).render();println(it.toString())}
+    val jo = JsonObject()
+    Buffer.buffer().let {  AppServer(it, false, carListServer, jo).render();println(it.toString())}
   }
 
   @Test
