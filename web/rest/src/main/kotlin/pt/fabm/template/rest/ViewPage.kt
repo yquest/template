@@ -27,9 +27,9 @@ class ViewPage(private val page: PageInit) {
             </div>
             <script type="text/javascript">var __state = """
       )
-      .appendBuffer(page.pageInitData.toBuffer())
+      .appendString(page.pageInitData.toString().trim())
       .appendString(
-        """.trimMargin();</script>
+        """;</script>
             <script type="text/javascript" src="bundle.js"></script>
           </body>
         </html>

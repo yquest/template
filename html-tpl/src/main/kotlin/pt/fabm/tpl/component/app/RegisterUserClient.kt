@@ -10,7 +10,7 @@ class RegisterUserClient(buffer: Buffer) : RegisterUser(buffer), ClientElement,
   MultiEnvTemplateClient {
 
   override fun modal() {
-    TagElement(buffer,"Modal").startStarterTag().endTag()
+    TagElement(buffer,"Modal").startStarterTag().endStarterTag().endTag()
   }
 
   override fun navbar() {
@@ -18,7 +18,7 @@ class RegisterUserClient(buffer: Buffer) : RegisterUser(buffer), ClientElement,
   }
 
   override fun notifications() {
-    TagElement(buffer,"Notifications").startStarterTag().endTag()
+    TagElement(buffer,"Notifications").startStarterTag().endStarterTag().endTag()
   }
 
   override fun appInput(label: String, tabIndex: Int, type: AppInput.Type) {
@@ -41,15 +41,13 @@ class RegisterUserClient(buffer: Buffer) : RegisterUser(buffer), ClientElement,
     import { Notifications } from "../tpl/Notifications";
     import { uiStore } from "../../stores/UIStore";
     import { Modal } from "../tpl/ModalTpl";
-    import { AppInput } from "./AppInputTpl";
+    import { AppInput } from "./global/AppInputTpl";
     import { registerPage } from "../app/controllers/RegisterUserController";
     import { navbar } from "../app/controllers/NavbarController";
-    
-    export const Register = observer((props: registerPage.Props) => ( 
+
+    export const Register = observer((props: registerPage.Props) => (
     """.trimIndent())
     render()
     buffer.appendString("));")
   }
-
-
 }

@@ -62,8 +62,10 @@ abstract class Login(buffer: Buffer) : Element(buffer), MultiEnvTemplate {
       .startStarterTag()
 
     //attributes
-    if (className != null) appendClassName(className)
-    appendClient(" className={$clientClass}")
+    if (className != null)
+      appendClassName(className)
+    if (clientClass != null)
+      appendClient(" className={$clientClass}")
 
     a.endStarterTag()
     this.block()
@@ -82,12 +84,15 @@ abstract class Login(buffer: Buffer) : Element(buffer), MultiEnvTemplate {
     this.block()
     button.endTag()
   }
+
   fun form(onSubmit: String, block: Login.() -> Unit) {
-    val form = TagElement(buffer,"form")
+    val form = TagElement(buffer, "form")
+    form.startStarterTag().endStarterTag()
     appendClient(" onSubmit={$onSubmit}")
     this.block()
     form.endTag()
   }
+
   abstract fun showIfErrorForm(block: Login.() -> Unit)
   abstract fun modalBackground()
   abstract fun clientText(text: String)

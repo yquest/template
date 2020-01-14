@@ -12,7 +12,7 @@ class LoginClient(buffer: Buffer) : Login(buffer), ClientElement,
 
   override fun asClientText(text: String): String? = text
   override fun modal() {
-    TagElement(buffer,"Modal").startStarterTag().endTag()
+    TagElement(buffer,"Modal").startStarterTag().endStarterTag().endTag()
   }
   override fun navbar() {
     appendBody("{navbar.createComponent()}")
@@ -26,9 +26,9 @@ class LoginClient(buffer: Buffer) : Login(buffer), ClientElement,
     import { Notifications } from "../tpl/Notifications";
     import { uiStore } from "../../stores/UIStore";
     import { Modal } from "../tpl/ModalTpl";
-    import { AppInput } from "./AppInputTpl";
+    import { AppInput } from "./global/AppInputTpl";
     import { navbar } from "../app/controllers/NavbarController";
-    
+
     export const Login = observer((props: loginPage.Props) => (
     """.trimIndent())
     render()
@@ -36,7 +36,7 @@ class LoginClient(buffer: Buffer) : Login(buffer), ClientElement,
   }
 
   override fun notifications() {
-    TagElement(buffer,"Notifications").startStarterTag().endTag()
+    TagElement(buffer,"Notifications").startStarterTag().endStarterTag().endTag()
   }
 
   override fun appInput(label: String, tabIndex: Int, type: AppInput.Type) {
