@@ -23,7 +23,8 @@ class AppServer(
   }
 
   override fun notifications() {
-    //ignore
+    //empty notifications
+    buffer.appendString("""<div class="fixed-top container"><div class="float-right"></div></div>""")
   }
 
   override fun carList() {

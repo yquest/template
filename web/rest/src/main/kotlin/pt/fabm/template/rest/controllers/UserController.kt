@@ -31,7 +31,7 @@ class UserController(val vertx: Vertx, private val userTimeout: Long) {
   fun userLogin(rc: RoutingContext){
     val body = rc.bodyAsJson
     val login = Login(
-      username = body.getString(UserRegisterIn.NAME),
+      username = body.getString(UserRegisterIn.USER),
       password = body.getString(UserRegisterIn.PASS).toHash()
     )
 
@@ -84,11 +84,11 @@ class UserController(val vertx: Vertx, private val userTimeout: Long) {
 
   fun createUser(rc: RoutingContext) {
     val bodyAsJson = rc.bodyAsJson
-    val name: String? = bodyAsJson.getString(UserRegisterIn.NAME)
+    val name: String? = bodyAsJson.getString(UserRegisterIn.USER)
     val email: String? = bodyAsJson.getString(UserRegisterIn.EMAIL)
     val password: String? = bodyAsJson.getString(UserRegisterIn.PASS)
 
-    if (name.isNullOrEmpty()) throw RequiredException(UserRegisterIn.NAME)
+    if (name.isNullOrEmpty()) throw RequiredException(UserRegisterIn.USER)
     if (email.isNullOrEmpty()) throw RequiredException(UserRegisterIn.EMAIL)
     if (password.isNullOrEmpty()) throw RequiredException(UserRegisterIn.PASS)
 

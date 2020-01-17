@@ -1,14 +1,4 @@
-export enum MAKERS {
-  AUDI, VOLKSWAGEN, NISSAN, PEUGEOT, CITROEN, RENAULT
-}
-
-export const makerToString: Map<MAKERS, string> = new Map<MAKERS, string>([
-  [MAKERS.AUDI, "Audi"],
-  [MAKERS.VOLKSWAGEN, "Volkswagen"],
-  [MAKERS.NISSAN, "Nissan"],
-  [MAKERS.PEUGEOT, "Peugeot"],
-  [MAKERS.RENAULT, "Renault"]
-]);
+import { CarMaker } from "./gen/CarMaker";
 
 export interface RawCar{
   maturityDate:number;
@@ -18,7 +8,7 @@ export interface RawCar{
 }
 
 export interface CarPK {
-  make: MAKERS;
+  make: CarMaker.e;
   model: string;
 }
 
@@ -53,7 +43,7 @@ export function createRawCar(car:Car):{
 
 export function carToJson(car: Car):string {
   let json = (car as any)
-  json.make = MAKERS[car.make];
+  json.make = CarMaker[car.make];
   delete (json.getPK);
   json.maturityDate = json.maturityDate.getTime();
   return json;

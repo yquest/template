@@ -1,7 +1,8 @@
 import { observable, IObservableArray, action, configure } from "mobx";
-import { Car, MAKERS } from "../model/Car";
+import { Car } from "../model/Car";
 import { userService } from "../services/UserService";
 import { services } from "../services/Services";
+import { CarMaker } from "../model/gen/CarMaker";
 
 configure({ enforceActions: "observed" });
 
@@ -56,7 +57,7 @@ const carEdition = observable({
     creationType: false,
     car: null as Car,
     index: null as number,
-    updateMaker(make: MAKERS) {
+    updateMaker(make: CarMaker.e) {
         carEdition.car.make = make;
     },
     updateModel(model: string) {

@@ -87,8 +87,9 @@ abstract class Login(buffer: Buffer) : Element(buffer), MultiEnvTemplate {
 
   fun form(onSubmit: String, block: Login.() -> Unit) {
     val form = TagElement(buffer, "form")
-    form.startStarterTag().endStarterTag()
+    form.startStarterTag()
     appendClient(" onSubmit={$onSubmit}")
+    form.endStarterTag()
     this.block()
     form.endTag()
   }

@@ -1,8 +1,9 @@
 import Axios, { AxiosResponse } from "axios";
-import { Car, MAKERS, CarPK, carFromRaw } from "../model/Car";
+import { Car, CarPK, carFromRaw } from "../model/Car";
 import { dateToString } from "../util";
 import { CarService } from "./CarService";
 import { stores } from "../stores/Stores";
+import { CarMaker } from "../model/gen/CarMaker";
 
 interface RestResult {
     data: any;
@@ -12,8 +13,8 @@ export class CarServiceImp implements CarService {
 
     async create(car: Car): Promise<void> {
         let serialized = {
-            make: MAKERS[car.make],
-            maturityDate: dateToString(car.maturityDate),
+            make: car.make,
+            maturityDate: car.maturityDate.getDate(),
             model: car.model,
             price: car.price
         };
@@ -25,7 +26,7 @@ export class CarServiceImp implements CarService {
 
     async update(car: Car): Promise<void> {        
         let serialized = {
-            make: MAKERS[car.make],
+            make: car.make,
             maturityDate: dateToString(car.maturityDate),
             model: car.model,
             price: car.price
@@ -38,7 +39,7 @@ export class CarServiceImp implements CarService {
     async list():Promise<Car[]>{
         const res = await Axios.get("api/car/list");
         return (res.data as Array<any>).map((item) => {
-            item.make = MAKERS[item.make];
+            item.make = CarMaker.getLabel(item.make);
             item.maturityDate = new Date(item.maturityDate);
             let car = (item as Car);
             car.getPK = () => {
@@ -52,9 +53,10 @@ export class CarServiceImp implements CarService {
     }
 
     async remove(carPK:Car):Promise<void>{
+        console.log("pause");
         await Axios.delete("api/car", {
             params: {
-                make: MAKERS[carPK.make],
+                make: carPK.make,
                 model: carPK.model
             }
         });

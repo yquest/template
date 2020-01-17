@@ -1,15 +1,16 @@
-import { MAKERS, RawCar, carToRaw, carFromRaw } from "./model/Car"
+import {  RawCar, carToRaw, carFromRaw } from "./model/Car"
+import { CarMaker } from "./model/gen/CarMaker"
 
 
 const cars:RawCar[] = [
     {
-        make:MAKERS.AUDI,
+        make:CarMaker.e.AUDI,
         model:"A3",
         maturityDate:1569000000000,
         price:30000
     },
     {
-        make:MAKERS.NISSAN,
+        make:CarMaker.e.NISSAN,
         model:"Note",
         maturityDate:1569512798493,
         price:10000

@@ -19,7 +19,7 @@ export class UserServiceTest implements UserService{
     }
     async userLogin(user: User): Promise<boolean> {
         function findUser(current:User):boolean{
-            return current.username === user.username && current.password === user.password;
+            return current.user === user.user && current.pass === user.pass;
         }
         this.authenticatedCache = this.usersList.findIndex(findUser) !== -1;
         return Promise.resolve(this.authenticatedCache)

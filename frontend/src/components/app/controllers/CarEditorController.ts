@@ -2,12 +2,12 @@ import { uiStore } from "../../../stores/UIStore";
 import { observable, action } from "mobx";
 import { stores } from "../../../stores/Stores";
 import { appInput } from "../../../controllers/AppInputController";
-import { AppInput } from "../../gen/AppInputTpl";
+import { AppInput } from "../../gen/global/AppInputTpl";
 import * as React from "react";
-import { makerToString } from "../../../model/Car";
 import { dropDown } from "../../../controllers/DropDownController";
 import { DropDownInput } from "../../gen/global/DropDownTpl";
 import { services } from "../../../services/Services";
+import { CarMaker } from "../../../model/gen/CarMaker";
 
 
 export namespace carEdit {
@@ -63,7 +63,7 @@ export namespace carEdit {
         return React.createElement(DropDownInput, dropDown.createProps({
             disabled: !stores.carEdition.creationType,
             inputName: "make",
-            items: ['(none)', ...Array.from(makerToString.values())],
+            items: ['(none)', ...CarMaker.labels()],
             label: "Maker",
             store: store,
             tabIndex: tabIndex

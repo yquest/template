@@ -1,9 +1,10 @@
-import * as React from 'react';
-import * as ReactDOM from 'react-dom';
-//import { App } from './App';
+import * as React from "react";
+import * as ReactDOM from "react-dom";
+import { App } from "./components/gen/AppTpl";
 
-/*
 ReactDOM.render(
-      <App />,
-  document.getElementById('root'));
-*/
+  <App createCarClick={() => {
+    console.log("click");
+  }} />,
+  document.getElementById("root")
+);

@@ -63,8 +63,8 @@ export namespace registerPage {
             if(hasErrors()) return;
             
             services.userService.registerUser({
-                username: username.value,
-                password: password.value,
+                user: username.value,
+                pass: password.value,
                 email: email.value
             }).then(_=>{
                 const notification = {

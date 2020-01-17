@@ -34,7 +34,7 @@ class DaoVerticle : AbstractVerticle() {
       val getLogin = {
         val body = getBody()
         Login(
-          username = body.getString(UserRegisterIn.NAME),
+          username = body.getString(UserRegisterIn.USER),
           password = body.getString(UserRegisterIn.PASS).toByteArray()
         )
       }
@@ -42,7 +42,7 @@ class DaoVerticle : AbstractVerticle() {
       val getUserRegisterIn = {
         val body = getBody()
         UserRegisterIn(
-          name = body.getString(UserRegisterIn.NAME),
+          name = body.getString(UserRegisterIn.USER),
           pass = body.getString(UserRegisterIn.PASS).toByteArray(),
           email = body.getString(UserRegisterIn.EMAIL)
         )
@@ -50,7 +50,7 @@ class DaoVerticle : AbstractVerticle() {
 
       val userRegisterToJson: (UserRegisterIn) -> JsonObject = {
         JsonObject()
-          .put(UserRegisterIn.NAME, it.name)
+          .put(UserRegisterIn.USER, it.name)
           .put(UserRegisterIn.PASS, it.pass)
           .put(UserRegisterIn.EMAIL, it.email)
       }

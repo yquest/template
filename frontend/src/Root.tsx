@@ -6,6 +6,8 @@ import * as React from "react";
 import { registerPage } from "./components/app/controllers/RegisterUserController";
 import { app } from "./components/app/controllers/AppController";
 
+console.log("ssr");
+
 const appProps = app.createProps();
 export const Root = observer(() => {
   if (stores.router.page === "login") {

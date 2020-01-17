@@ -27,7 +27,13 @@ class RenderTestElements {
 
   @Test
   fun testLoginServer() {
-    Buffer.buffer().let { LoginServer(it, true).render();println(it.toString()) }
+    Buffer.buffer().let {
+      LoginServer(
+        page = it,
+        auth = false,
+        pageInitData = JsonObject()
+      ).render();println(it.toString())
+    }
   }
 
   @Test

@@ -21,7 +21,7 @@ class Client(vertx: Vertx) {
     return client.post(port, host, "/api/user")
       .rxSendJsonObject(
         JsonObject()
-          .put(UserRegisterIn.NAME, user.name ?: error("no name"))
+          .put(UserRegisterIn.USER, user.name ?: error("no name"))
           .put(UserRegisterIn.PASS, (user.pass ?: error("no pass")).toByteArray())
           .put(UserRegisterIn.EMAIL, user.email ?: error("no email"))
       )
@@ -37,7 +37,7 @@ class Client(vertx: Vertx) {
     return client.post(port, host, "/api/user/login")
       .rxSendJsonObject(
         JsonObject()
-          .put(UserRegisterIn.NAME, user.name ?: error("no name"))
+          .put(UserRegisterIn.USER, user.name ?: error("no name"))
           .put(
             UserRegisterIn.PASS, (user.pass ?: error("no pass"))
               .toByteArray()

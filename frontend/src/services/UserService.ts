@@ -22,17 +22,17 @@ export class UserServiceImp implements UserService{
     }
     async registerUser(user: User): Promise<void> {
         let body = {
-            name: user.username,
+            user: user.user,
             email: user.email,
-            password: user.password
+            pass: user.pass
         };
         await Axios.post("api/user", body)
     };
 
     async userLogin(user: User): Promise<boolean> {
         this.authenticatedCache = await Axios.post("api/user/login", {
-            user: user.username,
-            pass: user.password
+            user: user.user,
+            pass: user.pass
         }).then(res=> res.status === 200);
         return this.authenticatedCache;
     };

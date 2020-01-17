@@ -1,6 +1,7 @@
 package pt.fabm.template.rest.controllers
 
 import io.reactivex.Single
+import io.vertx.core.json.JsonArray
 import io.vertx.core.logging.LoggerFactory
 import io.vertx.kotlin.core.json.jsonObjectOf
 import io.vertx.reactivex.core.Vertx
@@ -12,16 +13,47 @@ import pt.fabm.template.rest.AuthorizationHandler
 import pt.fabm.template.rest.ViewPage
 import pt.fabm.tpl.component.app.AppServer
 import pt.fabm.tpl.component.app.CarFields
+import pt.fabm.tpl.component.app.LoginServer
 
 class ViewsController(private val vertx: Vertx) {
   companion object {
     val LOGGER = LoggerFactory.getLogger(ViewsController::class.java)
   }
 
-  fun main(rc: RoutingContext) {
+  private fun createAuthRx(rc: RoutingContext): Single<Boolean> {
     val claims = Single.fromCallable {
       AuthorizationHandler.getClaims(rc).claims
     }.cache()
+    return claims.map { true }.onErrorReturn { false }
+  }
+
+
+  fun login(rc: RoutingContext) {
+    fun onSuccess(buffer: Buffer) = rc.response().end(buffer)
+    fun onError(error: Throwable) {
+      rc.response().statusCode = 503
+      LOGGER.error(error)
+      rc.response().end()
+    }
+
+    val buffer = Buffer.buffer()
+    val authRx = createAuthRx(rc)
+    authRx.map { auth ->
+      LoginServer(
+        auth = auth,
+        page = buffer.delegate,
+        pageInitData = jsonObjectOf(
+          "cars" to JsonArray(),
+          "page" to "login"
+        )
+      )
+    }.map {
+      Buffer(ViewPage(it).render())
+    }.subscribe(::onSuccess, ::onError)
+
+  }
+
+  fun main(rc: RoutingContext) {
 
     fun render(auth: Boolean, list: List<Car>): ViewPage {
       val buffer = Buffer.buffer()
@@ -34,10 +66,21 @@ class ViewsController(private val vertx: Vertx) {
             price = it.price.toString()
           )
         },
-        pageInitData = jsonObjectOf()
+        pageInitData = jsonObjectOf(
+          "cars" to list.map {
+            jsonObjectOf(
+              "make" to it.make.ordinal,
+              "model" to it.model,
+              "maturityDate" to it.maturityDate.epochSecond,
+              "price" to it.price
+            )
+          }.let { JsonArray(it) }
+        )
       )
       return ViewPage(app)
     }
+
+    val authRx = createAuthRx(rc)
 
     fun onSuccess(buffer: Buffer) = rc.response().end(buffer)
     fun onError(error: Throwable) {
@@ -50,7 +93,7 @@ class ViewsController(private val vertx: Vertx) {
       .rxSend<List<Car>>(EventBusAddresses.Dao.Car.list, null)
       .map { it.body() }
       .flatMap { list ->
-        claims.map { true }.onErrorReturn { false }.map { isAuth ->
+        authRx.map { isAuth ->
           Buffer(
             render(isAuth, list).render()
           )

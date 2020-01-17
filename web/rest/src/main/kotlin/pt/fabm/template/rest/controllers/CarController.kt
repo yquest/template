@@ -140,7 +140,11 @@ class CarController(val vertx: Vertx) {
 
     val carId = Single.fromCallable {
       AuthorizationHandler.getClaims(rc).claims
-      CarId.fromBasicJson(rc.bodyAsJson)
+      val request = rc.request()
+      CarId(
+        make = CarMake.values()[request.getParam(Car.MAKE).toInt()],
+        model = request.getParam(Car.MODEL) ?: throw IllegalArgumentException("no model provided")
+      )
     }
 
     carId

@@ -53,6 +53,7 @@ class RestVerticle : AbstractVerticle() {
     router.put("/api/car").withBody().handler(carController::updateCar)
     router.delete("/api/car").handler(carController::deleteCar)
     router.get("/").handler(viewsController::main)
+    router.get("/login").handler(viewsController::login)
 
     val webRoot = StaticHandler
       .create()

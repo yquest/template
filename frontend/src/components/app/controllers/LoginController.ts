@@ -88,8 +88,8 @@ export namespace loginPage {
             mandatoryAppInput.bind(password)();
             
             services.userService.userLogin({
-                username: login.value,
-                password: password.value
+                user: login.value,
+                pass: password.value
             }).then(res => {
                 if(res){
                     loginSuccess();

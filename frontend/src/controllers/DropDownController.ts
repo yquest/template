@@ -120,6 +120,9 @@ export namespace dropDown {
                         break;
                 }
             },
+            get btnLabel(){
+                return "my-label";
+            },
             labels: entry.items,
             toggle() { entry.store.updateOpen(!entry.store.open) },
             onSelectItem(idx) {

@@ -1,12 +1,15 @@
 package pt.fabm.tpl.component.app
 
 import io.vertx.core.buffer.Buffer
+import io.vertx.core.json.JsonObject
 import pt.fabm.tpl.component.AppInput
 import pt.fabm.tpl.component.AppInputServer
 import pt.fabm.tpl.component.MultiEnvTemplateServer
+import pt.fabm.tpl.component.page.PageInit
 
-class LoginServer(buffer: Buffer, private val auth: Boolean) : Login(buffer),
-  MultiEnvTemplateServer {
+
+class LoginServer(override val auth: Boolean, override val page: Buffer, override val pageInitData: JsonObject) : Login(page),
+  MultiEnvTemplateServer, PageInit {
 
   override fun asClientText(text: String): String? = null
   override fun literalClassName(value: String): String = ""
@@ -19,7 +22,8 @@ class LoginServer(buffer: Buffer, private val auth: Boolean) : Login(buffer),
   }
 
   override fun notifications() {
-    //ignore
+    //empty notifications
+    buffer.appendString("""<div class="fixed-top container"><div class="float-right"></div></div>""")
   }
 
   override fun appInput(label: String, tabIndex: Int, type: AppInput.Type) {
@@ -29,6 +33,7 @@ class LoginServer(buffer: Buffer, private val auth: Boolean) : Login(buffer),
       tabIndex = tabIndex,
       value = ""
     )
+
     fun renderInput(label: String) {
       appInput.render(label)
     }

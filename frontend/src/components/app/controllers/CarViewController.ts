@@ -1,4 +1,4 @@
-import { Car, MAKERS, makerToString } from "../../../model/Car";
+import { Car } from "../../../model/Car";
 import { dateToStringReadable } from "../../../util";
 import * as React from "react";
 import { CarView } from "../../gen/CarViewTpl";
@@ -6,6 +6,7 @@ import { stores } from "../../../stores/Stores";
 import { uiStore, showModal } from "../../tpl/ModalTpl";
 import { ModalContent } from "../../../stores/UIStore";
 import { services } from "../../../services/Services";
+import { CarMaker } from "../../../model/gen/CarMaker";
 
 
 export namespace carView {
@@ -37,7 +38,7 @@ export namespace carView {
                 return idx === stores.carEdition.index ? "selected" : null;
             },
             authenticated: entry.authenticated,
-            maker: MAKERS[entry.car.make],
+            maker: CarMaker.getLabel(entry.car.make),
             maturityDate: dateToStringReadable(entry.car.maturityDate),
             model: entry.car.model,
             price: entry.car.price + "€",
@@ -73,7 +74,7 @@ export namespace carView {
                     }
                     const modalContent: ModalContent = new ModalContent();
                     modalContent.actionButton = "remove";
-                    modalContent.content = `Do you want to remove the car: (Model:${car.model}) Maker(${makerToString.get(car.make)})`;
+                    modalContent.content = `Do you want to remove the car: (Model:${car.model}) Maker(${CarMaker.getLabel(car.make)})`;
                     modalContent.title = "Alert";
                     modalContent.actionEvent = () => {
                         services.carService.remove(carViewEntry.car);
