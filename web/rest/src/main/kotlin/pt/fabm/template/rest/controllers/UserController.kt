@@ -24,7 +24,7 @@ class UserController(val vertx: Vertx, private val userTimeout: Long) {
     val LOGGER = LoggerFactory.getLogger(UserController::class.java)
   }
   fun userLogout(rc: RoutingContext){
-    rc.getCookie(Consts.ACCESS_TOKEN_COOKIE)?.setPath("/api/")?.setMaxAge(0L)
+    rc.getCookie(Consts.ACCESS_TOKEN_COOKIE)?.setMaxAge(0L)
     rc.response().end()
   }
 
@@ -61,11 +61,11 @@ class UserController(val vertx: Vertx, private val userTimeout: Long) {
 
       var cookie = Cookie.cookie(Consts.ACCESS_TOKEN_COOKIE, jws)
       cookie.setHttpOnly(true)
-      cookie.path = "/api/"
+      cookie.path = "/"
       rc.addCookie(cookie)
 
       cookie = Cookie.cookie(Consts.USER_NAME_COOKIE, username)
-      cookie.path = "/api/*"
+      cookie.path = "/"
       rc.addCookie(cookie)
       rc.response().statusCode = 200
       rc.response().end()

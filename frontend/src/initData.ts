@@ -1,4 +1,4 @@
-import {  RawCar, carToRaw, carFromRaw } from "./model/Car"
+import {  RawCar } from "./model/Car"
 import { CarMaker } from "./model/gen/CarMaker"
 
 

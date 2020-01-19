@@ -8,18 +8,21 @@ import pt.fabm.tpl.component.TagElement
 
 class LoginClient(buffer: Buffer) : Login(buffer), ClientElement,
   MultiEnvTemplateClient {
+  private val fragments = Fragments(buffer)
   override fun literalClassName(value: String): String = " className={$value}"
 
   override fun asClientText(text: String): String? = text
   override fun modal() {
-    TagElement(buffer,"Modal").startStarterTag().endStarterTag().endTag()
+    TagElement(buffer, "Modal").startStarterTag().endStarterTag().endTag()
   }
+
   override fun navbar() {
     appendBody("{navbar.createComponent()}")
   }
 
   override fun renderImplementation() {
-    appendBody("""
+    appendBody(
+      """
     import { observer } from "mobx-react";
     import { loginPage } from "../app/controllers/LoginController";
     import * as React from "react";
@@ -30,13 +33,14 @@ class LoginClient(buffer: Buffer) : Login(buffer), ClientElement,
     import { navbar } from "../app/controllers/NavbarController";
 
     export const Login = observer((props: loginPage.Props) => (
-    """.trimIndent())
+    """.trimIndent()
+    )
     render()
     appendBody("));")
   }
 
   override fun notifications() {
-    TagElement(buffer,"Notifications").startStarterTag().endStarterTag().endTag()
+    fragments.clientNotifications()
   }
 
   override fun appInput(label: String, tabIndex: Int, type: AppInput.Type) {

@@ -13,7 +13,11 @@ class EnumGen<T : Enum<T>>(
     buffer.appendString(
       """
       export function labels():Array<string>{
-        return new Array(size).map(idx=>getLabel(idx));
+        const array = [];
+        for (var i = 0; i < size; i++) {
+          array.push(getLabel(i));
+        }
+        return array;
       }""".trimMargin()
     )
     buffer.appendString("export function getLabel(instance:e):string{")
@@ -24,7 +28,7 @@ class EnumGen<T : Enum<T>>(
 
   override fun renderImplementation() {
     buffer.appendString("export namespace $name{")
-    buffer.appendString("enum e{")
+    buffer.appendString("export enum e{")
     val size = values.size
     val iterator = values.iterator()
     buffer.appendString(iterator.next().name)

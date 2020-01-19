@@ -35,6 +35,7 @@ class CarController(val vertx: Vertx) {
     fun onError(error: Throwable) {
       rc.response().statusCode = 503
       rc.response().end()
+      LOGGER.error("technical error", error)
     }
 
     vertx.eventBus().rxSend<List<Car>>(

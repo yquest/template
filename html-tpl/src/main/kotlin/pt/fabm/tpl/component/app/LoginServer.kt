@@ -8,11 +8,14 @@ import pt.fabm.tpl.component.MultiEnvTemplateServer
 import pt.fabm.tpl.component.page.PageInit
 
 
-class LoginServer(override val auth: Boolean, override val page: Buffer, override val pageInitData: JsonObject) : Login(page),
-  MultiEnvTemplateServer, PageInit {
+class LoginServer(override val auth: Boolean, override val page: Buffer, override val pageInitData: JsonObject) :
+  Login(page),
+  MultiEnvTemplateServer,
+  PageInit {
 
   override fun asClientText(text: String): String? = null
   override fun literalClassName(value: String): String = ""
+  private val fragments = Fragments(buffer)
   override fun modal() {
     //ignore
   }
@@ -22,8 +25,7 @@ class LoginServer(override val auth: Boolean, override val page: Buffer, overrid
   }
 
   override fun notifications() {
-    //empty notifications
-    buffer.appendString("""<div class="fixed-top container"><div class="float-right"></div></div>""")
+    fragments.serverNotifications()
   }
 
   override fun appInput(label: String, tabIndex: Int, type: AppInput.Type) {

@@ -121,7 +121,7 @@ export namespace dropDown {
                 }
             },
             get btnLabel(){
-                return "my-label";
+                return entry.label;
             },
             labels: entry.items,
             toggle() { entry.store.updateOpen(!entry.store.open) },

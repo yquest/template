@@ -6,8 +6,8 @@ import pt.fabm.tpl.component.MultiEnvTemplateClient
 import pt.fabm.tpl.component.TagElement
 
 class AppClient(buffer: Buffer) : App(buffer), ClientElement, MultiEnvTemplateClient {
-
-  override fun renderImplementation(){
+  private val fragments = Fragments(buffer)
+  override fun renderImplementation() {
     appendBody(
       """
       import { observer } from "mobx-react";
@@ -36,7 +36,7 @@ class AppClient(buffer: Buffer) : App(buffer), ClientElement, MultiEnvTemplateCl
   }
 
   override fun notifications() {
-    TagElement(buffer, "Notifications").createSingleTag()
+    fragments.clientNotifications()
   }
 
   override fun carList() {

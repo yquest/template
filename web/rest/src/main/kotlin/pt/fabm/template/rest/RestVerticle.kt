@@ -52,8 +52,8 @@ class RestVerticle : AbstractVerticle() {
     router.post("/api/car").withBody().handler(carController::createCar)
     router.put("/api/car").withBody().handler(carController::updateCar)
     router.delete("/api/car").handler(carController::deleteCar)
-    router.get("/").handler(viewsController::main)
-    router.get("/login").handler(viewsController::login)
+    router.get("/").withCookies().handler(viewsController::main)
+    router.get("/login").withCookies().handler(viewsController::login)
 
     val webRoot = StaticHandler
       .create()

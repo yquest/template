@@ -44,7 +44,8 @@ class ViewsController(private val vertx: Vertx) {
         page = buffer.delegate,
         pageInitData = jsonObjectOf(
           "cars" to JsonArray(),
-          "page" to "login"
+          "page" to "login",
+          "auth" to auth
         )
       )
     }.map {
@@ -74,7 +75,8 @@ class ViewsController(private val vertx: Vertx) {
               "maturityDate" to it.maturityDate.epochSecond,
               "price" to it.price
             )
-          }.let { JsonArray(it) }
+          }.let { JsonArray(it) },
+          "auth" to auth
         )
       )
       return ViewPage(app)

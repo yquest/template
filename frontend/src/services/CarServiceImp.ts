@@ -1,8 +1,7 @@
-import Axios, { AxiosResponse } from "axios";
+import Axios from "axios";
 import { Car, CarPK, carFromRaw } from "../model/Car";
 import { dateToString } from "../util";
 import { CarService } from "./CarService";
-import { stores } from "../stores/Stores";
 import { CarMaker } from "../model/gen/CarMaker";
 
 interface RestResult {

@@ -13,7 +13,7 @@ class AppServer(
 ) :
   App(buffer), MultiEnvTemplateServer, PageInit {
   override val page: Buffer get() = buffer
-
+  private val notifications = Fragments(buffer)
   override fun modal() {
     //ignore
   }
@@ -23,8 +23,7 @@ class AppServer(
   }
 
   override fun notifications() {
-    //empty notifications
-    buffer.appendString("""<div class="fixed-top container"><div class="float-right"></div></div>""")
+    notifications.serverNotifications()
   }
 
   override fun carList() {
