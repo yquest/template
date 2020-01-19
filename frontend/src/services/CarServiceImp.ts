@@ -1,19 +1,14 @@
 import Axios from "axios";
-import { Car, CarPK, carFromRaw } from "../model/Car";
-import { dateToString } from "../util";
+import { Car, carFromRaw } from "../model/Car";
 import { CarService } from "./CarService";
 import { CarMaker } from "../model/gen/CarMaker";
 
-interface RestResult {
-    data: any;
-    status: number;
-}
 export class CarServiceImp implements CarService {
 
-    async create(car: Car): Promise<void> {
+    async create(car: Car): Promise<void> {        
         let serialized = {
             make: car.make,
-            maturityDate: car.maturityDate.getDate(),
+            maturityDate: car.maturityDate.getTime(),
             model: car.model,
             price: car.price
         };
@@ -26,7 +21,7 @@ export class CarServiceImp implements CarService {
     async update(car: Car): Promise<void> {        
         let serialized = {
             make: car.make,
-            maturityDate: dateToString(car.maturityDate),
+            maturityDate: car.maturityDate.getTime(),
             model: car.model,
             price: car.price
         };
@@ -38,6 +33,7 @@ export class CarServiceImp implements CarService {
     async list():Promise<Car[]>{
         const res = await Axios.get("api/car/list");
         return (res.data as Array<any>).map((item) => {
+            console.log("map car");
             item.make = CarMaker.getLabel(item.make);
             item.maturityDate = new Date(item.maturityDate);
             let car = (item as Car);

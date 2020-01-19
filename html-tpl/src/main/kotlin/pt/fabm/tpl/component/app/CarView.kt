@@ -41,7 +41,7 @@ abstract class CarView(buffer: Buffer) : Element(buffer), MultiEnvTemplate {
   abstract fun showIfBlockedRemove(block: CarView.() -> Unit)
   abstract fun showIfBlockedNotRemove(block: CarView.() -> Unit)
 
-  fun tr(classClientVar: String, block: CarView.() -> Unit) {
+  private fun tr(classClientVar: String, block: CarView.() -> Unit) {
     val tr = TagElement(buffer, "tr")
       .startStarterTag()
     appendClient(" className={$classClientVar}")
@@ -50,7 +50,7 @@ abstract class CarView(buffer: Buffer) : Element(buffer), MultiEnvTemplate {
     tr.endTag()
   }
 
-  fun i(className: String) {
+  private fun i(className: String) {
     val i = TagElement(buffer, "i")
       .startStarterTag()
     //attributes
@@ -72,7 +72,7 @@ abstract class CarView(buffer: Buffer) : Element(buffer), MultiEnvTemplate {
     a.endTag()
   }
 
-  fun td(block: CarView.() -> Unit) {
+  private fun td(block: CarView.() -> Unit) {
     val td = TagElement(buffer,  "td").noAttributesStarterTag()
     this.block()
     td.endTag()

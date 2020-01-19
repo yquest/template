@@ -14,6 +14,10 @@ import pt.fabm.template.rest.ViewPage
 import pt.fabm.tpl.component.app.AppServer
 import pt.fabm.tpl.component.app.CarFields
 import pt.fabm.tpl.component.app.LoginServer
+import java.time.Instant
+import java.time.ZoneId
+import java.time.format.DateTimeFormatter
+import java.util.*
 
 class ViewsController(private val vertx: Vertx) {
   companion object {
@@ -56,6 +60,15 @@ class ViewsController(private val vertx: Vertx) {
 
   fun main(rc: RoutingContext) {
 
+    fun Instant.toAppFormat(): String {
+      val formatter = DateTimeFormatter
+        .ofPattern("yyyy-MM-dd, kk:mm")
+        .withLocale(Locale.getDefault())
+        .withZone(ZoneId.systemDefault())
+
+      return formatter.format(this)
+    }
+
     fun render(auth: Boolean, list: List<Car>): ViewPage {
       val buffer = Buffer.buffer()
       val app = AppServer(
@@ -63,8 +76,8 @@ class ViewsController(private val vertx: Vertx) {
           CarFields(
             maker = it.make.label,
             model = it.model,
-            matDate = it.maturityDate.toString(),
-            price = it.price.toString()
+            matDate = it.maturityDate.toAppFormat(),
+            price = "${it.price}€"
           )
         },
         pageInitData = jsonObjectOf(
@@ -72,7 +85,7 @@ class ViewsController(private val vertx: Vertx) {
             jsonObjectOf(
               "make" to it.make.ordinal,
               "model" to it.model,
-              "maturityDate" to it.maturityDate.epochSecond,
+              "maturityDate" to it.maturityDate.toEpochMilli(),
               "price" to it.price
             )
           }.let { JsonArray(it) },

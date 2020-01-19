@@ -3,6 +3,7 @@ package pt.fabm.template.rest.controllers
 import Consts
 import io.jsonwebtoken.Jwts
 import io.vertx.core.json.JsonObject
+import io.vertx.core.logging.Logger
 import io.vertx.core.logging.LoggerFactory
 import io.vertx.reactivex.core.Vertx
 import io.vertx.reactivex.core.buffer.Buffer
@@ -21,10 +22,10 @@ import java.util.*
 
 class UserController(val vertx: Vertx, private val userTimeout: Long) {
   companion object{
-    val LOGGER = LoggerFactory.getLogger(UserController::class.java)
+    val LOGGER: Logger = LoggerFactory.getLogger(UserController::class.java)
   }
   fun userLogout(rc: RoutingContext){
-    rc.getCookie(Consts.ACCESS_TOKEN_COOKIE)?.setMaxAge(0L)
+    rc.getCookie(Consts.ACCESS_TOKEN_COOKIE)?.setPath("/")?.setMaxAge(0L)
     rc.response().end()
   }
 

@@ -17,9 +17,6 @@ const cars:RawCar[] = [
     }
 ]
 
-//localStorage.setItem("cars",JSON.stringify(cars.map(carFromRaw)));
-
-
 window["__state"] = {
     auth:true,
     username:"xico",

@@ -125,7 +125,9 @@ const navigation = {
         history.pushState(state, "login", "/login");
     },
     loginOffEvent(): void {
-        user.updateAuthenticated(false);
+        userService.userLogout().then(()=>{
+            user.updateAuthenticated(false);
+        });
     },
     root(): void {
         const state = { page: "" };
