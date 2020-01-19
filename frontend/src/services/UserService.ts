@@ -33,7 +33,7 @@ export class UserServiceImp implements UserService{
         this.authenticatedCache = await Axios.post("api/user/login", {
             user: user.user,
             pass: user.pass
-        }).then(res=> res.status === 200);
+        }).then(res=> res.status === 200).catch(res=> false);
         return this.authenticatedCache;
     };
 
