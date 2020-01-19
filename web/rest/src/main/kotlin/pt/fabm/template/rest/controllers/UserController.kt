@@ -13,7 +13,6 @@ import pt.fabm.template.EventBusAddresses
 import pt.fabm.template.extensions.toHash
 import pt.fabm.template.models.type.Login
 import pt.fabm.template.models.type.UserRegisterIn
-import pt.fabm.template.rest.AuthorizationHandler
 import pt.fabm.template.validation.RequiredException
 import java.time.LocalDateTime
 import java.time.ZoneId

@@ -6,8 +6,8 @@
   "scripts": {
     "start": "webpack-dev-server  --mode development --env.platform=web3",
     "build": "webpack  --mode development",
-    "web2": "webpack  --mode development --env.platform=web2",
-    "ssr": "webpack  --mode development --env.platform=server",
+    "no-ssr": "webpack  --mode development --env.platform=no-ssr",
+    "ssr": "webpack  --mode development --env.platform=ssr",
     "buildProd": "webpack  --mode production",
     "test": "echo \"Error: no test specified\" && exit 1"
   },

@@ -70,24 +70,15 @@ module.exports = [function (env, argv) {
   };
 
   var lenv = env || {
-    platform: 'web'
+    platform: 'no-ssr'
   };
 
-  lenv.platform = lenv.platform || 'web';
+  lenv.platform = lenv.platform || 'no-ssr';
 
   console.log(`env: ${JSON.stringify(env)}`);
 
-  // server-specific configuration
-  if (lenv.platform === 'server') {
-    base.target = 'node';
-    base.entry = ['@babel/polyfill',
-      './content/styles.scss',
-      './server/index.tsx'
-    ]
-    base.output.filename = 'server.js';
-  }
-  // client-specific configurations
-  else if (lenv.platform === 'web') {
+  // no ssr
+  if (lenv.platform === 'no-ssr') {
     base.entry = ['@babel/polyfill',
       './content/styles.scss',
       './main.tsx'
@@ -103,21 +94,12 @@ module.exports = [function (env, argv) {
       })
     );
   }
-  else if (lenv.platform === 'web2') {
+  //ssr
+  else if (lenv.platform === 'ssr') {
     base.entry = ['@babel/polyfill',
       './content/styles.scss',
-      './index2.tsx'
+      './SSR.tsx'
     ]
-    base.output.filename = 'bundle.js';
-  }
-  else if (lenv.platform === 'web3') {
-    base.entry = ['@babel/polyfill',
-      './content/styles.scss',
-      './initData.ts',
-      './index3.tsx'
-    ]
-    base.devServer.historyApiFallback = true;
-    base.output.publicPath = '/';
     base.output.filename = 'bundle.js';
   }
   return base;
