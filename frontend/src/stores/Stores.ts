@@ -1,6 +1,5 @@
 import { observable, IObservableArray, action, configure } from "mobx";
 import { Car } from "../model/Car";
-import { userService } from "../services/UserService";
 import { services } from "../services/Services";
 import { CarMaker } from "../model/gen/CarMaker";
 
@@ -35,8 +34,8 @@ const carList = observable({
 
 const userActions = { updateName: action, updateAuthenticated: action, updateUser: action };
 const user = observable({
-    name: userService.initialName,
-    authenticated: userService.initialIsAuthenticated,
+    name: services.userService.name,
+    authenticated: services.userService.authenticated,
     updateName(name: string): void {
         user.name = name;
     },
@@ -125,7 +124,7 @@ const navigation = {
         history.pushState(state, "login", "/login");
     },
     loginOffEvent(): void {
-        userService.userLogout().then(()=>{
+        services.userService.userLogout().then(()=>{
             user.updateAuthenticated(false);
         });
     },

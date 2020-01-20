@@ -1,10 +1,10 @@
 {
   "name": "carapp",
   "version": "1.0.0",
-  "description": "In this sample we setup the basic plumbing to \"build\" our project and launch it in a dev server.",
+  "description": "Example of a Car app that uses the SSR as an option",
   "main": "index.js",
   "scripts": {
-    "start": "webpack-dev-server  --mode development --env.platform=web3",
+    "start": "webpack-dev-server  --mode development --env.platform=webserver",
     "build": "webpack  --mode development",
     "no-ssr": "webpack  --mode development --env.platform=no-ssr",
     "ssr": "webpack  --mode development --env.platform=ssr",

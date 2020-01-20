@@ -1,10 +1,26 @@
-import { UserService } from "../services/UsrService";
+import { UserService } from "../services/UserService";
 import { User } from "../model/User";
 
 export class UserServiceTest implements UserService{
     private usersList:User[] = [];
-    private nameCached: string = (window["__state"] as AppInitialData).username;
-    private authenticatedCache: boolean = (window["__state"] as AppInitialData).auth;
+    private nameCached: string;
+    private authenticatedCache: boolean;
+    constructor(){
+        const usersStorage = localStorage.getItem("users");
+        const initialData = usersStorage != null? JSON.parse(localStorage.getItem("users")):[];
+        if(initialData == null){
+            this.nameCached = null;
+            this.authenticatedCache = false;
+        }
+        const state = window['__state'] || {};
+        state.page = null;
+        window['__state'] = state;
+    }
+    userLogout(): Promise<void> {
+        this.nameCached = null;
+        this.authenticatedCache = false;
+        return Promise.resolve()       
+    }
     
     get name ():string{
         return this.nameCached;
@@ -13,11 +29,11 @@ export class UserServiceTest implements UserService{
         return this.authenticatedCache;
     }
     
-    async registerUser(user: User): Promise<void> {
+    registerUser(user: User): Promise<void> {
         this.usersList.push(user);
         return Promise.resolve();
     }
-    async userLogin(user: User): Promise<boolean> {
+    userLogin(user: User): Promise<boolean> {
         function findUser(current:User):boolean{
             return current.user === user.user && current.pass === user.pass;
         }

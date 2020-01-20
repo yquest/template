@@ -1,8 +1,10 @@
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
+const webpack = require('webpack');
 const path = require('path');
 
 const basePath = __dirname;
+var testServices = false;
 
 module.exports = [function (env, argv) {
   const base = {
@@ -65,11 +67,11 @@ module.exports = [function (env, argv) {
       new MiniCssExtractPlugin({
         filename: "[name].css",
         chunkFilename: "[id].css"
-      }),
+      })
     ],
   };
 
-  var lenv = env || {
+  var lenv = env || {    
     platform: 'no-ssr'
   };
 
@@ -102,6 +104,28 @@ module.exports = [function (env, argv) {
     ]
     base.output.filename = 'bundle.js';
   }
+  //webserver
+  else if (lenv.platform === 'webserver') {
+    base.entry = ['@babel/polyfill',
+      './content/styles.scss',
+      './NOSSR.tsx'
+    ]
+    base.output.filename = 'bundle.js';
+
+    base.plugins.push(
+      new HtmlWebpackPlugin({
+        filename: 'index.html', //Name of file in ./dist/
+        template: 'index.html', //Name of template in ./src
+        favicon: "favicon.ico",
+        hash: true,
+      })
+    );
+    testServices = true;
+  }
+  console.log(`test services?${testServices}`)
+  base.plugins.push(new webpack.DefinePlugin({
+    __APP_SERVICES_TEST__: JSON.stringify(testServices)
+  }));
   return base;
 },
 function (env, argv) {

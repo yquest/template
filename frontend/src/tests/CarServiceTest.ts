@@ -4,7 +4,8 @@ import { Car, carFromRaw, carToRaw } from "../model/Car";
 export class CarServiceTest implements CarService {
     carList: Car[];
     constructor() {
-        const initialData = JSON.parse(localStorage.getItem("cars"));
+        const carsStorage = localStorage.getItem("cars");
+        const initialData = carsStorage != null? JSON.parse(localStorage.getItem("cars")):[];
         this.carList = initialData.map(carFromRaw);
     }
 

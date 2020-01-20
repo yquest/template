@@ -12,24 +12,25 @@ node {
   workDir = file("${project.buildDir}/node")
   nodeModulesDir = file("${project.projectDir}")
 }
+
 task nodeClientBuild(type: NpmTask) {
   args = ['run', 'build']
+}
+
+task nodeClientStart(type: NpmTask) {
+  args = ['run', 'start']
 }
 
 task nodeClientBuildProd(type: NpmTask) {
   args = ['run', 'buildProd']
 }
 
-task nodeClientBuildTestWeb2(type: NpmTask) {
-  args = ['run', 'web2']
+task nodeNoSSRBuild(type: NpmTask) {
+  args = ['run', 'no-ssr']
 }
 
 task nodeSSRBuild(type: NpmTask) {
   args = ['run', 'ssr']
-}
-
-task expressRun(type: NodeTask){
-  script file('dist/server.js')
 }
 
 task distClean(type: Delete) {

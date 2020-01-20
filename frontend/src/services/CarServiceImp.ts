@@ -64,5 +64,3 @@ export class CarServiceImp implements CarService {
         return cars
     }
 }
-
-export const carService = new CarServiceImp()
