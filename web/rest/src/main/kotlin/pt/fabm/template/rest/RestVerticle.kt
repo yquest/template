@@ -23,12 +23,13 @@ class RestVerticle : AbstractVerticle() {
     const val PORT = "port"
     const val HOST = "host"
     const val PDIR = "pdir"
-
+    const val SSR = "ssr"
   }
 
   override fun rxStart(): Completable {
     val port = config().getInteger(PORT) ?: throw RequiredException(PORT)
     val host = config().getString(HOST) ?: throw RequiredException(HOST)
+    val ssr = config().getBoolean(SSR, false) ?: throw RequiredException(HOST)
 
     val staticPath = config().getString(PDIR) ?: throw RequiredException(PDIR)
     if (!File(staticPath).exists()) error(
@@ -52,8 +53,12 @@ class RestVerticle : AbstractVerticle() {
     router.post("/api/car").withBody().handler(carController::createCar)
     router.put("/api/car").withBody().handler(carController::updateCar)
     router.delete("/api/car").handler(carController::deleteCar)
-    router.get("/").withCookies().handler(viewsController::main)
-    router.get("/login").withCookies().handler(viewsController::login)
+    if (ssr){
+      router.get("/").withCookies().handler(viewsController::main)
+      router.get("/login").withCookies().handler(viewsController::login)
+    }else{
+      router.get("/").withCookies().handler(viewsController::mainNoSSR)
+    }
 
     val webRoot = StaticHandler
       .create()

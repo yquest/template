@@ -81,7 +81,7 @@ module.exports = [function (env, argv) {
   if (lenv.platform === 'no-ssr') {
     base.entry = ['@babel/polyfill',
       './content/styles.scss',
-      './main.tsx'
+      './NOSSR.tsx'
     ]
     base.output.filename = 'bundle.js';
 
