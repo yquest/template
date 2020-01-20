@@ -2,6 +2,7 @@ const HtmlWebpackPlugin = require('html-webpack-plugin');
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 const webpack = require('webpack');
 const path = require('path');
+const http = require('http');
 
 const basePath = __dirname;
 var testServices = false;
@@ -121,6 +122,29 @@ module.exports = [function (env, argv) {
       })
     );
     testServices = true;
+
+    base.devServer.before = (app, server, compiler) => {
+      app.get('/some/path', function(req, res) {
+      http.get('http://localhost:8888/api/init-data', (resp) => {
+        let data = '';
+
+        // A chunk of data has been recieved.
+        resp.on('data', (chunk) => {
+          data += chunk;
+        });
+
+        // The whole response has been received. Print out the result.
+        resp.on('end', () => {
+          console.log("data",data);
+          res.json({ response: 'cool' });
+        });
+
+      }).on("error", (err) => {
+        res.json({ response: 'error' });
+        console.log("Error: " + err.message);
+      });
+      });
+    }
   }
   console.log(`test services?${testServices}`)
   base.plugins.push(new webpack.DefinePlugin({
