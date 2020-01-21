@@ -13,45 +13,36 @@ node {
   workDir = file("${project.buildDir}/node")
   nodeModulesDir = file("${project.projectDir}")
 }
+
+def createCmd(String scriptPath, String cmdName){
+  def variant = new VariantBuilder(project.extensions['node'] as NodeExtension).build()
+  def nodeExec = variant.nodeExec
+  def script = file("${project.projectDir}/$scriptPath")
+  def cmd
+  def cmdFile
+
+  if(variant.isWindows()){
+    cmdFile = file("${project.buildDir}/${cmdName}.cmd")
+    cmd = """${nodeExec} ${script.absolutePath} %*"""
+  } else{
+    cmdFile = file("${project.buildDir}/${cmdName}.sh")
+    cmd = """#!/bin/bash \n${nodeExec} ${script.absolutePath} @"""
+  }
+  println "script exists?: ${script.exists()}"
+  println "file created: ${cmdFile}"
+  println "with content: ${cmd}"
+  cmdFile.text = cmd
+}
+
 task createWebpackCmd {
   doLast {
-    def variant = new VariantBuilder(project.extensions['node'] as NodeExtension).build()
-    def nodeExec = variant.nodeExec
-    def webpackScript = file("${project.projectDir}/node_modules/webpack/bin/webpack.js")
-    def cmd = """${nodeExec} ${webpackScript.absolutePath} %*"""
-    def cmdFile
-
-    if(variant.isWindows()){
-      cmdFile = file("${project.buildDir}/webpack.cmd")
-    }else{
-      println("not accepted os to create the script")
-      return
-    }
-    println "script webpack exists?: ${webpackScript.exists()}"
-    println "file created: ${cmdFile}"
-    println "with content: ${cmd}"
-    cmdFile.text = cmd
+    createCmd("node_modules/webpack/bin/webpack.js","webpack")
   }
 }
 
 task createWebpackDevServer {
   doLast {
-    def variant = new VariantBuilder(project.extensions['node'] as NodeExtension).build()
-    def nodeExec = variant.nodeExec
-    def wpdsScript = file("${project.projectDir}/node_modules/webpack-dev-server/bin/webpack-dev-server.js")
-    def cmd = """${nodeExec} ${wpdsScript.absolutePath} %*"""
-    def cmdFile
-
-    if(variant.isWindows()){
-      cmdFile = file("${project.buildDir}/wpds.cmd")
-    }else{
-      println("not accepted os to create the script")
-      return
-    }
-    println "script webpack exists?: ${wpdsScript.exists()}"
-    println "file created: ${cmdFile}"
-    println "with content: ${cmd}"
-    cmdFile.text = cmd
+    createCmd("node_modules/webpack-dev-server/bin/webpack-dev-server.js","wpds")
   }
 }
 
