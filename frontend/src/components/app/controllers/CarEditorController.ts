@@ -159,9 +159,9 @@ export namespace carEdit {
             if (!hasErrors) {
                 const carToUpadate = {...stores.carEdition.car};
                 const carIndex = stores.carEdition.index;
-                if (stores.carEdition.creationType) { 
+                if (stores.carEdition.creationType) {
                     services.carService.create(carToUpadate).then(res=>{
-                        stores.carList.createCar(carToUpadate); 
+                        stores.carList.createCar(carToUpadate);
                     });
                 }
                 else {

@@ -3,9 +3,9 @@ const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 const webpack = require('webpack');
 const path = require('path');
 const http = require('http');
+const fs = require('fs');
 
 const basePath = __dirname;
-var testServices = false;
 
 module.exports = [function (env, argv) {
   const base = {
@@ -21,18 +21,7 @@ module.exports = [function (env, argv) {
       //inline: true, // Enable watch and live reload
       host: 'localhost',
       port: 8080,
-      stats: 'errors-only',
-      before: function (app, server) {
-        app.get('/some/path', function (req, res) {
-          res.json({ custom: 'res' });
-        });
-      },
-      proxy: {
-        '/api': {
-          target: 'http://localhost:8888',
-          secure: false
-        }
-      }
+      stats: 'errors-only'
     },
     module: {
       rules: [
@@ -113,43 +102,39 @@ module.exports = [function (env, argv) {
     ]
     base.output.filename = 'bundle.js';
 
-    base.plugins.push(
-      new HtmlWebpackPlugin({
-        filename: 'index.html', //Name of file in ./dist/
-        template: 'index.html', //Name of template in ./src
-        favicon: "favicon.ico",
-        hash: true,
-      })
-    );
-    testServices = true;
+    const htmlwpp = new HtmlWebpackPlugin({
+      templateParameters: (compilation, assets, assetTags, options) => {
+        assets.js.unshift("tests");
+        return {
+          compilation,
+          webpackConfig: compilation.options,
+          htmlWebpackPlugin: {
+            tags: assetTags,
+            files: assets,
+            options
+          },
+        };
+      },
+      filename: 'index.html', //Name of file in ./dist/
+      template: 'index.html', //Name of template in ./src
+      favicon: "favicon.ico",
+      hash: true
+    });
+
+    base.plugins.push(htmlwpp);
 
     base.devServer.before = (app, server, compiler) => {
-      app.get('/some/path', function(req, res) {
-      http.get('http://localhost:8888/api/init-data', (resp) => {
-        let data = '';
-
-        // A chunk of data has been recieved.
-        resp.on('data', (chunk) => {
-          data += chunk;
+      app.get('/tests', function(req, res) {
+        fs.readFile('webserver-tests/init.js', 'utf8', function(err, contents) {          
+          res.writeHead(200, { 'Content-Type': 'application/json' });
+          res.end(contents);
         });
-
-        // The whole response has been received. Print out the result.
-        resp.on('end', () => {
-          console.log("data",data);
-          res.json({ response: 'cool' });
-        });
-
-      }).on("error", (err) => {
-        res.json({ response: 'error' });
-        console.log("Error: " + err.message);
       });
+      app.get('/api/user/logout', function(req, res) {
+        res.end();
       });
     }
   }
-  console.log(`test services?${testServices}`)
-  base.plugins.push(new webpack.DefinePlugin({
-    __APP_SERVICES_TEST__: JSON.stringify(testServices)
-  }));
   return base;
 },
 function (env, argv) {
@@ -180,5 +165,4 @@ function (env, argv) {
   base.entry = ['./sw.ts'];
   base.output.filename = 'sw.js';
   return base;
-}
-];
+}];

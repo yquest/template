@@ -1,5 +1,7 @@
 import com.moowork.gradle.node.NodeExtension
 import com.moowork.gradle.node.variant.VariantBuilder
+import groovy.text.SimpleTemplateEngine
+
 plugins {
   id "com.moowork.node" version "1.3.1"
 }
@@ -14,38 +16,44 @@ node {
   nodeModulesDir = file("${project.projectDir}")
 }
 
-def createCmd(String scriptPath, String cmdName){
+if(!hasProperty("scripts")) ext.scripts = []
+
+ext.scripts += [
+  ["name": "webpack", "path": "node_modules/webpack/bin/webpack.js", "entry": null],
+  ["name": "webpack_dev_server", "path": "node_modules/webpack-dev-server/bin/webpack-dev-server.js", "entry": null]
+]
+
+ext.scripts.each{Map<String,Map<String,String>> map->
+  task "create_script_${map.name}" {
+    group = 'script'
+    doLast{
+      createNodeScriptTask(map.path, map.name, map.entry)
+    }
+  }
+}
+
+def createNodeScriptTask(String path, String name, String entry = null) {
   def variant = new VariantBuilder(project.extensions['node'] as NodeExtension).build()
   def nodeExec = variant.nodeExec
-  def script = file("${project.projectDir}/$scriptPath")
+  def script = file("${project.projectDir}/$path")
   def cmd
   def cmdFile
 
-  if(variant.isWindows()){
-    cmdFile = file("${project.buildDir}/${cmdName}.cmd")
+  if (variant.isWindows()) cmdFile = file("${project.buildDir}/${name}.cmd")
+  else cmdFile = file("${project.buildDir}/${name}.sh")
+
+  if (entry != null)
+    cmd = new SimpleTemplateEngine().createTemplate(entry).make(['nodeExec':nodeExec, 'script':script.absolutePath])
+  else if (variant.isWindows())
     cmd = """${nodeExec} ${script.absolutePath} %*"""
-  } else{
-    cmdFile = file("${project.buildDir}/${cmdName}.sh")
+  else
     cmd = """#!/bin/bash \n${nodeExec} ${script.absolutePath} @"""
-  }
+
   println "script exists?: ${script.exists()}"
   println "file created: ${cmdFile}"
   println "with content: ${cmd}"
   cmdFile.text = cmd
 }
-
-task createWebpackCmd {
-  doLast {
-    createCmd("node_modules/webpack/bin/webpack.js","webpack")
-  }
-}
-
-task createWebpackDevServer {
-  doLast {
-    createCmd("node_modules/webpack-dev-server/bin/webpack-dev-server.js","wpds")
-  }
-}
-
 
 task nodeClientBuild(type: NpmTask) {
   args = ['run', 'build']
