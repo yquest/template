@@ -4,9 +4,7 @@ import io.reactivex.Completable
 import io.vertx.core.logging.Logger
 import io.vertx.core.logging.LoggerFactory
 import io.vertx.reactivex.core.AbstractVerticle
-import io.vertx.reactivex.ext.auth.User
 import io.vertx.reactivex.ext.web.Router
-import io.vertx.reactivex.ext.web.RoutingContext
 import io.vertx.reactivex.ext.web.handler.StaticHandler
 import pt.fabm.template.extensions.withBody
 import pt.fabm.template.extensions.withCookies
@@ -70,7 +68,7 @@ class RestVerticle : AbstractVerticle() {
     router.route().handler {
       if (!it.response().ended()) {
         it.response().statusCode = 404
-        it.response().end("ressource not found")
+        it.response().end("resource not found")
       }
     }
 

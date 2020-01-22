@@ -1,11 +1,9 @@
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
-const webpack = require('webpack');
 const path = require('path');
-const http = require('http');
-const fs = require('fs');
-
 const basePath = __dirname;
+
+console.log(basePath);
 
 module.exports = [function (env, argv) {
   const base = {
@@ -18,10 +16,10 @@ module.exports = [function (env, argv) {
     },
     devServer: {
       contentBase: './dist', // Content base
-      //inline: true, // Enable watch and live reload
       host: 'localhost',
       port: 8080,
-      stats: 'errors-only'
+      stats: 'errors-only',
+      historyApiFallback:true
     },
     module: {
       rules: [
@@ -123,25 +121,24 @@ module.exports = [function (env, argv) {
 
     base.plugins.push(htmlwpp);
 
+    var _invalidateRequireCacheForFile = function(filePath){
+      delete require.cache[path.resolve(filePath)];
+    };
+  
+    var requireNoCache =  function(filePath){
+      _invalidateRequireCacheForFile(filePath);
+      return require(filePath);
+    };
+
     base.devServer.before = (app, server, compiler) => {
-      app.post('/api/user/login', function(req, res) {
-        fs.readFile('webserver-tests/login.js', 'utf8', function(err, contents) {          
-          const login = eval(contents);
-          res.writeHead(login, { 'Content-Type': 'application/json' });
-          res.end();
-        });
-      });
       app.get('/tests', function(req, res) {
-        console.log("/tests");
-        fs.readFile('webserver-tests/init.js', 'utf8', function(err, contents) {          
-          res.writeHead(200, { 'Content-Type': 'application/json' });
-          res.end(contents);
-        });
+        const init = requireNoCache('./webserver-tests/init.js');
+        init(req,res);
       });
-      app.get('/api/user/logout', function(req, res) {
-        console.log("/api/user/logout");
-        res.end();
-      });      
+      app.all('/api/*', function (req, res, next) {
+        const requests = requireNoCache('./webserver-tests/mock.js');
+        requests(req,res);
+      });
     }
   }
   return base;
