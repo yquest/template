@@ -1,5 +1,5 @@
 var state1Test = {
- "auth":true,
+ "auth":false,
  "cars":[{
    "make":3,
    "model":"2005",

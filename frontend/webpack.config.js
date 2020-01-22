@@ -124,15 +124,25 @@ module.exports = [function (env, argv) {
     base.plugins.push(htmlwpp);
 
     base.devServer.before = (app, server, compiler) => {
+      app.post('/api/user/login', function(req, res) {
+        fs.readFile('webserver-tests/login.js', 'utf8', function(err, contents) {          
+          res.writeHead(200, { 'Content-Type': 'application/json' });
+          res.end();
+        });
+        res.writeHead(200, { 'Content-Type': 'application/json' });
+        res.end();
+      });
       app.get('/tests', function(req, res) {
+        console.log("/tests");
         fs.readFile('webserver-tests/init.js', 'utf8', function(err, contents) {          
           res.writeHead(200, { 'Content-Type': 'application/json' });
           res.end(contents);
         });
       });
       app.get('/api/user/logout', function(req, res) {
+        console.log("/api/user/logout");
         res.end();
-      });
+      });      
     }
   }
   return base;
