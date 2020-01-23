@@ -30,7 +30,7 @@ export class UserServiceImp implements UserService{
     };
 
     async userLogin(user: User): Promise<boolean> {
-        this.authenticatedCache = await Axios.post("api/user/login", {
+        this.authenticatedCache = await Axios.post("/api/user/login", {
             user: user.user,
             pass: user.pass
         }).then(res=> res.status === 200).catch(res=> false);
