@@ -72,3 +72,11 @@ compileTestKotlin {
     jvmTarget = "1.8"
   }
 }
+
+task herokuInstall {
+  dependsOn ':frontend:nodeSSRBuild'
+  dependsOn ':web:main:installDist'
+  doLast {
+    println "installing in heroku"
+  }
+}

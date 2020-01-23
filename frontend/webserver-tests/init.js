@@ -1,20 +1,24 @@
 module.exports = function(req, res) {
   console.log(`serving state initialisation, page:${req.url}`);
 
-      var car1 ={
-        make: 3,
-        model: "2005",
-        maturityDate: new Date(2020, 0, 1, 10, 0, 0, 0).getTime(),
-        price: 10000
-      }
+  function createDate(year, month, days, hours, minutes, seconds){
+    return new Date(year, month-1, days, hours, minutes, seconds, 0).getTime();
+  }
 
-  var state1Test = {
-    username: "xico",
-    auth: false,
-    cars: [ car1 ]
+  const car1 = {
+    make: 3,
+    model: "2005",
+    maturityDate: createDate(2020,1,2,3,4,5),
+    price: 10000
   };
 
-  var emptyCars={
+  const state1Test = {
+    username: "xico",
+    auth: false,
+    cars: [car1]
+  };
+
+  const emptyCars = {
     //page:"login",
     username: "xico",
     auth: false,
